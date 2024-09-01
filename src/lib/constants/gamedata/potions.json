@@ -1,0 +1,20 @@
+[
+	{
+		"name": "Health Potion",
+		"price": 30,
+		"type": "potion",
+		"healing": "60"
+	},
+	{
+		"name": "Mana Potion",
+		"price": 30,
+		"type": "potion",
+		"mana": "40"
+	},
+	{
+		"name": "Interactive Chat Potion",
+		"price": 30,
+		"type": "potion",
+		"point": 1
+	}
+]
