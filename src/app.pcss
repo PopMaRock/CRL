@@ -3,15 +3,38 @@
 @tailwind utilities;
 
 /* === StoryText === */
-@layer components {
-.story-text {
-    tab-size: 4;
-    font-size: 20px;
-    line-height: 30px;
-    text-size-adjust: 100%;
-    white-space: pre-wrap;
-    word-break: break-word;
+.font-smoothing {
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased !important;
+	-moz-font-smoothing: antialiased !important;
+	text-rendering: optimizeLegibility !important;
+}
+.chat-text {
+	max-width: 65ch;
+	font-size: 1.35em;
+	letter-spacing: 0.03em;
+	hyphens: auto;
   }
+  @media screen and (min-width: 700px) {
+    * ::-webkit-scrollbar,::-webkit-scrollbar {
+        width:2px!important;
+        border-radius: 999px;
+        height: 0!important
+    }
+
+    * ::-webkit-scrollbar-track,::-webkit-scrollbar-track {
+        background: transparent!important
+    }
+
+    * ::-webkit-scrollbar-thumb,::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: hsla(0,0%,100%,.5)!important;
+        height: 16px!important
+    }
+
+    * ::-webkit-scrollbar-thumb:hover,::-webkit-scrollbar-thumb:hover {
+        background: #fff!important
+    }
 }
 /* === Horizontal Rules === */
 

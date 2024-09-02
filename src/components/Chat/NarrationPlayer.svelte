@@ -6,7 +6,7 @@
 	import Button from './button.svelte'
 	import { useAudio, type AudioControls, type AudioState } from './useAudio'
 
-  export let blockId: string;
+  export let blockId: number;
 
   const didPlay = writable(false);
   const audioRequested = writable(false);
@@ -73,25 +73,27 @@
   <Button
     variant="ghost"
     class="rounded-full"
-    size="sm"
+    size="xs"
+    alt="Play Narration"
     on:click={handleClick}
   >
     {#if state.playing}
-      <PauseIcon size={16} />
+      <PauseIcon size={8} />
     {:else if isProcessing}
-      <LoaderIcon size={16} />
+      <LoaderIcon size={8} />
     {:else}
-      <PlayIcon size={16} />
+      <PlayIcon size={8} />
     {/if}
   </Button>
   {#if $didPlay}
     <Button
       variant="ghost"
       class="rounded-full"
-      size="sm"
+      size="xs"
+      alt="Rewind"
       on:click={handleRewind}
     >
-      <RotateCcwIcon size={16} />
+      <RotateCcwIcon size={8} />
     </Button>
   {/if}
 </div>

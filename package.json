@@ -46,7 +46,6 @@
 		"@google/generative-ai": "^0.2.1",
 		"best-effort-json-parser": "^1.0.1",
 		"clsx": "^2.1.0",
-		"CRL": "file:",
 		"dotenv": "^16.4.5",
 		"framer-motion": "^11.0.8",
 		"langchain": "^0.2.17",

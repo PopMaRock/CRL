@@ -1,12 +1,4 @@
 <script lang="ts">
-	import ChatMessage from '$components/ChatMessage.svelte'
-	import UiButtons from '$components/UiButtons.svelte'
-	import GameStartWindow from '$components/GameStartWindow.svelte'
-	import DescriptionWindow from '$components/ItemDescWindow.svelte'
-	import MessageWindows from '$components/InGameWarnMsgs.svelte'
-	import ActionBox from '$components/ActionBox.svelte'
-	import Choices from '$components/Choices.svelte'
-	import BackgroundImgs from '$components/BackgroundImgs.svelte'
 	// import StaticPrompts from '$lib/components/StaticPrompts.svelte'
 
 	import { game, character, selectedItem, misc, coolDowns, bgImage, ui } from '$stores/stores'

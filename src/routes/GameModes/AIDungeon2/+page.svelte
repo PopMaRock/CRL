@@ -4,7 +4,6 @@
 	import { AIDConversation } from '$stores/stores'
 	import { onDestroy } from 'svelte'
 	import StoryLayout from '$components/Chat/StoryLayout.svelte'
-	import StoryLayoutAlt from '$components/Chat/StoryLayoutAlt.svelte'
 
 	const gen = new Generator()
 	const response = readablestreamStore()
@@ -13,11 +12,13 @@
 		console.log('destroyed AIDungeon2 session')
 	})
 
-	async function sendMessage(message: string, selectedOption: string) {
+	async function sendMessage(message: string, actionOption: string) {
 		if ($response.loading) return //calm doon. Already doing something. Sake pal.
 		//add the message to the conversation
+		console.log('actionOption before generator', actionOption);
+		if(!message && !actionOption) return;
 		try {
-			await gen.handleMessage(response, message, selectedOption)
+			await gen.handleMessage(response, message, actionOption)
 			console.log('Conversation up to now...', $AIDConversation)
 		} catch (error: any) {
 			console.error(error)
@@ -28,9 +29,9 @@
 	}
 	function handleSendMessage(event: any) {
 		//shut the fuck up Typescript.
-		const { message, selectedOption } = event.detail
-		sendMessage(message, selectedOption)
+		const { message, actionOption } = event.detail
+		sendMessage(message, actionOption)
 	}
 </script>
 
-<StoryLayoutAlt {response} bind:errorMessage on:sendMessage={handleSendMessage} />
+<StoryLayout {response} bind:errorMessage on:sendMessage={handleSendMessage} />

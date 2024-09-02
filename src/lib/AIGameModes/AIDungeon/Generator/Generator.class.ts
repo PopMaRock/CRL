@@ -1,7 +1,4 @@
-import {
-	cutTrailingSentence,
-	firstToSecondPerson
-} from '..//Story/utils'
+import { cutTrailingSentence, firstToSecondPerson } from '..//Story/utils'
 import { get } from 'svelte/store'
 import { get_similarity } from '$lib/utils/Similarity'
 import { AIDConversation } from '$stores/stores'
@@ -58,62 +55,15 @@ Instructions:
 		return prompt
 	}
 
-	result_replace(result: string, actions: string[]): string {
+	resultReplace(result: string, actions: string[]=[]): string {
 		result = result.replace('."', '".')
 		result = result.replace('#', '')
 		result = result.replace('*', '')
 		result = result.replace('\n\n', '\n')
 		result = result.replace('(?<=\\w)\\.\\.(?:\\s|$)', '.')
+		result = result.replace(/#{1,3} Response:/, ''); //bullshit Llama response pish.
 		result = cutTrailingSentence(result)
-		for (const sentence of actions) {
-			result = result.replace(sentence.trim() + ' ', '')
-		}
-		if (result.length === 0) {
-			return ''
-		}
-		const first_letter_capitalized = result[0].toUpperCase() === result[0]
-		if (!first_letter_capitalized) {
-			result = result[0].toLowerCase() + result.slice(1)
-		}
-		return result
-	}
-
-	async generate(
-		prompt: string,
-		options: any = null,
-		seed: number = 1,
-		depth: number = 1
-	): Promise<string> {
-		const debug_print = false
-		prompt = this.prompt_replace(prompt)
-		const last_prompt = prompt.includes('>') ? prompt.split('>').pop() : prompt
-
-		if (debug_print) {
-			console.log('******DEBUG******')
-			console.log('Prompt is: ', prompt)
-		}
-
-		//const text = await this.generate_raw(prompt)
-		const text = ''
-
-		if (debug_print) {
-			console.log('Generated result is: ', text)
-			console.log('******END DEBUG******')
-		}
-
-		let result = text
-		last_prompt !== undefined
-			? (result = this.result_replace(
-					result,
-					last_prompt.match(/.+?(?:\.{1,3}|[!?]|$)(?!")/g) || []
-				))
-			: ''
-		if (result.length === 0 && depth < 20) {
-			return this.generate(this.cut_down_prompt(prompt), options, seed, depth + 1)
-		} else if (result.split('.').length < 3 && depth < 20) {
-			return this.generate(prompt, options, seed, depth + 1)
-		}
-
+		result = result.trimEnd()
 		return result
 	}
 
@@ -123,11 +73,10 @@ Instructions:
 		return split_prompt[0] + (expendable_text ? `>${expendable_text}` : '')
 	}
 
-	private async gen_output(response: any, message: string): Promise<void> {
+	private async gen_output(response: any, history: any): Promise<void> {
 		const settings = {
-			input: message,
 			systemPrompt: this.prompt,
-			history: get(AIDConversation),
+			history: history,
 			model: 'mradermacher/FuseChat-Kunoichi-10.7B-i1-GGUF',
 			settings: {
 				baseURL: 'http://localhost:1234/v1/',
@@ -139,6 +88,7 @@ Instructions:
 				seed: this.seed
 			}
 		}
+		console.log('Request to LLM: ', settings);
 		try {
 			const answer = await response.request(
 				new Request('/api/chat/openai', {
@@ -147,28 +97,30 @@ Instructions:
 					body: JSON.stringify(settings)
 				})
 			)
-			const assistantMessage = { role: 'assistant', content: cutTrailingSentence(answer as string) }
+			if(!answer) throw new Error('No response from LLM');
+			const assistantMessage: Chat = {
+				role: 'assistant',
+				content: this.resultReplace(answer as string),
+				meta: { timestamp: Date.now(), hasAudio: false },
+				type: 'text'
+			}
 			//@ts-ignore
 			AIDConversation.update((conversations) => [...conversations, assistantMessage])
 		} catch (error: any) {
-			console.log('Error in gen_output: ', error);
+			console.log('Error in gen_output: ', error)
 			return error
 		}
 	}
-	public async handleMessage(response: any, message: string, selectedOptions: string): Promise<void> {
+	public async handleMessage(response: any, message: string, actionOption: string): Promise<void> {
 		message = message.trim()
 		message = message[0].toLowerCase() + message.slice(1)
 		if (!['.', '?', '!'].includes(message.slice(-1))) {
 			message += '.'
 		}
-		message = firstToSecondPerson(message)
+		if (actionOption !== 'say') message = firstToSecondPerson(message)
 
 		message =
-			selectedOptions === 'do'
-				? '>' + message
-				: selectedOptions === 'say'
-					? '"' + message + '"'
-					: message
+			actionOption === 'do' ? '>' + message : actionOption === 'say' ? '"' + message + '"' : message
 
 		if (['say', 'ask', '"'].some((substring) => message.includes(substring))) {
 			this.generate_num = 150
@@ -176,18 +128,32 @@ Instructions:
 
 		message = this.prompt_replace(message)
 		const last_prompt = message.includes('>') ? message.split('>').pop() : message
-		//@ts-ignore
-		AIDConversation.update((conversations) => [
-			...conversations,
-			{ role: selectedOptions === 'story' ? 'assistant' : 'user', content: message }
-		])
-		try{
-		await this.gen_output(response, message) //do generation
-		}catch(error){
-			console.log('Error in handleMessage: ', error);
+		//If it's a continue, don't add the user message to the conversation
+		console.log('Action option in Generator: ', actionOption)
+		if (actionOption !== 'continue') {
+			console.log('Adding message to conversation')
+			//@ts-ignore
+			AIDConversation.update((conversations) => [
+				...conversations,
+				{
+					role: actionOption === 'story' ? 'assistant' : 'user',
+					content: message,
+					meta: { timestamp: Date.now(), hasAudio: false },
+					type: 'text'
+				}
+			])
+		}
+		//Build the history as LLM will only accept [{role: '', content: ''}] format
+		const history = get(AIDConversation).map((conversation) => {
+			return { role: conversation.role, content: conversation.content }
+		})
+		try {
+			await this.gen_output(response, history) //do generation
+		} catch (error) {
+			console.log('Error in handleMessage: ', error)
 		}
 
-		let tempStory:any = get(AIDConversation)
+		let tempStory: any = get(AIDConversation)
 		if (tempStory.length >= 2) {
 			const similarity = get_similarity(
 				tempStory[tempStory.length - 1].content,

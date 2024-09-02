@@ -2,6 +2,8 @@
 	import GameIconsSideswipe from '~icons/game-icons/sideswipe'
 	import { logicalPropertiesHorizontalSlide } from '$lib/utils/transitions'
 	import { onMount } from 'svelte'
+	import { SlideToggle } from '@skeletonlabs/skeleton'
+	import { CRLSettingsStore } from '$stores/SettingsStore'
 	//variable to manage open/close sidebar
 	let srOpen = false
 	let srDiv: any
@@ -46,7 +48,8 @@
 					</div>
 				</div>
 			</div>
-			I'm a biscuit, you're a cunt.
+			Streaming:
+			<SlideToggle name="slide" bind:checked={$CRLSettingsStore.stream} />
 		</section>
 	{:else}
 	<section>

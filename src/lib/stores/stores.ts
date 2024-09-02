@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { writable, type Writable } from 'svelte/store'
 
 export const game: any = writable({
 	gameData: {
@@ -58,5 +58,5 @@ export const descWindow: any = writable({
 	amount: undefined,
 	point: undefined
 })
-export const AIDConversation: any = writable([])
+export const AIDConversation: Writable<Chat[]> = writable([]);
 //---

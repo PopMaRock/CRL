@@ -14,5 +14,5 @@ from scrolling up to see previous text.
   class={cn($$props.class)}
   style="transform: {noTransform ? 'none' : 'translateZ(0)'}"
 >
-  <slot></slot>
+  <slot/>
 </div>

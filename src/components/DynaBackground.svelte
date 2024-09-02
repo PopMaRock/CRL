@@ -26,7 +26,7 @@
 </script>
 
 
-<div class="max-h-4xl relative relative max-w-4xl">
+<div class="max-h-4xl relative relative max-w-4xl overflow-hidden bg-surface-900">
     <section class="relative z-5 h-full w-full mix-blend-multiply">
         <div class="h-full w-full">
             {#each layers.background as src}

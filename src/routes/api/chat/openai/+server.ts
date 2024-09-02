@@ -18,12 +18,11 @@ export const POST = async ({ request }) => {
 	const body = await request.json()
 	if (!body) throw error(400, 'Missing Data')
 	const {
-		input,
 		systemPrompt,
 		history,
 		model,
 		settings
-	}: { input: string; systemPrompt: string; history: any; model: string; settings: Settings } = body // history should be passed
+	}: { systemPrompt: string; history: any; model: string; settings: Settings } = body // history should be passed
 
 	// On to AI pish....
 	let apiConfig: any = { apiKey: 'lm-studio', configuration: {} }

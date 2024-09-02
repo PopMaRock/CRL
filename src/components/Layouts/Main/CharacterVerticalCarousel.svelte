@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CharacterCard from '$components/EngineElements/CharacterCard.svelte';
+  import CharacterCard from '$components/UI-Effects/CharacterCard.svelte';
   import { onMount } from 'svelte';
 
   let slider1: HTMLDivElement;
