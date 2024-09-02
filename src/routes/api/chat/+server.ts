@@ -6,12 +6,12 @@ import { json } from '@sveltejs/kit'
 //import type { Config } from '@sveltejs/adapter-vercel'
 
 // import Bard from 'bard-ai'
-import { GOOGLE_AI_API_KEY } from '$env/static/private'
+//import { GOOGLE_AI_API_KEY } from '$env/static/private'
 // import { PALM_KEY } from '$env/static/private'
 // import { BARD_KEY } from '$env/static/private'
 // import { DiscussServiceClient } from '@google-ai/generativelanguage'
 // import { GoogleAuth } from 'google-auth-library'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+//import { GoogleGenerativeAI } from '@google/generative-ai'
 
 
 // let myBard = new Bard(BARD_KEY)
@@ -29,11 +29,11 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 // }
 
 // Access your API key as an environment variable (see "Set up your API key" above)
-const genAI = new GoogleGenerativeAI(GOOGLE_AI_API_KEY)
+//const genAI = new GoogleGenerativeAI(GOOGLE_AI_API_KEY)
 
 // For text-only input, use the gemini-pro model
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
-
+//const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+/*
 const chat = model.startChat({
 	history: [
 		// {
@@ -67,4 +67,4 @@ export const POST: RequestHandler = async ({ request }: any) => {
 		return json({ error: e })
 	}
 	//////////////////////////////
-}
+}*/

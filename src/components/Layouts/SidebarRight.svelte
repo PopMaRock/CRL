@@ -4,6 +4,8 @@
 	import { onMount } from 'svelte'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
 	import { CRLSettingsStore } from '$stores/SettingsStore'
+	import { fade } from 'svelte/transition'
+	import Button from '$components/Chat/button.svelte'
 	//variable to manage open/close sidebar
 	let srOpen = false
 	let srDiv: any
@@ -37,8 +39,10 @@
 						type="button"
 						class="btn"
 						title="Get the fuck back in"
-						on:click={(event) => {event.stopPropagation();srOpen = false;}}
-						><GameIconsSideswipe class="rotate-180 text-xl text-primary-900" /></button
+						on:click={(event) => {
+							event.stopPropagation()
+							srOpen = false
+						}}><GameIconsSideswipe class="rotate-180 text-xl text-primary-900" /></button
 					>
 				</div>
 
@@ -48,18 +52,47 @@
 					</div>
 				</div>
 			</div>
-			Streaming:
-			<SlideToggle name="slide" bind:checked={$CRLSettingsStore.stream} />
+			Provider:<select class="select rounded-md" bind:value={$CRLSettingsStore.llmActive}>
+				<option value="lmstudio">LMStudio (Local)</option>
+				<option value="openai">OpenAI</option>
+				<option value="claude">Claude</option>
+				<option value="gemini">Gemini</option>
+			</select>
+			<div transition:fade>
+				<div class="mb-2 mt-2">
+					<label for="LLMbaseURL">LLM URL:</label>
+					<input
+						type="text"
+						name="LLMbaseURL"
+						class="input"
+						bind:value={$CRLSettingsStore.llm[$CRLSettingsStore.llmActive].baseURL}
+					/>
+				</div>
+				<div class="mb-2 mt-2">
+					<label for="LLMAPIKey">API Key:</label>
+					<input type="text" name="LLMAPIKey" class="input" value="" />
+				</div>
+				<div>
+					<Button class="variant-filled-primary btn" on:click={() => {}}>Test Connect</Button>
+				</div>
+				<div class="mt-10">
+					Streaming: <SlideToggle
+						name="slide"
+						bind:checked={$CRLSettingsStore.llmTextSettings.stream}
+					/>
+				</div>
+			</div>
 		</section>
 	{:else}
-	<section>
-	<button type="button" class="btn" on:click={(event) => {
-		event.stopPropagation();
-		srOpen = true;
-	  }}
-		><GameIconsSideswipe class="text-xl text-primary-900" /></button
-		>
-	</section>
+		<section>
+			<button
+				type="button"
+				class="btn"
+				on:click={(event) => {
+					event.stopPropagation()
+					srOpen = true
+				}}><GameIconsSideswipe class="text-xl text-primary-900" /></button
+			>
+		</section>
 	{/if}
-	
 </div>

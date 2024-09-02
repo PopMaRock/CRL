@@ -117,9 +117,9 @@
 				<div class="flex w-full flex-col gap-8 overflow-auto pb-[30vh]">
 					<!-- Messages -->
 					{#each $AIDConversation as item, index}
-						<TextBlock blockId={index} {item} fadein={(index === $AIDConversation.length - 1) ? !$CRLSettingsStore.stream : false} />
+						<TextBlock blockId={index} {item} fadein={(index === $AIDConversation.length - 1) ? !$CRLSettingsStore.llmTextSettings.stream : false} />
 					{/each}
-					{#if $response.loading && $CRLSettingsStore.stream}
+					{#if $response.loading && $CRLSettingsStore.llmTextSettings.stream}
 						{#await new Promise((res) => setTimeout(res, 400)) then _}
 							{#if $response.text == ''}
 								<TypingIndicator />

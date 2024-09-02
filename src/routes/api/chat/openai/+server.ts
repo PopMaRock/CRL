@@ -2,6 +2,8 @@ import { error } from '@sveltejs/kit'
 import { ChatOpenAI } from '@langchain/openai'
 import { CallbackManager } from '@langchain/core/callbacks/manager'
 import { HumanMessage,AIMessage,SystemMessage} from "@langchain/core/messages";
+import { VITE_OPENAI_API_KEY } from '$env/static/private';
+
 interface Settings {
 	generate_num: number
 	default_gen_num: number
@@ -25,7 +27,7 @@ export const POST = async ({ request }) => {
 	}: { systemPrompt: string; history: any; model: string; settings: Settings } = body // history should be passed
 
 	// On to AI pish....
-	let apiConfig: any = { apiKey: 'lm-studio', configuration: {} }
+	let apiConfig: any = { apiKey: VITE_OPENAI_API_KEY, configuration: {} }
 	if (settings.baseURL) apiConfig.configuration.baseURL = settings.baseURL
 	//create the new message object
 	apiConfig = {

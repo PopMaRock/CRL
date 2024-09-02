@@ -25,7 +25,7 @@
 			<SidebarLeft /></div>
 		</svelte:fragment>
 		<svelte:fragment slot="sidebarRight">
-				<SidebarRight />
+				<SidebarRight /> 
 		</svelte:fragment>
 		<!-- Router Slot -->
 			<slot />

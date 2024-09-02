@@ -132,7 +132,7 @@
 				</div>
 			</div>
 			{#if currentRailCategory == '/1'}
-				<a href="/GameModes/AIDungeon2/">Classic DungeonAI</a><br />
+				<a href="/gamemodes/dungeon/">DungeonAI</a><br />
 				<hr class="mt-20 opacity-30" />
 				<div class="mt-2 font-semibold text-primary-800">Your Adventures</div>
 			{:else if currentRailCategory == '2'}
