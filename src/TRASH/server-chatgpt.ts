@@ -1,6 +1,6 @@
 import { OPENAI_KEY } from '$env/static/private'
 import type { CreateChatCompletionRequest, ChatCompletionRequestMessage } from 'openai'
-import type { RequestHandler } from './$types'
+import type { RequestHandler } from '../routes/api/provider/$types'
 import { json } from '@sveltejs/kit'
 //import type { Config } from '@sveltejs/adapter-vercel'
 //import Bard, { askAI } from 'bard-ai'

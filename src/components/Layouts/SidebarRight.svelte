@@ -3,7 +3,7 @@
 	import { logicalPropertiesHorizontalSlide } from '$lib/utils/transitions'
 	import { onMount } from 'svelte'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
-	import { CRLSettingsStore } from '$stores/SettingsStore'
+	import { EngineLlmStore } from '$stores/engine'
 	import { fade } from 'svelte/transition'
 	import Button from '$components/Chat/button.svelte'
 	//variable to manage open/close sidebar
@@ -48,11 +48,11 @@
 
 				<div id="app-name">
 					<div class="flex flex-col leading-none">
-						<div class="text-xl">Settings</div>
+						<div class="text-xl">Engine Settings</div>
 					</div>
 				</div>
 			</div>
-			Provider:<select class="select rounded-md" bind:value={$CRLSettingsStore.llmActive}>
+			Provider:<select class="select rounded-md" bind:value={$EngineLlmStore.llmActive}>
 				<option value="lmstudio">LMStudio (Local)</option>
 				<option value="openai">OpenAI</option>
 				<option value="claude">Claude</option>
@@ -65,7 +65,7 @@
 						type="text"
 						name="LLMbaseURL"
 						class="input"
-						bind:value={$CRLSettingsStore.llm[$CRLSettingsStore.llmActive].baseURL}
+						bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive].baseURL}
 					/>
 				</div>
 				<div class="mb-2 mt-2">
@@ -78,7 +78,7 @@
 				<div class="mt-10">
 					Streaming: <SlideToggle
 						name="slide"
-						bind:checked={$CRLSettingsStore.llmTextSettings.stream}
+						bind:checked={$EngineLlmStore.llmTextSettings.stream}
 					/>
 				</div>
 			</div>

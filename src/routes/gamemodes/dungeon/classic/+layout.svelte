@@ -12,7 +12,6 @@
 	<Toast />
 
 	<AppShell>
-		<div class="h-screen">
-			<slot /></div>
+			<slot />
 	</AppShell>
 </div>

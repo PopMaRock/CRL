@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { initializeStores, Modal, storePopup } from '@skeletonlabs/skeleton'
 	import { AppShell, Toast } from '@skeletonlabs/skeleton'
-	//import { autoModeWatcher } from '@skeletonlabs/skeleton'
 	//import type { LayoutData } from './$types'
 	import { autoModeWatcher } from '@skeletonlabs/skeleton';
 	import '../app.pcss'
@@ -10,12 +9,10 @@
 	import SidebarRight from '$components/Layouts/SidebarRight.svelte'
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
 	initializeStores()
-	// Initialize
-	//console.log("%cHello. There's nothing for cunts like you round these parts", style)
 </script>
 <svelte:head>{@html '<script>(' + autoModeWatcher.toString() + ')();</script>'}</svelte:head>
 <div>
-	<Modal />
+	<Modal/>
 	<Toast />
 
 	<AppShell>
@@ -28,6 +25,8 @@
 				<SidebarRight /> 
 		</svelte:fragment>
 		<!-- Router Slot -->
+		<div class="h-screen">
 			<slot />
+			</div>
 	</AppShell>
 </div>

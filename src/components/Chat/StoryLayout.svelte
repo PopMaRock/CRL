@@ -12,7 +12,7 @@
 	import { useBackgroundMusic } from './useAudio' // Import the function
 	import InteractionBox from './InteractionBox.svelte'
 	import TypingIndicator from '$components/AIChatLayout/TypingIndicator.svelte'
-	import { CRLSettingsStore } from '$stores/SettingsStore'
+	import { CRLSettingsStore } from '$stores/engine'
 	export let response: any //this needs to constantly be passed around, like a country girl at a frat party.
 	export let errorMessage = ''
 
