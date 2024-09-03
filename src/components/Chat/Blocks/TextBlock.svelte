@@ -6,9 +6,9 @@
 	import TextGenerateEffect from '$components/UI-Effects/text-generation/TextGenerateEffect.svelte'
 	import { fade } from 'svelte/transition'
 	import { onDestroy, onMount } from 'svelte'
-	import { AIDConversation } from '$stores/stores'
+	import { DungeonConversationStore } from '$stores/dungeon'
 
-	export let item: Chat | string
+	export let item: DungeonConversation | string
 	export let blockId: number = 0
 	export let offerAudio: boolean = false
 	export let fadein: boolean = false
@@ -32,7 +32,7 @@
 	// Get the initial content
 	// Get the initial content if item is not a string
 	$: if (typeof item !== 'string') {
-		const conversation = get(AIDConversation)[blockId]
+		const conversation = get(DungeonConversationStore)[blockId]
 		if (conversation && conversation.content !== undefined) {
 			content = conversation.content
 		}
@@ -57,7 +57,7 @@
 	}
 	// Function to save the changes
 	function saveChanges() {
-		AIDConversation.update((conversations) => {
+		DungeonConversationStore.update((conversations) => {
 			conversations[blockId].content = inputValue
 			return conversations
 		})

@@ -3,7 +3,7 @@
 	import DynaBackground from '$components/DynaBackground.svelte'
 	//import TypingIndicator from '$components/AIChatLayout/TypingIndicator.svelte'
 	import { onMount } from 'svelte'
-	import { AIDConversation } from '$stores/stores'
+	import { DungeonConversationStore, DungeonGameSettingsStore } from '$stores/dungeon'
 	import TextBlock from './Blocks/TextBlock.svelte'
 	import { createEventDispatcher } from 'svelte'
 	import { writable } from 'svelte/store'
@@ -12,7 +12,6 @@
 	import { useBackgroundMusic } from './useAudio' // Import the function
 	import InteractionBox from './InteractionBox.svelte'
 	import TypingIndicator from '$components/AIChatLayout/TypingIndicator.svelte'
-	import { CRLSettingsStore } from '$stores/engine'
 	export let response: any //this needs to constantly be passed around, like a country girl at a frat party.
 	export let errorMessage = ''
 
@@ -116,10 +115,10 @@
 			>
 				<div class="flex w-full flex-col gap-8 overflow-auto pb-[30vh]">
 					<!-- Messages -->
-					{#each $AIDConversation as item, index}
-						<TextBlock blockId={index} {item} fadein={(index === $AIDConversation.length - 1) ? !$CRLSettingsStore.llmTextSettings.stream : false} />
+					{#each $DungeonConversationStore as item, index}
+						<TextBlock blockId={index} {item} fadein={(index === $DungeonConversationStore.length - 1) ? !$DungeonGameSettingsStore.llm.llmTextSettings.stream : false} />
 					{/each}
-					{#if $response.loading && $CRLSettingsStore.llmTextSettings.stream}
+					{#if $response.loading && $DungeonGameSettingsStore.llm.llmTextSettings.stream}
 						{#await new Promise((res) => setTimeout(res, 400)) then _}
 							{#if $response.text == ''}
 								<TypingIndicator />

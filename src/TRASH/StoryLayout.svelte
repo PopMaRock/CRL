@@ -3,7 +3,7 @@
 	import DynaBackground from '$components/DynaBackground.svelte'
 	import TypingIndicator from '$components/AIChatLayout/TypingIndicator.svelte'
 	import { onMount, afterUpdate } from 'svelte'
-    import { AIDConversation } from '$stores/stores'
+    import { DungeonConversationStore } from '$stores/dungeon'
     import {createEventDispatcher} from 'svelte'
     export let response: any; //this needs to constantly be passed around, like a country girl at a frat party.
     export let errorMessage = '';
@@ -60,8 +60,8 @@
 
 <div class="relative flex h-screen max-h-[95vh] w-full overflow-hidden px-10 pt-10">
 	<div class="flex-1 overflow-auto">
-		<div class="react-scroll-to-bottom--css-ikyem-79elbk">
-			<div class="react-scroll-to-bottom--css-ikyem-1n7m0yu">
+		<div>
+			<div>
 				{#if showEmptyChat}
 					<div class="relative flex w-full flex-col py-10">
 						<h1
@@ -71,9 +71,9 @@
 						</h1>
 					</div>
 				{/if}
-				{#if !showEmptyChat && $AIDConversation.length > 0}
+				{#if !showEmptyChat && $DungeonConversationStore.length > 0}
 					<div class="flex flex-col text-sm">
-						{#each $AIDConversation as item}
+						{#each $DungeonConversationStore as item}
 							<Message response={item} />
 						{/each}
 						{#if $response.loading}
@@ -181,16 +181,6 @@
 </div>
 
 <style>
-	.react-scroll-to-bottom--css-uzqrz-79elbk {
-		position: relative;
-	}
-
-	.react-scroll-to-bottom--css-ikyem-1n7m0yu {
-		height: 70%;
-		overflow-y: auto;
-		width: 100%;
-	}
-
 	textarea:focus {
 		outline: none;
 		box-shadow: none;

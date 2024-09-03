@@ -44,6 +44,7 @@
 	"dependencies": {
 		"@floating-ui/dom": "^1.6.3",
 		"@wolfrog/crl": "file:",
+		"american-british-english-translator": "^0.2.1",
 		"best-effort-json-parser": "^1.0.1",
 		"clsx": "^2.1.0",
 		"dotenv": "^16.4.5",

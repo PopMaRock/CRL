@@ -37,8 +37,11 @@
 			console.log('Unexpected response status:', res.status)
 		}
 	}
-    import StepOne from '$components/modals/newClassicGame/stepone.svelte';
-    const modalComponent: ModalComponent = { ref: StepOne };
+    import NewGame from '$components/modals/newClassicGame/newGame.svelte';
+    const modalComponent: ModalComponent = { 
+        ref: NewGame,
+        props: {stage: 1}
+    };
 	async function createOwnGame() {
 		const modal: ModalSettings = {
 			type: 'component',

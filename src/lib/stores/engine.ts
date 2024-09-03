@@ -27,6 +27,7 @@ Instructions:
 		limitContext: 4096,
 		memoryBank: true, //using vectera local
 		autoSummarize: false, //Can be false, local or main
+		convertToUKEnglish: true,
 		generateNum: 100,
 		defaultGenNum: 100,
 		temperature: 0.7,

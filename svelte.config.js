@@ -16,6 +16,9 @@ const config = {
 			}
 		}
 	})],
+	compilerOptions: {
+		customElement: true
+	},
 	kit: {
 		adapter: adapter(),
 		alias: {

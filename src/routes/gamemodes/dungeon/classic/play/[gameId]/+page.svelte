@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { readablestreamStore } from '$lib/stores/ReadableStreamStore'
 	import { Generator } from '$lib/AIGameModes/AIDungeon/Generator/Generator.class'
-	import { AIDConversation } from '$stores/stores'
+	import { DungeonConversationStore } from '$stores/dungeon'
 	import { onDestroy, onMount } from 'svelte'
 	import StoryLayout from '$components/Chat/StoryLayout.svelte'
 
@@ -26,7 +26,7 @@
 		if (!message && !actionOption) return
 		try {
 			await gen.handleMessage(response, message, actionOption)
-			console.log('Conversation up to now...', $AIDConversation)
+			console.log('Conversation up to now...', $DungeonConversationStore)
 		} catch (error: any) {
 			console.error(error)
 			errorMessage = error.message

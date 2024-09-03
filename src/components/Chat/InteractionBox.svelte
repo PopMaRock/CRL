@@ -98,15 +98,6 @@
 </div>
 
 <style>
-	.react-scroll-to-bottom--css-uzqrz-79elbk {
-		position: relative;
-	}
-
-	.react-scroll-to-bottom--css-ikyem-1n7m0yu {
-		height: 70%;
-		overflow-y: auto;
-		width: 100%;
-	}
 
 	textarea:focus {
 		outline: none;
