@@ -1,11 +1,13 @@
 <script lang="ts">
+  import Scenarios from "$components/Layouts/DungeonClassic/settings/scenarios.svelte";
+  import Story from "$components/Layouts/DungeonClassic/settings/story.svelte";
   import { cn, getTokens } from "$utilities/utils";
   import { getModalStore } from "@skeletonlabs/skeleton";
   import { ChevronLeft, X } from "lucide-svelte";
   import { onMount } from "svelte";
   export let stage: number;
   let loading = false;
-  let tokens: Uint32Array | undefined;
+ 
   const modalStore = getModalStore();
   if ($modalStore[0]) console.log($modalStore[0].title);
 
@@ -13,49 +15,7 @@
   const cBase = "p-4 shadow-xl space-y-4";
   const cHeader =
     "flex items-center border-b dark:border-gray-700 text-bold text-2xl";
-  const scenarios = [
-    {
-      name: "Random",
-      image: "dice/diceBase.png",
-    },
-    {
-      name: "Custom",
-      image: "blankStory/storyBase.png",
-    },
-    {
-      name: "Fantasy",
-      image: "path/to/fantasy.jpg",
-    },
-    {
-      name: "Space",
-      image: "path/to/space.jpg",
-    },
-    {
-      name: "Cyberpunk",
-      image: "path/to/cyberpunk.jpg",
-    },
-    {
-      name: "Horror",
-      image: "path/to/horror.jpg",
-    },
-    {
-      name: "Mystery",
-      image: "path/to/mystery.jpg",
-    },
-    {
-      name: "Steampunk",
-      image: "path/to/romance.jpg",
-    },
-    {
-      name: "Comedy",
-      image: "path/to/comedy.jpg",
-    },
-  ];
-  function scenarioClicked(scenarioType: string) {
-    console.log(`Scenario clicked: ${scenarioType}`);
-    forward();
-    // Add your logic here
-  }
+
   function forward() {
     stage === 1
       ? (stage = 2)
@@ -89,7 +49,7 @@
   <div
     class={cn(
       cBase,
-      "w-model variant-soft-surface flex min-h-[70vh] max-w-[60vh] flex-col rounded-md ring-4"
+      "w-model variant-soft-surface flex min-h-[70vh] w-[60vh] flex-col rounded-md ring-4"
     )}
   >
     <header class={cHeader}>
@@ -118,29 +78,12 @@
     {#if loading}
       Loading
     {:else}
-      <article class="flex-grow">
+      <article class="flex-grow ">
         {#if stage === 1}
-          <!-- scenario -->
-          		<div class="grid w-full grid-cols-3 gap-1">
-			{#each scenarios as scenario}
-				<button
-					class="variant-soft-surface flex flex-col min-h-40 min-w-40 items-center justify-center rounded-md hover:bg-surface-700"
-					on:click={() => scenarioClicked(scenario.name)}
-				>
-					<img
-						src={`/images/interface/newGame/${scenario.image}`}
-						alt={scenario.name}
-						class="h-24 w-24 mb-2"
-					/>
-					{scenario.name}
-				</button>
-			{/each}
-		</div>
+          <Scenarios on:scenarioSelected={forward} />
         {:else if stage === 2}
           <!-- story and plot -->
-		<input type="text" class="input input-add" placeholder="Game Title" />
-    <textarea on:change={(e) => tokens = getTokens(e.target.value)} class="textarea textarea-add overflow-y-auto h-48 w-full" placeholder="Premise. For example: You find yourself in the rugged heartland of Scotland, where you take on the storied mantle of %user_name%, a %user_description% with an uncanny knack for growing the finest barley this side of the Tweed. Life has been grand, filled with laughter, ale, and endless nights spinning tall tales by the hearth. But all that is set to change when word arrives that Fanny Williams, a power-hungry queen from south of the border, has set her sights on your fertile lands. With dreams of conquest dancing in her sinister head, she intends to lay waste to everything you hold dear. You must find a way to stop her, and her armies."></textarea>
-         <span class="text-xs">Tokens: {tokens?.length??0}</span>
+          <Story />
         {:else if stage === 3}
           <!-- Game settings -->
         {:else}
