@@ -1,12 +1,14 @@
 import { sveltekit } from '@sveltejs/kit/vite'
-import { defineConfig } from 'vite'
 import { purgeCss } from 'vite-plugin-tailwind-purgecss'
 import Icons from 'unplugin-icons/vite'
 import dotenv from 'dotenv';
+import type { UserConfig } from 'vite';
+import wasm from 'vite-plugin-wasm';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 dotenv.config();
 
-export default defineConfig({
+const config: UserConfig = {
 	define: {
 		'process.env': process.env
 	},
@@ -14,12 +16,12 @@ export default defineConfig({
 		sourcemap: true
 	},
 	plugins: [
-		sveltekit(),
-		purgeCss(),
+		[sveltekit(),purgeCss(),wasm(), topLevelAwait()],
 		Icons({
 			compiler: 'svelte',
 			autoInstall: true	// experimental - autoinstalls icons as and when used.
 		}),
-	]
-});
+	],
+};
+export default config;
 

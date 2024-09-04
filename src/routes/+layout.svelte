@@ -3,7 +3,7 @@
 	import { AppShell, Toast } from '@skeletonlabs/skeleton'
 	//import type { LayoutData } from './$types'
 	import { autoModeWatcher } from '@skeletonlabs/skeleton';
-	import '../app.pcss'
+	import '../app.postcss';
 	import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
 	import SidebarLeft from '$components/Layouts/Main/SidebarLeft.svelte'
 	import SidebarRight from '$components/Layouts/SidebarRight.svelte'

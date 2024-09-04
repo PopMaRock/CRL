@@ -30,7 +30,8 @@
 		if (res.status === 404) {
 			console.log('404')
 			return
-		} else if (res.status === 200) {
+		}
+        if (res.status === 200) {
 			const data = await res.json()
 			console.log(data)
 		} else {
@@ -46,7 +47,6 @@
 		const modal: ModalSettings = {
 			type: 'component',
 			title: 'New Adventure',
-            body: 'Choose a scenario',
             component: modalComponent,
             // Returns the updated response value
 			response: (r: string) => console.log('response:', r)
@@ -60,7 +60,7 @@
         -- Cyberpunk (AI generates it)
         -- Horror (AI generates it)
         -- Mystery (AI generates it)
-        -- Romance (AI generates it)
+        -- Steampunk (AI generates it)
         -- Comedy (AI generates it)
 
         Then pick story elements - Enhanced will take world, characters, items, magic etc... into consideration.

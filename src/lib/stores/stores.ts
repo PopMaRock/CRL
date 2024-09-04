@@ -19,3 +19,14 @@ export const descWindow: any = writable({
 	point: undefined
 })
 //---
+export const processing: Writable<boolean> = writable(false);
+export const processingQueue: Writable<any> = writable([]);
+
+// Subscribe to changes in the processingQueue
+processingQueue.subscribe((queue) => {
+    if (queue.length > 0) {
+        processing.set(true);
+    } else {
+        processing.set(false);
+    }
+});
