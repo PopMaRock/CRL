@@ -16,7 +16,7 @@ interface Settings {
     frequencyPenalty: number;
     seed: number;
     stream: boolean;
-    baseURL?: string; // Optional property
+    baseUrl?: string; // Optional property
 }
 
 
@@ -27,7 +27,7 @@ export const POST = async ({ request }) => {
     const { systemPrompt, history, model, settings }: { systemPrompt: string; history: any; model: string; settings: Settings } = body;
 
     let apiConfig: any = { apiKey: VITE_OPENAI_API_KEY, configuration: {} };
-    if (settings.baseURL) apiConfig.configuration.baseURL = settings.baseURL;
+    if (settings.baseUrl) apiConfig.configuration.baseUrl = settings.baseUrl;
 
     apiConfig = {
         ...apiConfig,
@@ -50,6 +50,7 @@ export const POST = async ({ request }) => {
             const model = new ChatOpenAI({
                 ...apiConfig,
                 callbackManager: CallbackManager.fromHandlers({
+                    // biome-ignore lint/style/useNamingConvention: nae influence over this function name
                     handleLLMNewToken: async (token: string) => controller.enqueue(token)
                 })
             });

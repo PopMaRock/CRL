@@ -2,17 +2,17 @@
   import { createEventDispatcher } from 'svelte';
   import { cn } from '$lib/utils/utils';
 
-  export let isLoading: boolean = false;
-  export let variant: string = 'default';
-  export let size: string = 'default';
-  export let className: string = '';
+  export let isLoading = false;
+  export let variant = 'default';
+  export let size = 'default';
+  export let className = '';
   export let type: any = 'button';
-  export let disabled: boolean = false;
-  export let alt: string = '';
+  export let disabled = false;
+  export let alt = '';
 
   const dispatch = createEventDispatcher();
 
-  const baseClasses: string = $$props.class+" inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+  const baseClasses: string = `${$$props.class} inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50`;
 
   const variantClasses: Record<string, string> = {
     default: "bg-primary text-primary-foreground hover:bg-primary/90",

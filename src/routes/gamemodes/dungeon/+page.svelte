@@ -1,23 +1,24 @@
 <script lang="ts">
-	import type { ModalComponent, ModalSettings } from '@skeletonlabs/skeleton'
-	import { getModalStore } from '@skeletonlabs/skeleton'
-	const modalStore = getModalStore()
+  import type { ModalComponent, ModalSettings } from "@skeletonlabs/skeleton";
+  import { getModalStore } from "@skeletonlabs/skeleton";
+  import NewGame from "$components/Dungeon/NewGame.svelte";
+  const modalStore = getModalStore();
 
-	async function doThing() {
-		//fir posting data
-		const payload = {
-			db: 'test',
-			collection: 'testies',
-			payload: {
-				name: 'test',
-				value: 123
-			}
-		}
-		//fetching data
-		const res = await fetch('/api/data?db=test&collection=testies', {
-			method: 'GET'
-		})
-		/*
+  async function doThing() {
+    //fir posting data
+    const payload = {
+      db: "test",
+      collection: "testies",
+      payload: {
+        name: "test",
+        value: 123,
+      },
+    };
+    //fetching data
+    const res = await fetch("/api/data?db=test&collection=testies", {
+      method: "GET",
+    });
+    /*
         const res = await fetch('/api/data', {
             method: 'POST', 
             headers: {
@@ -25,33 +26,32 @@
             },
             body: JSON.stringify(payload)
     });*/
-		//check if res status if it's 404
-		console.log(res)
-		if (res.status === 404) {
-			console.log('404')
-			return
-		}
-        if (res.status === 200) {
-			const data = await res.json()
-			console.log(data)
-		} else {
-			console.log('Unexpected response status:', res.status)
-		}
-	}
-    import NewGame from '$components/modals/newClassicGame/newGame.svelte';
-    const modalComponent: ModalComponent = { 
-        ref: NewGame,
-        props: {stage: 1}
+    //check if res status if it's 404
+    console.log(res);
+    if (res.status === 404) {
+      console.log("404");
+      return;
+    }
+    if (res.status === 200) {
+      const data = await res.json();
+      console.log(data);
+    } else {
+      console.log("Unexpected response status:", res.status);
+    }
+  }
+  const modalComponent: ModalComponent = {
+    ref: NewGame,
+    props: { stage: 1 },
+  };
+  async function createOwnGame() {
+    const modal: ModalSettings = {
+      type: "component",
+      title: "New Adventure",
+      component: modalComponent,
+      // Returns the updated response value
+      response: (r: string) => console.log("response:", r),
     };
-	async function createOwnGame() {
-		const modal: ModalSettings = {
-			type: 'component',
-			title: 'New Adventure',
-            component: modalComponent,
-            // Returns the updated response value
-			response: (r: string) => console.log('response:', r)
-		}
-        /*
+    /*
         Choose a scenario
         -- Random (AI generates it)
         -- Blank (User write it)
@@ -82,11 +82,14 @@
         Settings:
         Just use the game settings component
         */
-		modalStore.trigger(modal)
-	}
+    modalStore.trigger(modal);
+  }
 </script>
 
-Eh'll show the users existing stories and potential new stories. Also have a "create" button and a
-"Continue". The game data story will hold last time played so it can be put in order, init.
+Eh'll show the users existing stories and potential new stories. Also have a
+"create" button and a "Continue". The game data story will hold last time played
+so it can be put in order, init.
 
-<button class="btn-primary btn" on:click={createOwnGame}>+ Create Your Own</button>
+<button class="btn-primary btn" on:click={createOwnGame}
+  >+ Create Your Own</button
+>

@@ -19,7 +19,7 @@
       if ($audioRequested) {
         const resp = await fetch(`/api/game/${$page.params.handle}/narrate`, {
           method: 'POST',
-          body: JSON.stringify({ block_id: blockId }),
+          body: JSON.stringify({ blockId }),
         });
         const data = await resp.json();
         url.set(data.url || '');

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Message from '$components/AIChatLayout/Message.svelte'
-	import DynaBackground from '$components/DynaBackground.svelte'
-	import TypingIndicator from '$components/AIChatLayout/TypingIndicator.svelte'
+	import Message from '$components/Dungeon/Chat/Message.svelte'
+	import DynaBackground from '$components/Layouts/dungeon/DynaBackground.svelte'
+	import TypingIndicator from '$components/Layouts/dungeon/Chat/TypingIndicator.svelte'
 	import { onMount, afterUpdate } from 'svelte'
     import { DungeonConversationStore } from '$stores/dungeon'
     import {createEventDispatcher} from 'svelte'

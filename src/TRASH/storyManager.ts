@@ -1,5 +1,5 @@
 
-import { cutTrailingSentence, splitFirstSentence } from './utils';
+import { cutTrailingSentence, splitFirstSentence } from '../lib/modes/dungeon/story/utils';
 
 export class Story {
     storyStart: string;
@@ -14,7 +14,7 @@ export class Story {
     gameState: any;
     memory: number;
 
-    constructor(storyStart: string, context: string = "", seed: any = null, gameState: any = null) {
+    constructor(storyStart: string, context = "", seed: any = null, gameState: any = null) {
         this.storyStart = storyStart;
         this.context = context;
         this.rating = -1;
@@ -29,16 +29,16 @@ export class Story {
     }
 
     initFromDict(storyDict: any) {
-        this.storyStart = storyDict["story_start"];
-        this.seed = storyDict["seed"];
-        this.actions = storyDict["actions"];
-        this.results = storyDict["results"];
-        this.choices = storyDict["choices"];
-        this.possibleActionResults = storyDict["possible_action_results"];
-        this.gameState = storyDict["game_state"];
-        this.context = storyDict["context"];
-        this.uuid = storyDict["uuid"];
-        this.rating = storyDict["rating"] || -1;
+        this.storyStart = storyDict.story_start;
+        this.seed = storyDict.seed;
+        this.actions = storyDict.actions;
+        this.results = storyDict.results;
+        this.choices = storyDict.choices;
+        this.possibleActionResults = storyDict.possible_action_results;
+        this.gameState = storyDict.game_state;
+        this.context = storyDict.context;
+        this.uuid = storyDict.uuid;
+        this.rating = storyDict.rating || -1;
     }
 
     initializeFromJson(jsonString: string) {
@@ -76,7 +76,7 @@ export class StoryManager {
         this.inferenceTimeout = 120;
     }
 
-    loadStory(story: any, fromJson: boolean = false): string {
+    loadStory(story: any, fromJson = false): string {
         if (fromJson) {
             this.story = new Story("");
             this.story.initializeFromJson(story);
@@ -91,15 +91,15 @@ export class StoryManager {
         return this.story.toJson();
     }
 
-    storyContext(): string {
-        return this.story.latestResult();
+    storyContext(): void {
+        //return this.story.latestResult();
     }
 }
 
 export class UnconstrainedStoryManager extends StoryManager {
    
 
-    generateResult(action: string): string {
+    generateResult(action: string): void {
         //const block = this.generator.generate(this.storyContext() + action);
         //return block;
     }
@@ -118,7 +118,7 @@ class ConstrainedStoryManager extends StoryManager {
     actionPhrases: string[];
     seed: any;
 
-    constructor(generator: any, actionVerbsKey: string = "classic") {
+    constructor(generator: any, actionVerbsKey = "classic") {
         super(generator);
         this.actionPhrases = ['']; // getActionVerbs(actionVerbsKey);
         this.seed = null;
@@ -131,7 +131,7 @@ class ConstrainedStoryManager extends StoryManager {
         return this.story.storyStart;
     }
 
-    loadStory(story: any, fromJson: boolean = false): string {
+    loadStory(story: any, fromJson = false): string {
         const result = super.loadStory(story, fromJson);
         //updateStory(this.story);
         return result;

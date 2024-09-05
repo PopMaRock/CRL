@@ -1,8 +1,11 @@
 //god, this is a fuckin mess...
 
 interface DungeonGameSettings {
-    llm: LLM;
+    llmActive: 'openai' | 'claude' | 'gemini' | 'lmstudio';
+    llmTextSettings: LLMTextSettings;
     game: Game;
+    sd?: SD;
+    vo?: VO;
     accessability?: Accessibility;
     behaviour?: Behaviour;
 }
@@ -57,29 +60,39 @@ interface LLMTextSettings {
     limitContext: number;
     memoryBank: boolean;
     autoSummarize: boolean | 'local' | 'main';
+    historyTruncate: 'start' | 'middle'
+    convertToUkEnglish: boolean;
     generateNum: number;
     defaultGenNum: number;
     temperature: number;
     topP: number;
     topK: number;
-    batchSize: number;
     presencePenalty: number;
     frequencyPenalty: number;
     seed: number;
-}
-
-interface LLM {
-    llmActive: 'openai' | 'claude' | 'gemini' | 'lmstudio';
-    llmTextSettings: LLMTextSettings;
 }
 interface Game {
     name: string;
     description: string;
     createdBy: string;
+    premise: string;
     plotEssentials: string;
     authorsNotes: string[];
+    storySummary: string;
+    sd: boolean;
+    vo: boolean;
 }
-
+interface SD {
+    sdActive: string;
+    sdDefaultPositive: string;
+    sdDefaultNegative: string;
+}
+interface VO {
+    voActive: string;
+    voDefaultPositive: string;
+    voDefaultNegative: string;
+    model: string;
+}
 interface Accessibility {
     fadein: boolean;
     text: 'normal' | 'print' | 'clean' | 'hacker';

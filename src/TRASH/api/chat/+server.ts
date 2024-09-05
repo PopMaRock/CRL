@@ -10,7 +10,7 @@ interface Settings {
 	presence_penalty: number
 	frequency_penalty: number
 	seed: number
-	baseURL?: string // Optional property
+	baseUrl?: string // Optional property
 }
 
 export const POST = async ({ request }) => {
@@ -26,7 +26,7 @@ export const POST = async ({ request }) => {
 
 	// On to AI pish....
 	const apiConfig: any = { apiKey: 'lm-studio' }
-	if (settings.baseURL) apiConfig.baseURL = settings.baseURL
+	if (settings.baseUrl) apiConfig.baseUrl = settings.baseUrl
 	const api = new OpenAI(apiConfig)
 	//Inject system prompt
 	history.unshift({ role: 'system', content: systemPrompt })

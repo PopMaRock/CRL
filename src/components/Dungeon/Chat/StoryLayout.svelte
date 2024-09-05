@@ -1,7 +1,4 @@
 <script lang="ts">
-	//import Message from '$components/AIChatLayout/Message.svelte'
-	import DynaBackground from '$components/DynaBackground.svelte'
-	//import TypingIndicator from '$components/AIChatLayout/TypingIndicator.svelte'
 	import { onMount } from 'svelte'
 	import { DungeonConversationStore, DungeonGameSettingsStore } from '$stores/dungeon'
 	import TextBlock from './Blocks/TextBlock.svelte'
@@ -11,7 +8,8 @@
 	import Button from './button.svelte'
 	import { useBackgroundMusic } from './useAudio' // Import the function
 	import InteractionBox from './InteractionBox.svelte'
-	import TypingIndicator from '$components/AIChatLayout/TypingIndicator.svelte'
+  import DynaBackground from '../DynaBackground.svelte';
+  import TypingIndicator from './TypingIndicator.svelte';
 	export let response: any //this needs to constantly be passed around, like a country girl at a frat party.
 	export let errorMessage = ''
 
@@ -53,7 +51,8 @@
 		if (message.length < 1) {
 			errorMessage = 'Please enter a message.'
 			return
-		} else errorMessage = ''
+		}
+		errorMessage = ''
 		console.log('actionOption ', actionOption)
 		dispatch('sendMessage', { message, actionOption })
 	}

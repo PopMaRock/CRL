@@ -3,10 +3,10 @@
   import { get, writable } from "svelte/store";
   import NarrationPlayer from "../NarrationPlayer.svelte";
   import BlockContainer from "./BlockContainer.svelte";
-  import TextGenerateEffect from "$components/UI-Effects/text-generation/TextGenerateEffect.svelte";
   import { fade } from "svelte/transition";
   import { onDestroy, onMount } from "svelte";
   import { DungeonConversationStore } from "$stores/dungeon";
+  import { TextGenerateEffect } from "$components/Dungeon/UI-Effects/text-generation";
 
   export let item: DungeonConversation | string;
   export const blockId: number = 0;

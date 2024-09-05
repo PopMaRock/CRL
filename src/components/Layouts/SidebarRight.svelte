@@ -5,7 +5,7 @@
 	import { SlideToggle } from '@skeletonlabs/skeleton'
 	import { EngineLlmStore } from '$stores/engine'
 	import { fade } from 'svelte/transition'
-	import Button from '$components/Chat/button.svelte'
+  import Button from '$components/Dungeon/Chat/button.svelte';
 	//variable to manage open/close sidebar
 	let srOpen = false
 	let srDiv: any
@@ -60,12 +60,12 @@
 			</select>
 			<div transition:fade>
 				<div class="mb-2 mt-2">
-					<label for="LLMbaseURL">LLM URL:</label>
+					<label for="LLMbaseUrl">LLM URL:</label>
 					<input
 						type="text"
-						name="LLMbaseURL"
+						name="LLMbaseUrl"
 						class="input"
-						bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive].baseURL}
+						bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive].baseUrl}
 					/>
 				</div>
 				<div class="mb-2 mt-2">

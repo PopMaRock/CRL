@@ -30,7 +30,7 @@ export const POST = async ({ request }) => {
 		verbose: true,
 		//streaming: true,
 		maxTokens: 80,
-		configuration: { baseURL: 'http://localhost:1234/v1/' },
+		configuration: { baseUrl: 'http://localhost:1234/v1/' },
 		apiKey: 'lm-studio',
 		streaming: true,
         cache: true

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { readablestreamStore } from '$lib/stores/ReadableStreamStore'
-	import { Generator } from '$lib/AIGameModes/AIDungeon/Generator/Generator.class'
+	import { readablestreamStore } from '$stores/readableStreamStore'
+	import { Generator } from '$lib/modes/dungeon/generator/generator.class'
 	import { DungeonConversationStore } from '$stores/dungeon'
 	import { onDestroy, onMount } from 'svelte'
-	import StoryLayout from '$components/Chat/StoryLayout.svelte'
+  import StoryLayout from '$components/Dungeon/Chat/StoryLayout.svelte';
 
 	const gen = new Generator()
 	const response = readablestreamStore()
@@ -30,8 +30,6 @@
 		} catch (error: any) {
 			console.error(error)
 			errorMessage = error.message
-		} finally {
-			message = ''
 		}
 	}
 	function handleSendMessage(event: any) {

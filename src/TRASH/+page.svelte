@@ -19,7 +19,7 @@
 	import medievalMageSpells from '$lib/constants/gamedata/gamestarters/medievalMageSpells.json'
 	import medievalWarriorInventory from '$lib/constants/gamedata/gamestarters/medievalWarriorInventory.json'
 	import medievalWarriorSpells from '$lib/constants/gamedata/gamestarters/medievalWarriorSpells.json'
-	import { TextGenerateEffect } from '$components/UI-Effects/text-generation'
+	import { TextGenerateEffect } from '$components/Layouts/dungeon/UI-Effects/text-generation'
 	// import buyArmors from '$lib/gamedata/armors.json'
 
 	let answer: string = ''

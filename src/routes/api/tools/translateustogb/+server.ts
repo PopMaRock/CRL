@@ -1,9 +1,9 @@
 import { resp } from '$utilities/apiHelper';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 import pkg from 'american-british-english-translator'; //fuckin massive
 const {Translator} = pkg;
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }: { request: Request }) => {
     // Get JSON string from request
     const json = await request.json();
     // Extract the string to be translated

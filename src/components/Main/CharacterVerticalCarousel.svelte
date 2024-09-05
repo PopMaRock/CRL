@@ -1,6 +1,6 @@
 <script lang="ts">
-  import CharacterCard from '$components/UI-Effects/CharacterCard.svelte';
   import { onMount } from 'svelte';
+  import CharacterCard from './CharacterCard.svelte';
 
   let slider1: HTMLDivElement;
   let slider2: HTMLDivElement;
@@ -10,10 +10,10 @@
   onMount(() => {
     const cloneItems = (slider: HTMLDivElement) => {
       const items = Array.from(slider.children);
-      items.forEach(item => {
+      for (const item of items) {
         const clone = (item as HTMLElement).cloneNode(true);
         slider.appendChild(clone);
-      });
+      }
     };
 
     cloneItems(slider1);

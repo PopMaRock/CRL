@@ -3,7 +3,7 @@
 
 	// Function to wrap text within double quotes with <i> tags and wrap everything in a card
     function formatText() {
-        if (response.content !== null && typeof response.content === 'string' && response?.role == "user") {
+        if (response.content !== null && typeof response.content === 'string' && response?.role === "user") {
             let content = response.content;
             // Italicize quotes
             content = content.replace(/"([^"]*)"/g, 'You say <i>"$1"</i>');
@@ -18,9 +18,8 @@
                     <p>${content}</p>
                 </div>
             `;
-        } else {
-            return response?.content;
         }
+            return response?.content;
     }
 </script>
 

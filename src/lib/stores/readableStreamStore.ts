@@ -20,7 +20,7 @@ export function readablestreamStore() {
             while (true) {
                 const { value: token, done } = await reader.read();
 
-                if (token != undefined) update((val) => {
+                if (token !== undefined) update((val) => {
                    finaltext = val.text + token;
                    return ({ loading: true, text: finaltext });
                 });

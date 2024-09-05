@@ -22,8 +22,7 @@ export const DungeonCharacterStore: Writable<any> = writable({
 //defaults:
 
 //DungeonGameSettings
-export const DungeonGameSettingsDefault: DungeonGameSettings = {
-    llm: {
+export const DungeonGameSettingsDefault: DungeonGameSettings  = {
         llmActive: 'openai',
         llmTextSettings: {
             prompt: `You are an AI dungeon master that provides any kind of roleplaying game content.
@@ -38,24 +37,39 @@ Instructions:
             stream: false,
             limitContext: 4096,
             memoryBank: true, //using vectera local
+            historyTruncate: 'middle', //can be 'start', 'middle'
             autoSummarize: false, //Can be false, local or main
-            generateNum: 100,
+            convertToUkEnglish: false,
+            generateNum: 100, //internal
             defaultGenNum: 100,
             temperature: 0.7,
             topP: 0.95,
             topK: 50,
-            batchSize: 1,
             presencePenalty: 0.5,
             frequencyPenalty: 1.5,
-            seed: -1
-        }
+            seed: -1 //internal
     },
     game: {
-        name: 'Dungeon Crawler',
-        description: 'A text-based dungeon crawler game.',
+        name: '',
+        description: '',
         createdBy: 'CRL',
-        plotEssentials: `You are a novice bounty hunter pursuing a cunning succubus demoness named Ava, accompanied by your magical talking goat companion, Goaty McGoatFace. Together, you set off on your journey to capture her and claim the reward to spend on bitches and beer, braving its horrors and depravities.`,
-        authorsNotes: []
+        premise: '',
+        plotEssentials: "",
+        authorsNotes: [],
+        storySummary: '',
+        sd: false,
+        vo: false,
+    },
+    sd: {
+        sdActive: 'webui',
+        sdDefaultPositive: '(masterpiece), drawing',
+        sdDefaultNegative: '(bad hands), realistic',
+    },
+    vo: {
+        voActive: 'elevenlabs',
+        voDefaultPositive: 'happy',
+        voDefaultNegative: 'sad',
+        model: 'Alice'
     },
     accessability: {
         fadein: true,
