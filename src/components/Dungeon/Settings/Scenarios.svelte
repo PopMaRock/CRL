@@ -41,9 +41,9 @@
       image: "path/to/comedy.jpg",
     },
   ];
-  function scenarioClicked(scenarioType: string) {
-    console.log(`Scenario clicked: ${scenarioType}`);
-    dispatch('scenarioSelected', scenarioType);
+  function scenarioClicked(scenario: string) {
+    console.log(`Scenario clicked: ${scenario}`);
+    dispatch('scenarioSelected', scenario);
     // Add your logic here
   }
 </script>

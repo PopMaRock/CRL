@@ -3,6 +3,7 @@ import 'unplugin-icons/types/svelte'
 // for information about these interfaces
 // and what to do when importing types
 declare global {
+	const __version__ : string;
 	namespace App {
 		// interface Error {}
 		// interface Locals {}
@@ -10,5 +11,4 @@ declare global {
 		// interface Platform {}
 	}
 }
-
 export {}

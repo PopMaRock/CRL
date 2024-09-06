@@ -1,9 +1,14 @@
 <script lang="ts">
+  import Textarea from "$components/Main/Forms/Textarea.svelte";
+import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
   import { DungeonGameSettingsStore } from "$stores/dungeon";
-  import { EngineLlmStore } from "$stores/engine";
   import { getTokens } from "$utilities/utils";
-  import { Accordion, AccordionItem, RangeSlider, SlideToggle } from "@skeletonlabs/skeleton";
-  import { BadgeHelp } from "lucide-svelte";
+  import {
+    Accordion,
+    AccordionItem,
+    RangeSlider,
+    SlideToggle,
+  } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
 
   let tokens: Uint32Array | undefined;
@@ -17,41 +22,35 @@
 </div>
 
 <div>
-  <SlideToggle name="streaming" active="variant-filled-primary" class="mt-4" size="sm" bind:checked={$DungeonGameSettingsStore.llmTextSettings.stream}>Streaming {$DungeonGameSettingsStore.llmTextSettings.stream? 'On':'Off'}</SlideToggle>
+  <SlideToggle
+    name="streaming"
+    active="variant-filled-primary"
+    class="mt-4"
+    size="sm"
+    bind:checked={$DungeonGameSettingsStore.llmTextSettings.stream}
+    >Streaming {$DungeonGameSettingsStore.llmTextSettings.stream
+      ? "On"
+      : "Off"}</SlideToggle
+  >
 </div>
 
-<div class="variant-filled-surface pl-2 pt-2 mt-4 mb-4 rounded-md">
-  <label for="limitContext" class="label font-bold">Limit Context</label>
-  <div
-    class="input-add border-0 input-group input-group-divider grid-cols-[1fr_auto]"
-  >
-    <input
-      id="limitContext"
-      type="number"
-      name="limitContext"
-      class=""
-      bind:value={$DungeonGameSettingsStore.llmTextSettings.limitContext}
-    />
-    <span title="Context reduction will sacrifice long term memory first"
-      ><BadgeHelp class="items-center mt-2 ml-4 mr-2 h-5 w-5" /></span
-    >
-  </div>
-
-  <label for="defaultGenNum" class="label font-bold">Limit Response Length</label>
-  <div
-    class="input-add border-0 input-group input-group-divider grid-cols-[1fr_auto]"
-  >
-    <input
-      id="defaultGenNum"
-      type="number"
-      name="defaultGenNum"
-      class=""
-      bind:value={$DungeonGameSettingsStore.llmTextSettings.defaultGenNum}
-    />
-    <span title="If the AI is talking too much, reduce this"
-      ><BadgeHelp class="items-center mt-2 ml-4 mr-2 h-5 w-5" /></span
-    >
-  </div>
+<div class="variant-filled-surface pl-2 mt-4 mb-4 rounded-md">
+  <TextboxGroup
+    label="Limit Context"
+    name="limitContext"
+    type="number"
+    bind:value={$DungeonGameSettingsStore.llmTextSettings.limitContext}
+    placeholder="4096"
+  />
+  <TextboxGroup
+    label="Limit Response Length"
+    name="limitResponseLength"
+    type="number"
+    bind:value={$DungeonGameSettingsStore.llmTextSettings.defaultGenNum}
+    placeholder="100"
+    iconHelp={true}
+    helpText="If the AI is talking too much, reduce this"
+  />
 </div>
 
 <div>
@@ -138,15 +137,10 @@
 </div>
 <Accordion class="border-1 variant-filled-surface rounded-md mt-5 mb-5">
   <AccordionItem closed>
-    <svelte:fragment slot="summary">Advanced</svelte:fragment>
-    <svelte:fragment slot="content"
-      >
-        <textarea
-          name="prompt"
-          class="!text-xs textarea-add min-h-40 w-full"
-          bind:value={$DungeonGameSettingsStore.llmTextSettings.prompt}
-          placeholder="e.g. You find yourself in the rugged heartland of Alba. Life has been good and you are loved by the locals. However, a power-hungry queen plans to invade your country from the south. You must find a way to stop her armies and save your country."
-        ></textarea></svelte:fragment
+    <svelte:fragment slot="summary">Advanced [NOT IMPLEMENTED]</svelte:fragment>
+    <svelte:fragment slot="content">
+      <!--<Textarea name="stopString" label="Custom Stop String" class="textarea-add min-h-24 w-1/2" placeHolder="['jim', 'bob', 'dave']"/>-->
+     </svelte:fragment
     >
   </AccordionItem>
 </Accordion>

@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ url }: any): Promise<Response> => {
 export const POST: RequestHandler = async ({ request }: any): Promise<Response> => {
 	const body = await request.json()
 	if (!body) return resp({ error: er.badRequest.missing }, 400)
-	const { db, collection, payload } = body
+	const { data, db, collection, method } = body
 
 	console.log('POST request: ', body)
 
@@ -55,12 +55,12 @@ export const POST: RequestHandler = async ({ request }: any): Promise<Response> 
 		return resp({ error: er.badRequest.missing }, 400)
 	}
 
-	if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
+	if (typeof data !== 'object' || data === null || Array.isArray(data)) {
 		return resp({ error: er.badRequest.nonObject }, 400)
 	}
 
 	const dbCon = new JsonDB(new Config(`db/${db}`, true, false, '/'))
-	await dbCon.push(`/${collection}`, payload)
+	await dbCon.push(`/${collection}`, data)
 	return resp({ status: 'Post complete' }, 200)
 }
 /**

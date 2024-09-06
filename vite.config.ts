@@ -10,13 +10,20 @@ dotenv.config();
 
 const config: UserConfig = {
 	define: {
-		'process.env': process.env
+		'process.env': process.env,
+		__version__: JSON.stringify(process.env.npm_package_version),
+
 	},
 	build: {
 		sourcemap: true
 	},
 	plugins: [
-		[sveltekit(),purgeCss(),wasm(), topLevelAwait()],
+		[
+			sveltekit(),
+			purgeCss(),
+			wasm(),
+			topLevelAwait(),
+		],
 		Icons({
 			compiler: 'svelte',
 			autoInstall: true	// experimental - autoinstalls icons as and when used.

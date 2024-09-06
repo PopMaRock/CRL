@@ -10,6 +10,7 @@
 	import { AppRail, AppRailAnchor, AppRailTile, Avatar, LightSwitch } from '@skeletonlabs/skeleton'
 	import { logicalPropertiesHorizontalSlide } from '$lib/utils/transitions'
 	import { onMount } from 'svelte'
+  import User from '../Persona.svelte';
 	let currentRailCategory: undefined | string = undefined
 	$: listboxItemActive = (href: string) =>
 		$page.url.pathname?.includes(href) ? 'bg-primary-active-token' : ''
@@ -94,15 +95,9 @@
 			<svelte:fragment slot="lead"><GameIconsHelp class="inline-flex text-xl" /></svelte:fragment>
 		</AppRailTile>
 		<svelte:fragment slot="trail">
-			<AppRailAnchor title="Account">
+			<AppRailAnchor >
 				<svelte:fragment slot="lead">
-					<div class="flex">
-						<Avatar
-							src="https://images.unsplash.com/photo-1617296538902-887900d9b592?ixid=M3w0Njc5ODF8MHwxfGFsbHx8fHx8fHx8fDE2ODc5NzExMDB8&ixlib=rb-4.0.3&w=128&h=128&auto=format&fit=crop"
-							width="w-12"
-							rounded="rounded-full"
-						/>
-					</div>
+					<User/>
 				</svelte:fragment>
 				<svelte:fragment slot="default">
 					<div class="pt-2 pb-2 flex h-full items-center justify-center">
@@ -122,7 +117,10 @@
 				<div id="app-name">
 					<div class="flex flex-col leading-none">
 						<div class="text-xl">CRL</div>
-						<div class="text-sm">Alpha v0.0.1</div>
+						
+						<div class="text-sm">
+						v{__version__}
+						</div>
 					</div>
 				</div>
 				<div id="open-close-btns" class="flex space-x-1">

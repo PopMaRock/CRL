@@ -9,7 +9,8 @@ export const POST: RequestHandler = async ({ request }: { request: Request }) =>
     // Extract the string to be translated
     const str = json.str;
     // Translate the string
-    const translatedStr = Translator.translate(str, { British: true });
+    // biome-ignore lint/style/useNamingConvention: <explanation>
+        const translatedStr = Translator.translate(str, { British: true });
     // Return the translated string in the response
     return resp(translatedStr, 200 );
 };

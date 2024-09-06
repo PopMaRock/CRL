@@ -43,21 +43,12 @@ Instructions:
       baseUrl: "https://api.openai.com/v1",
       model: "gpt-3.5-turbo",
     },
-    claude: {
-      baseUrl: "https://claude.langchain.com",
-      model: "claude",
-    },
-    gemini: {
-      baseUrl: "https://gemini.langchain.com",
-      model: "gemini",
-    },
     lmstudio: {
       baseUrl: "http://localhost:1234/v1",
       model: "lmstudio",
     },
   },
 });
-
 // biome-ignore lint/style/useNamingConvention: <explanation>
 export const EngineSDStore: Writable<any> = writable({
   sdActive: "webui",
@@ -90,7 +81,6 @@ export const EngineSDStore: Writable<any> = writable({
     },
   },
 });
-
 export const EngineVoiceStore: Writable<any> = writable({
   voiceActive: "elevenlabs",
   voice: {
@@ -106,3 +96,87 @@ export const EngineVoiceStore: Writable<any> = writable({
     },
   },
 });
+// Create the store instance
+export const EnginePersonaStore: Writable<any> & {
+  get: () => any;
+  setAndPersist: () => Promise<void>;
+} = createEnginePersonaStore();
+
+// Define the custom store
+// Define the custom store
+function createEnginePersonaStore() {
+  const { subscribe, set, update } = writable({
+    persona: "Hamish",
+    personaDesc:
+      "%persona% is a 21 year old male tiger-humanoid that loves to expose himself to bank tellers.",
+  });
+
+  return {
+    subscribe,
+    set,
+    update,
+    get: async () => {
+      try {
+        const data = await persistentStore("personas", "persona", "get");
+        if (data) {
+          set(data);
+        }
+        return data;
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        return null;
+      }
+    },
+    setAndPersist: async () => {
+      let currentValue: any;
+      subscribe((value) => (currentValue = value))();
+      set(currentValue);
+      await persistentStore("personas", "persona", "set", currentValue);
+    },
+  };
+}
+
+async function persistentStore(
+  db: string,
+  collection: string,
+  method: "set" | "get",
+  data?: any
+) {
+  try {
+    let url = "/api/data";
+    if (method === "get") {
+      const params = new URLSearchParams({ db, collection, method }).toString();
+      url += `?${params}`;
+    }
+
+    const response = await fetch(url, {
+      method: method === "set" ? "POST" : "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:
+        method === "set"
+          ? JSON.stringify({ data, db, collection, method })
+          : undefined,
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.info("Not found");
+        return null;
+      } //else
+        throw new Error("Failed to send or retrieve data");
+    } 
+
+    if (method === "get") {
+      const result = await response.json();
+      console.log("Data retrieved successfully");
+      console.log(result);
+      return result;
+    }
+    console.log("Data sent successfully");
+  } catch (error) {
+    console.error("Failed to send or retrieve data:", error);
+    throw error;
+  }
+}

@@ -1,3 +1,7 @@
+/**
+ * May switch to LMStudio SDK in the future but for now, LangChain OpenAI will do.
+ */
+
 import { ChatOpenAI } from "@langchain/openai";
 import { CallbackManager } from "@langchain/core/callbacks/manager";
 import {
@@ -7,15 +11,16 @@ import { VITE_OPENAI_API_KEY } from "$env/static/private";
 import { er, resp } from "$utilities/apiHelper";
 
 interface Settings {
-  generateNum?: number;
-  defaultGenNum?: number;
+  generateNum: number;
+  defaultGenNum: number;
   temperature: number;
   topP: number;
-  topK?: number;
-  presencePenalty?: number;
-  frequencyPenalty?: number;
-  seed?: number;
-  stream?: boolean;
+  topK: number;
+  batchSize: number;
+  presencePenalty: number;
+  frequencyPenalty: number;
+  seed: number;
+  stream: boolean;
   baseUrl?: string; // Optional property
 }
 
@@ -68,15 +73,6 @@ export const POST = async ({ request }) => {
       });
       try {
         await model.invoke([new SystemMessage(mPrompt)]);
-        /*await model.invoke([
-                    new SystemMessage(systemPrompt),
-                    new AIMessage(
-                        'A dark and lonely road, you begin your journey in Nathe as a young bounty hunter. You have been tasked with finding the elusive, lustful demon Ava of the kingdom of Nathe. You have been traveling for days and have finally reached the edge of the forest. You can see a village in the distance, but you know that the journey ahead will be dangerous. You take a deep breath and step into the forest, ready to face whatever challenges come your way.'
-                    ),
-                    ...history.map((chat: any) =>
-                        chat.role === 'user' ? new HumanMessage(chat.content) : new AIMessage(chat.content)
-                    )
-                ]);*/
       } catch (e) {
         console.log("error", e);
       } finally {

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { DungeonGameSettingsStore } from "$stores/dungeon";
+  import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
+import { DungeonGameSettingsStore } from "$stores/dungeon";
   import {
     Accordion,
     AccordionItem,
@@ -7,22 +8,10 @@
     RadioItem,
     SlideToggle,
   } from "@skeletonlabs/skeleton";
-  import { BadgeHelp } from "lucide-svelte";
 </script>
 
-<div
-  class="variant-filled-surface input-add border-0 input-group input-group-divider grid-cols-[1fr_auto]"
->
-  <input
-    type="text"
-    class=""
-    bind:value={$DungeonGameSettingsStore.game.name}
-    placeholder="Game Title"
-  />
-  <span title="Keep it simple. [No effect on AI Prompt]"
-    ><BadgeHelp class="items-center mt-2 ml-4 mr-2 h-5 w-5" /></span
-  >
-</div>
+<TextboxGroup type="text" label="Game Title" name="gameTitle" title="Enter the title of the game" bind:value={$DungeonGameSettingsStore.game.name} iconHelp={true} 
+helpText="Keep it simple. [No effect on AI Prompt]"/>
 <div>
   <SlideToggle
     name="memoryBank"

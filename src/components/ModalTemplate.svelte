@@ -3,8 +3,9 @@
   import { getModalStore } from "@skeletonlabs/skeleton";
   import { ChevronLeft, X } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
-  export const stage: number = 1;
-  export const showFooterButtons = true;
+  export let stage = 1;
+  export let showBackButton = true;
+  export let showFooterButtons = true;
   export let showPositiveBtn = true;
   export let showNegativeBtn = false;
   export let positiveBtn = "Create";
@@ -26,7 +27,7 @@
     )}
   >
     <header class={cHeader}>
-      {#if stage > 1}
+      {#if stage > 1 && showBackButton}
         <button
           type="button"
           class="items-center hover:animate-ping"

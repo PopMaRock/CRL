@@ -75,9 +75,10 @@ interface Game {
     name: string;
     description: string;
     createdBy: string;
-    premise: string;
+    genre: string;
+    opening: string;
     plotEssentials: string;
-    authorsNotes: string[];
+    authorsNotes: string;
     storySummary: string;
     sd: boolean;
     vo: boolean;
