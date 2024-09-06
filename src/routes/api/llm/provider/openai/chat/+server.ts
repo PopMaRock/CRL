@@ -33,10 +33,9 @@ export const POST = async ({ request }) => {
   let apiConfig: any = { apiKey: VITE_OPENAI_API_KEY, configuration: {} };
   let summary = "";
 
-  if (settings.baseUrl) apiConfig.configuration.baseUrl = settings.baseUrl;
-
   apiConfig = {
     ...apiConfig,
+    model: model ?? 'gpt-3.5-turbo',
     temperature: settings.temperature,
     streaming: settings.stream,
     topP: settings.topP,

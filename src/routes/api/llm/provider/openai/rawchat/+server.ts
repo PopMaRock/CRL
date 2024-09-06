@@ -13,7 +13,7 @@ interface Settings {
   frequencyPenalty?: number;
   seed?: number;
   stream?: boolean;
-  baseUrl?: string; // Optional property
+  baseUrl?: string; // not set in openai
 }
 
 export const POST = async ({ request }) => {
@@ -28,10 +28,9 @@ export const POST = async ({ request }) => {
 
   let apiConfig: any = { apiKey: VITE_OPENAI_API_KEY, configuration: {} };
 
-  if (settings.baseUrl) apiConfig.configuration.baseUrl = settings.baseUrl;
-
   apiConfig = {
     ...apiConfig,
+    model: model ?? "gpt-4o-mini",
     temperature: settings.temperature ?? 0.1,
     streaming: settings.stream ?? false,
     topP: settings.topP ?? 0.95,
@@ -46,12 +45,12 @@ export const POST = async ({ request }) => {
   const mPrompt = `${systemPrompt}`.trim();
   // Check token count against context limit. If over, truncate from middle or start (depending on what user has picked).
 
-  const llm = new ChatOpenAI(apiConfig); // Pass apiConfig as an object
+  const llm = new ChatOpenAI({...apiConfig}); // Pass apiConfig as an object
 
   try {
     const response = await llm.invoke([new SystemMessage(mPrompt)]);
     console.log("response", response);
-    return resp({ response }, 200);
+    return resp({ response: response.content }, 200);
   } catch (e) {
     console.log("error", e);
     return resp({ error: er.serverFail }, 500);

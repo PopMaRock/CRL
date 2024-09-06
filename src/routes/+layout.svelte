@@ -25,8 +25,9 @@
 				<SidebarRight /> 
 		</svelte:fragment>
 		<!-- Router Slot -->
-		<div class="h-screen">
-			<slot />
+				<div class="h-screen flex flex-col">
+			<div class="flex-grow">
+				<slot />
 			</div>
 	</AppShell>
 </div>

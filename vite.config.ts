@@ -5,6 +5,9 @@ import dotenv from 'dotenv';
 import type { UserConfig } from 'vite';
 import wasm from 'vite-plugin-wasm';
 import topLevelAwait from 'vite-plugin-top-level-await';
+import dns from "node:dns";
+
+dns.setDefaultResultOrder('verbatim');
 
 dotenv.config();
 

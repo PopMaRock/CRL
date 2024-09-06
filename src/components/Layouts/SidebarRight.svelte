@@ -55,10 +55,9 @@
 			Provider:<select class="select rounded-md" bind:value={$EngineLlmStore.llmActive}>
 				<option value="lmstudio">LMStudio (Local)</option>
 				<option value="openai">OpenAI</option>
-				<option value="claude">Claude</option>
-				<option value="gemini">Gemini</option>
 			</select>
 			<div transition:fade>
+				{#if $EngineLlmStore.llm[$EngineLlmStore.llmActive]?.baseUrl}
 				<div class="mb-2 mt-2">
 					<label for="LLMbaseUrl">LLM URL:</label>
 					<input
@@ -68,6 +67,7 @@
 						bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive].baseUrl}
 					/>
 				</div>
+				{/if}
 				<div class="mb-2 mt-2">
 					<label for="LLMAPIKey">API Key:</label>
 					<input type="text" name="LLMAPIKey" class="input" value="" />

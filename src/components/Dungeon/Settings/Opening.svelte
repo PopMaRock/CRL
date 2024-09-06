@@ -5,7 +5,7 @@
   import { WandSparkles } from "lucide-svelte";
 
   async function genPremise() {
-    const response = await fetch("/api/llm/provider/lmstudio/rawchat", {
+    const response = await fetch("/api/llm/provider/openai/rawchat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

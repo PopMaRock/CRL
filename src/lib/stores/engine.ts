@@ -40,7 +40,6 @@ Instructions:
   },
   llm: {
     openai: {
-      baseUrl: "https://api.openai.com/v1",
       model: "gpt-3.5-turbo",
     },
     lmstudio: {
