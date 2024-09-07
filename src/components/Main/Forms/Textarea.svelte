@@ -11,7 +11,7 @@
   export let showLabel = true;
 </script>
 
-<div class={cn($$props.class, "variant-filled-surface rounded-md mt-5 mb-5")}>
+<div class={cn($$props.class, "dark:variant-filled-surface rounded-md mt-5 mb-5")}>
   {#if showLabel}
     <label for={name} class="pl-3 pt-3 font-semibold text-sm" {title}
       >{label}</label

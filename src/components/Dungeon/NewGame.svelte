@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Tab, TabGroup } from "@skeletonlabs/skeleton";
-  import { onMount, tick } from "svelte";
+  import { getToastStore, Tab, TabGroup, Toast } from "@skeletonlabs/skeleton";
+  import { onMount } from "svelte";
   import Modal from "../ModalTemplate.svelte";
   import Scenarios from "./Settings/Scenarios.svelte";
   import Opening from "./Settings/Opening.svelte";
@@ -8,21 +8,14 @@
   import GameSettings from "./Settings/GameSettings.svelte";
   import LlmSettings from "./Settings/LlmSettings.svelte";
   import {
-    DungeonGameSettingsDefault,
     DungeonGameSettingsStore,
+    resetDungeonSettingsStore,
   } from "$stores/dungeon";
-  import { EngineLlmStore } from "$stores/engine";
   export let stage: number;
   let loading = false;
 
   function forward() {
-    stage = (stage === 1)
-      ?  2
-      : (stage === 2)
-        ? 3
-        : stage === 3
-          ? 0
-          : 1; //go forward
+    stage = stage === 1 ? 2 : stage === 2 ? 3 : stage === 3 ? 0 : 1; //go forward
   }
   function backward() {
     console.log(`Backward${stage}`);
@@ -38,35 +31,44 @@
     console.log("New Game");
     // Remove focus from any element to stop wanky default focuses on buttons.
     (document.activeElement as HTMLElement)?.blur();
-
-    // Clear the DungeonGameSettingsStore
-    DungeonGameSettingsStore.set(DungeonGameSettingsDefault);
-    await tick(); //wait pending changes
-    //Merge in user defaults from EngineLlmStore
-    DungeonGameSettingsStore.update((s:DungeonGameSettings) => {
-      return s.llmTextSettings = {
-        ...s,
-        llmActive: $EngineLlmStore.llmActive,
-        ...$EngineLlmStore.llmTextSettings,
-      };
-    });
-    await tick(); //wait pending changes
-    
+    resetDungeonSettingsStore();
   });
   function scenarioSelected(event: CustomEvent) {
     console.log(event);
-    if(!event.detail) return;
+    if (!event.detail) return;
     $DungeonGameSettingsStore.game.genre = event.detail;
     forward();
   }
   let storyTab = 0;
+  async function positiveClicked() {
+    //basic check on essentials.
+    if (
+      !$DungeonGameSettingsStore.game.genre ||
+      !$DungeonGameSettingsStore.game.name ||
+      !$DungeonGameSettingsStore.game.description ||
+      !$DungeonGameSettingsStore.game.opening ||
+      !$DungeonGameSettingsStore.llmTextSettings.prompt
+    ) {
+      console.log("Missing essentials");
+      const ms = getToastStore();
+      ms.trigger({
+        message: "Missing essentials. Re-check form",
+        background: "variant-filled-primary",
+        timeout: 2000,
+        hideDismiss: true,
+      });
+      return;
+    }
+  }
 </script>
 
 <Modal
   title="New Game"
   {stage}
   class="min-h-[82vh] max-h-[82vh] w-[60vh]"
+  showFooterButtons={stage !== 1}
   on:back={backward}
+  on:positiveClick={positiveClicked}
 >
   {#if loading}
     Loading
@@ -82,9 +84,9 @@
       <!-- Tab Panels --->
       <svelte:fragment slot="panel">
         {#if storyTab === 0}
-        <Opening />
+          <Opening />
         {:else if storyTab === 1}
-        <Story />
+          <Story />
         {:else if storyTab === 2}
           <GameSettings />
         {:else if storyTab === 3}

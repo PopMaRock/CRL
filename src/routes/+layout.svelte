@@ -1,33 +1,29 @@
 <script lang="ts">
-	import { initializeStores, Modal, storePopup } from '@skeletonlabs/skeleton'
-	import { AppShell, Toast } from '@skeletonlabs/skeleton'
-	//import type { LayoutData } from './$types'
-	import { autoModeWatcher } from '@skeletonlabs/skeleton';
-	import '../app.postcss';
-	import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
-	import SidebarLeft from '$components/Layouts/Main/SidebarLeft.svelte'
-	import SidebarRight from '$components/Layouts/SidebarRight.svelte'
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
-	initializeStores()
+  import { initializeStores, Modal, storePopup } from "@skeletonlabs/skeleton";
+  import { AppShell, Toast } from "@skeletonlabs/skeleton";
+  //import type { LayoutData } from './$types'
+  import { autoModeWatcher } from "@skeletonlabs/skeleton";
+  import "../app.postcss";
+  import {
+    arrow,
+    autoUpdate,
+    computePosition,
+    flip,
+    offset,
+    shift,
+  } from "@floating-ui/dom";
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+  initializeStores();
 </script>
-<svelte:head>{@html '<script>(' + autoModeWatcher.toString() + ')();</script>'}</svelte:head>
-<div>
-	<Modal/>
-	<Toast />
 
-	<AppShell>
-		<svelte:fragment slot="sidebarLeft">
-			<!-- Hidden below Tailwind's large breakpoint -->
-			<div id="sidebar-right" class="h-full lg:block">
-			<SidebarLeft /></div>
-		</svelte:fragment>
-		<svelte:fragment slot="sidebarRight">
-				<SidebarRight /> 
-		</svelte:fragment>
-		<!-- Router Slot -->
-				<div class="h-screen flex flex-col">
-			<div class="flex-grow">
-				<slot />
-			</div>
-	</AppShell>
+<svelte:head>{@html "<script>(" +autoModeWatcher.toString() +")();</script>"}</svelte:head>
+<div>
+<!-- Rip out the skeleton modal as it strictly follows ARIA rules which are detrimental to development and fuck up functionality-->
+<!-- thanks to the ARIA pish, the modal will always close when the backdrop is clicked. -->
+  <Modal zIndex="z-[666]" on:backdrop={()=>{return undefined;}}/>
+  <Toast zIndex="z-[999]"/>
+
+  <AppShell>
+    <slot />
+  </AppShell>
 </div>

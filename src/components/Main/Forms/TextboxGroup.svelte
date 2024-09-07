@@ -15,7 +15,7 @@
 	}
 </script>
 
-<div class={cn($$props.class,"variant-filled-surface pl-2 pt-2 mt-4 mb-4 rounded-md")}>
+<div class={cn($$props.class,"dark:variant-filled-surface pl-2 pt-2 mt-4 mb-4 rounded-md")}>
     <label for="{name}" class="label font-bold" title="{title}">{label}</label>
     <div
       class="input-add border-0 input-group input-group-divider grid-cols-[1fr_auto]"

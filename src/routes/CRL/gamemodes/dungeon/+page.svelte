@@ -47,6 +47,7 @@
     const modal: ModalSettings = {
       type: "component",
       title: "New Adventure",
+      backdropClasses: "",
       component: modalComponent,
       // Returns the updated response value
       response: (r: string) => console.log("response:", r),

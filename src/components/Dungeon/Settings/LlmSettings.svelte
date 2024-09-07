@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Textarea from "$components/Main/Forms/Textarea.svelte";
 import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
   import { DungeonGameSettingsStore } from "$stores/dungeon";
   import { getTokens } from "$utilities/utils";
@@ -34,7 +33,7 @@ import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
   >
 </div>
 
-<div class="variant-filled-surface pl-2 mt-4 mb-4 rounded-md">
+<div class="dark:variant-filled-surface pl-2 mt-4 mb-4 rounded-md">
   <TextboxGroup
     label="Limit Context"
     name="limitContext"

@@ -14,31 +14,31 @@
     },
     {
       name: "Fantasy",
-      image: "path/to/fantasy.jpg",
+      image: "dummy-image-square.jpg",
     },
     {
       name: "Space",
-      image: "path/to/space.jpg",
+      image: "dummy-image-square.jpg",
     },
     {
       name: "Cyberpunk",
-      image: "path/to/cyberpunk.jpg",
+      image: "dummy-image-square.jpg",
     },
     {
       name: "Horror",
-      image: "path/to/horror.jpg",
+      image: "dummy-image-square.jpg",
     },
     {
       name: "Mystery",
-      image: "path/to/mystery.jpg",
+      image: "dummy-image-square.jpg",
     },
     {
       name: "Steampunk",
-      image: "path/to/romance.jpg",
+      image: "dummy-image-square.jpg",
     },
     {
       name: "Comedy",
-      image: "path/to/comedy.jpg",
+      image: "dummy-image-square.jpg",
     },
   ];
   function scenarioClicked(scenario: string) {

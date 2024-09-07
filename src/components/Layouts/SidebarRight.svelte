@@ -68,10 +68,10 @@
 					/>
 				</div>
 				{/if}
-				<div class="mb-2 mt-2">
+				<!--<div class="mb-2 mt-2">
 					<label for="LLMAPIKey">API Key:</label>
 					<input type="text" name="LLMAPIKey" class="input" value="" />
-				</div>
+				</div>-->
 				<div>
 					<Button class="variant-filled-primary btn" on:click={() => {}}>Test Connect</Button>
 				</div>

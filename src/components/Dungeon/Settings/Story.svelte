@@ -1,17 +1,14 @@
 <script lang="ts">
   import Textarea from "$components/Main/Forms/Textarea.svelte";
   import { DungeonGameSettingsStore } from "$stores/dungeon";
-  import { EngineLlmStore, EnginePersonaStore } from "$stores/engine";
+  import { EnginePersonaStore } from "$stores/engine";
+  import { crlGenerate } from "$utilities/utils";
   import { WandSparkles } from "lucide-svelte";
+
   async function genStory() {
-    const response = await fetch("/api/llm/provider/lmstudio/rawchat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: $DungeonGameSettingsStore.llmTextSettings.model,
-        systemPrompt: `
+    $DungeonGameSettingsStore.game.storySummary = await crlGenerate(
+      "game",
+      `
         Invent a brief story summary containing interesting things that may have happened since the stated Opening.
         You should include the next primary plot, goal and antagonist in the story.
 
@@ -19,30 +16,25 @@
         User's description: ${$EnginePersonaStore.persona}
         Genre: ${$DungeonGameSettingsStore.game.genre}
 
-        ${`\nOpening: ${$DungeonGameSettingsStore.game.opening}`??''}${`\nPlot Essentials: ${$DungeonGameSettingsStore.game.plotEssentials}`??''}${`\n${$DungeonGameSettingsStore.game.authorsNotes}`??''}
+        ${`\nOpening: ${$DungeonGameSettingsStore.game.opening}` ?? ""}${
+          `\nPlot Essentials: ${$DungeonGameSettingsStore.game.plotEssentials}` ??
+          ""
+        }${`\n${$DungeonGameSettingsStore.game.authorsNotes}` ?? ""}
 
         You should write in the second person, for example "You find yourself..."
         You should respond in a paragraph. Do not create lists or structured formatting.
         Write a maximum of 150 words.`,
-        settings: {
-          baseUrl: $EngineLlmStore.llm.lmstudio.baseUrl, //FIXME: Fix this setting
-          maxTokens: 300,
-          temperature: 0.7,
-          topP: 1,
-          frequencyPenalty: 0.5,
-          presencePenalty: 1.2,
-          streaming: false,
-        },
-        //stop: ["###"],
-      }),
-    });
-    const data = await response.json();
-    console.log(data);
-    $DungeonGameSettingsStore.game.storySummary = data.response;
+      300,
+      0.7,
+      1,
+      0.5,
+      1.5,
+      false
+    );
   }
 </script>
 
-<div class="variant-filled-surface rounded-md mt-5 mb-5">
+<div class="dark:variant-filled-surface rounded-md mt-5 mb-5">
   <div class="flex items-center justify-between">
     <label for="summary" class="pl-3 pt-3 font-semibold text-sm"
       >Story Summary (optional)</label

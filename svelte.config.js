@@ -27,7 +27,12 @@ const config = {
 			$utilities: './src/lib/utils',
 		}
 		// https://kit.svelte.dev/docs/configuration#alias
-	}
+	},
+	 // Disable accessibility warnings - don't have time for A11y's bullshit.
+	 onwarn: (warning, handler) => {
+		if (warning.code.includes("a11y")) return;
+		handler(warning);
+	  },
 }
 
 export default config
