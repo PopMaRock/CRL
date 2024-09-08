@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getToastStore, Tab, TabGroup, Toast } from "@skeletonlabs/skeleton";
+  import { getToastStore, Tab, TabGroup } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
   import Modal from "../ModalTemplate.svelte";
   import Scenarios from "./Settings/Scenarios.svelte";
@@ -8,10 +8,13 @@
   import GameSettings from "./Settings/GameSettings.svelte";
   import LlmSettings from "./Settings/LlmSettings.svelte";
   import {
+    DungeonConversationStore,
     DungeonGameSettingsStore,
     resetDungeonSettingsStore,
   } from "$stores/dungeon";
+  import { dbSet, dbUpdate } from "$utilities/db";
   export let stage: number;
+  const ms = getToastStore();
   let loading = false;
 
   function forward() {
@@ -21,11 +24,6 @@
     console.log(`Backward${stage}`);
     stage = 1;
     console.log(`Changed${stage}`);
-  }
-  async function makeGame() {
-    loading = true;
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    loading = false;
   }
   onMount(async () => {
     console.log("New Game");
@@ -43,14 +41,13 @@
   async function positiveClicked() {
     //basic check on essentials.
     if (
-      !$DungeonGameSettingsStore.game.genre ||
+      //!$DungeonGameSettingsStore.game.genre ||
       !$DungeonGameSettingsStore.game.name ||
-      !$DungeonGameSettingsStore.game.description ||
+      //!$DungeonGameSettingsStore.game.description ||
       !$DungeonGameSettingsStore.game.opening ||
       !$DungeonGameSettingsStore.llmTextSettings.prompt
     ) {
       console.log("Missing essentials");
-      const ms = getToastStore();
       ms.trigger({
         message: "Missing essentials. Re-check form",
         background: "variant-filled-primary",
@@ -59,6 +56,52 @@
       });
       return;
     }
+    //generate a unique id
+    $DungeonGameSettingsStore.game.id = Math.random().toString(36).slice(2, 11);
+    //add to database of games
+    try {
+      await dbUpdate("CRL", "dungeons", $DungeonGameSettingsStore.game.id, {
+        name: $DungeonGameSettingsStore.game.name,
+        desc: $DungeonGameSettingsStore.game.description ?? "",
+        genre: $DungeonGameSettingsStore.game.genre,
+        image: "",
+        meta: { created: Date.now(), lastPlayed: Date.now() },
+      });
+      await dbSet({
+        db: `dungeons/${$DungeonGameSettingsStore.game.id}/gamesettings`,
+        data: $DungeonGameSettingsStore,
+      });
+      //Push opening into DungeonConversationStore
+      DungeonConversationStore.set([{
+        role: "assistant",
+        content: $DungeonGameSettingsStore.game.opening,
+        meta: { timestamp: Date.now(), hasAudio: false },
+        type: "text",
+      }]);
+      //Push storySummary into DungeonConversationStore
+      if ($DungeonGameSettingsStore.game.storySummary)
+        $DungeonConversationStore.push({
+          role: "assistant",
+          content: $DungeonGameSettingsStore.game.storySummary,
+          meta: { timestamp: Date.now(), hasAudio: false },
+          type: "text",
+        });
+      await dbSet({
+        db: `dungeons/${$DungeonGameSettingsStore.game.id}/conversations`,
+        data: $DungeonConversationStore,
+      });
+    } catch (e) {
+      console.error(e);
+      ms.trigger({
+        message: "Error creating game -- check console",
+        background: "variant-filled-primary",
+        timeout: 2000,
+        hideDismiss: true,
+      });
+      return;
+    }
+    //build game folder and files
+    //start game
   }
 </script>
 

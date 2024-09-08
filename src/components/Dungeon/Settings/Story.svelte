@@ -4,8 +4,9 @@
   import { EnginePersonaStore } from "$stores/engine";
   import { crlGenerate } from "$utilities/utils";
   import { WandSparkles } from "lucide-svelte";
-
+  let loading = false;
   async function genStory() {
+    loading = true;
     $DungeonGameSettingsStore.game.storySummary = await crlGenerate(
       "game",
       `
@@ -31,6 +32,7 @@
       1.5,
       false
     );
+    loading = false;
   }
 </script>
 
@@ -39,8 +41,12 @@
     <label for="summary" class="pl-3 pt-3 font-semibold text-sm"
       >Story Summary (optional)</label
     >
-    <button title="Generate summary" class="ml-4" on:click={genStory}>
+    <button title="Generate opening" class="ml-4" disabled={loading} on:click={genStory}>
+      {#if loading}
+      <WandSparkles class="animate-ping items-center mt-2 ml-4 mr-2 h-5 w-5" />
+      {:else}
       <WandSparkles class="items-center mt-2 ml-4 mr-2 h-5 w-5" />
+      {/if}
     </button>
   </div>
   <textarea

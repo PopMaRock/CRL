@@ -1,3 +1,4 @@
+import { dbGet, dbUpdate } from "$utilities/db";
 import { writable, type Writable } from "svelte/store";
 /**
  * These are engine settings for the Dungeon game mode.
@@ -116,7 +117,7 @@ function createEnginePersonaStore() {
     update,
     get: async () => {
       try {
-        const data = await persistentStore("personas", "persona", "get");
+        const data = await dbGet("CRL", "personas", "1");
         if (data) {
           set(data);
         }
@@ -130,52 +131,7 @@ function createEnginePersonaStore() {
       let currentValue: any;
       subscribe((value) => (currentValue = value))();
       set(currentValue);
-      await persistentStore("personas", "persona", "set", currentValue);
+      await dbUpdate("CRL", "personas", "1", currentValue);
     },
   };
-}
-
-async function persistentStore(
-  db: string,
-  collection: string,
-  method: "set" | "get",
-  data?: any
-) {
-  try {
-    let url = "/api/data";
-    if (method === "get") {
-      const params = new URLSearchParams({ db, collection, method }).toString();
-      url += `?${params}`;
-    }
-
-    const response = await fetch(url, {
-      method: method === "set" ? "POST" : "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body:
-        method === "set"
-          ? JSON.stringify({ data, db, collection, method })
-          : undefined,
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.info("Not found");
-        return null;
-      } //else
-        throw new Error("Failed to send or retrieve data");
-    } 
-
-    if (method === "get") {
-      const result = await response.json();
-      console.log("Data retrieved successfully");
-      console.log(result);
-      return result;
-    }
-    console.log("Data sent successfully");
-  } catch (error) {
-    console.error("Failed to send or retrieve data:", error);
-    throw error;
-  }
 }

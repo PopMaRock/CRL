@@ -2,6 +2,8 @@
   import type { ModalComponent, ModalSettings } from "@skeletonlabs/skeleton";
   import { getModalStore } from "@skeletonlabs/skeleton";
   import NewGame from "$components/Dungeon/NewGame.svelte";
+  import Carousel from "$components/Main/carousel.svelte";
+  import MultiColumn from "$components/Main/multiColumn.svelte";
   const modalStore = getModalStore();
 
   async function doThing() {
@@ -87,10 +89,29 @@
   }
 </script>
 
-Eh'll show the users existing stories and potential new stories. Also have a
-"create" button and a "Continue". The game data story will hold last time played
-so it can be put in order, init.
-
-<button class="btn-primary btn" on:click={createOwnGame}
-  >+ Create Your Own</button
->
+<div class="mx-16">
+  <div class="overflow-hidden h-1/4">
+    <div class="max-w-[120vh]">
+      <div class="flex items-center justify-between mt-10">
+        <h1 class="text-4xl font-bold sm:text-6xl">
+          DUNGEON
+        </h1>
+        <div class="flex gap-x-6 items-center">
+          <button
+          on:click={createOwnGame}
+            class="rounded-md btn variant-filled-primary px-3.5 py-2.5 text-sm font-semibold shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+            >New Game</button>
+          <button class="text-sm font-semibold leading-6"
+            >Continue <span aria-hidden="true">→</span></button
+          >
+        </div>
+      </div>
+      <div class="mt-10 w-full">
+        <Carousel class="min-w-[40vh]"/>
+      </div>
+      <div class="mt-5 w-full">
+        <MultiColumn />
+      </div>
+    </div>
+  </div>
+</div>

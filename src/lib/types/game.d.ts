@@ -72,6 +72,7 @@ interface LLMTextSettings {
     seed: number;
 }
 interface Game {
+    id: string | null;
     name: string;
     description: string;
     createdBy: string;

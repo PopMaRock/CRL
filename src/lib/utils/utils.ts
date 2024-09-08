@@ -12,6 +12,8 @@ import { addProcessToQueue } from "$stores/processes";
 import { get, type Writable } from "svelte/store";
 import { EngineLlmStore } from "$stores/engine";
 import { DungeonGameSettingsStore } from "$stores/dungeon";
+import { browser } from "$app/environment";
+import { getToastStore } from "@skeletonlabs/skeleton";
 
 export async function getTokens(text: string): Promise<any> {
   if (!text) return undefined;
@@ -75,4 +77,29 @@ export async function crlGenerate(
   const data = await response.json();
   console.log(data);
   return data.response;
+}
+export async function testLlmConnection(llmActive: string, toast?:any, baseUrl?: string) {
+  if (browser) {
+    try {
+      const response = await fetch(
+        `/api/llm/provider/${llmActive}/ping?baseUrl=${baseUrl ?? ""}`
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to connect to LmStudio");
+      }
+      if(toast)toast.trigger({
+        message: `Connection to ${llmActive} successful`,
+        background: "variant-filled-success",
+        timeout: 5000,
+      });
+    } catch (error) {
+      console.error("Failed to connect to LLM.", error);
+      if(toast)toast.trigger({
+        message: `Connection to ${llmActive} failed: ${error}`,
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+    }
+  }
 }

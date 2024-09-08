@@ -1,7 +1,7 @@
 <script>
   import CharacterVerticalCarousel from "$components/Main/CharacterVerticalCarousel.svelte";
 import { fade } from "svelte/transition"
-
+export let data;
 </script>
 <div transition:fade={{ duration: 700 }}>
     <!-- TAILWIND HERO -->
@@ -18,7 +18,9 @@ import { fade } from "svelte/transition"
           <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-2xl lg:flex-shrink-0 lg:pt-8">
             <div class="mt-10 sm:mt-32 lg:mt-16">
               <h2 class="sm:mx-auto sm:w-10/12 md:w-2/3 font-black text-3xl text-center sm:text-3xl md:text-2xl lg:w-auto lg:text-left xl:text-3xl">
-                <span class="relative text-transparent bg-clip-text bg-gradient-to-r from-secondary-600 to-secondary-500 dark:from-primary-400 dark:to-primary-900">Hey Vince</span>
+                <span class="relative text-transparent bg-clip-text bg-gradient-to-r from-secondary-600 to-secondary-500 dark:from-primary-400 dark:to-primary-900">
+                  Hey {data?.user?.name}
+                </span>
               </h2>
             </div>
             <h1 class="mt-10 text-4xl font-bold tracking-tight  sm:text-6xl">CRL: Local Adventures.</h1>

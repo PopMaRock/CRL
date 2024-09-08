@@ -41,9 +41,9 @@
 		height="h-full"
 		border="border-r border-surface-500/30"
 	>
-		<AppRailAnchor slot="lead" name="home" href="/">
+		<AppRailAnchor slot="lead" name="home" href="/CRL" title="Go Hame">
 			<svelte:fragment slot="lead"
-				><img src="/crl-images/icon_logo.png" class="align-center w-12" /></svelte:fragment
+				><img src="/crl-images/icon_logo.png" class="align-center w-12" alt="Logo. Clicking it will tack ya hame"/></svelte:fragment
 			>
 		</AppRailAnchor>
 		<!-- Mobile Only -->
@@ -130,7 +130,7 @@
 				</div>
 			</div>
 			{#if currentRailCategory == '/1'}
-				<a href="/CRL/gamemodes/dungeon/">DungeonAI</a><br />
+				<a href="/CRL/gamemodes/dungeon/">Dungeon</a><br />
 				<hr class="mt-20 opacity-30" />
 				<div class="mt-2 font-semibold text-primary-800">Your Adventures</div>
 			{:else if currentRailCategory == '2'}

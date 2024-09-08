@@ -69,7 +69,7 @@ import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
   </RangeSlider>
 </div>
 <div class="grid grid-cols-2 gap-4">
-  <div>
+  <div title="TopP is simply the ">
     <RangeSlider
       name="topP"
       bind:value={$DungeonGameSettingsStore.llmTextSettings.topP}
@@ -85,6 +85,7 @@ import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
       </div>
     </RangeSlider>
   </div>
+  <!-- FIXME: TopK is bullshit. Remove it later-->
   <div>
     <RangeSlider
       name="topK"

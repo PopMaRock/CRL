@@ -23,7 +23,7 @@
   <div
     class={cn(
       `${$$props.class}`,
-      `w-model dark:variant-soft-surface bg-white flex flex-col rounded-md ring-4 p-4 shadow-xl space-y-4`
+      `w-model dark:bg-surface-600 bg-white flex flex-col rounded-md ring-4 p-4 shadow-xl space-y-4`
     )}
   >
     <header class={cHeader}>

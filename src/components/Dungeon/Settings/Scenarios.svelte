@@ -48,10 +48,10 @@
   }
 </script>
  <!-- scenario -->
- <div class="grid w-full grid-cols-3 gap-1">
+ <div class="grid w-full grid-cols-3 gap-1 ">
     {#each scenarios as scenario}
         <button
-            class="variant-soft-surface flex flex-col min-h-40 min-w-40 items-center justify-center rounded-md hover:bg-surface-700"
+            class="dark:variant-filled-surface flex flex-col min-h-40 min-w-40 items-center justify-center rounded-md hover:bg-surface-700"
             on:click={() => scenarioClicked(scenario.name)}
         >
             <img

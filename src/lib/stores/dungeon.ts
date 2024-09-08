@@ -1,4 +1,3 @@
-import { tick } from "svelte";
 import { get, writable, type Writable } from "svelte/store";
 import { EngineLlmStore } from "./engine";
 
@@ -31,6 +30,7 @@ export const DungeonGameSettingsDefault: DungeonGameSettings = {
       seed: -1, //internal
     },
     game: {
+      id: null,
       name: "",
       description: "",
       createdBy: "CRL",

@@ -78,7 +78,7 @@ helpText="Keep it simple. [No effect on AI Prompt]"/>
     class="mt-4"
     size="sm"
     bind:checked={$DungeonGameSettingsStore.llmTextSettings.convertToUkEnglish}
-    >Translate to UKEnglish is {$DungeonGameSettingsStore.llmTextSettings
+    >Translate to Traditional English is {$DungeonGameSettingsStore.llmTextSettings
       .convertToUkEnglish
       ? "on"
       : "off"}</SlideToggle

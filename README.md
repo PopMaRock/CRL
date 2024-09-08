@@ -1,17 +1,12 @@
 # CRL - A pile of nothing and pish just now. 
 ## WIP
 
-Inspired by great repos such as:
-https://github.com/Solemensis/Chad-Rpg
-https://github.com/steamship-core/ai-adventure
-https://github.com/SillyTavern/SillyTavern
-
 ## Requirements
 - Linux or Windows 10+.
--- Node 18+
--- Up-to-date browser
+- Node 18+
+- Up-to-date browser
 
-This is to be run in a local environment (on a computer).
+CRL is to be run in a local environment (on a computer).
 
 For local models: LMStudio (With server running)
 For remote models: OpenAI (Requires API key to be added to a .env file)
@@ -36,3 +31,8 @@ If you are, delete 'node_modules' folder and run 'npm install'
 
 ### Builton
 SvelteKit, Vite, LangChain to run locally with SDForge (image models) and LMStudio (text models).
+
+### Inspired by great repos such as:
+https://github.com/Solemensis/Chad-Rpg
+https://github.com/steamship-core/ai-adventure
+https://github.com/SillyTavern/SillyTavern

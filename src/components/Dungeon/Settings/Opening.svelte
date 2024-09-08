@@ -4,8 +4,10 @@
   import { crlGenerate } from "$utilities/utils";
   import { Accordion, AccordionItem } from "@skeletonlabs/skeleton";
   import { WandSparkles } from "lucide-svelte";
+  let loading = false;
 
   async function genPremise() {
+    loading = true;
     $DungeonGameSettingsStore.game.opening = await crlGenerate(
       "game",
       `Write a brief opening to a new role playing adventure which revolves around the user.
@@ -22,6 +24,7 @@
       1.5,
       false
     );
+    loading = false;
   }
 </script>
 
@@ -30,8 +33,12 @@
     <label for="opening" class="label pl-3 pt-3 font-semibold text-sm"
       >Opening</label
     >
-    <button title="Generate opening" class="ml-4" on:click={genPremise}>
+    <button title="Generate opening" class="ml-4" disabled={loading} on:click={genPremise}>
+      {#if loading}
+      <WandSparkles class="animate-ping items-center mt-2 ml-4 mr-2 h-5 w-5" />
+      {:else}
       <WandSparkles class="items-center mt-2 ml-4 mr-2 h-5 w-5" />
+      {/if}
     </button>
   </div>
   <textarea
