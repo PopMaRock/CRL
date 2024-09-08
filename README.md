@@ -1,19 +1,18 @@
 # CRL - A pile of nothing and pish just now. 
 ## WIP
 
+### CRL is to be run in a local environment (on a computer).
+
+For local models: LMStudio (With server running)
+For remote models: OpenAI (Requires API key to be added to a .env file)
+
+For local image generation: SD Forge (with --api flag in the COMMANDLINE_ARGS)
+For remote image generation: Civitai (Requires API key to be added to a .env file)
+
 ## Requirements
 - Linux or Windows 10+.
 - Node 18+
 - Up-to-date browser
-
-CRL is to be run in a local environment (on a computer).
-
-For local models: LMStudio (With server running)
-For remote models: OpenAI (Requires API key to be added to a .env file)
---
-For local image generation: SD Forge (with --api flag in the COMMANDLINE_ARGS)
-For remote image generation: Civitai (Requires API key to be added to a .env file)
---
 
 ## Install
 
