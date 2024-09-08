@@ -1,14 +1,19 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import Modal from "../ModalTemplate.svelte";
   import { EnginePersonaStore } from "$stores/engine";
   import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
   import Textarea from "$components/Main/Forms/Textarea.svelte";
+  export let parent: any; //shite passed from the parent component. It'll complain if it's removed.
 
   onMount(async () => {
     console.log("User Settings");
-    await EnginePersonaStore.get(); //should get the shit from the database
+    await EnginePersonaStore.get(); //should get the data from the database
   });
+
+  async function savePersona() {
+    EnginePersonaStore.setAndPersist();
+  }
 </script>
 
 <Modal
@@ -16,6 +21,10 @@
   showFooterButtons={false}
   showBackButton={false}
   class="min-h-[40vh] w-[60vh]"
+  on:close={async () => {
+    await tick();
+    await savePersona();
+  }}
 >
   <TextboxGroup
     name="persona"

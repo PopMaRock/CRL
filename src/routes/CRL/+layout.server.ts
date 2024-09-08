@@ -7,12 +7,14 @@ export async function load({ url, locals }: { url: any; locals: any }) {
     if (!uid) {
       //redirect to home page
       console.log("no uid redirecting to login page");
-      throw redirect(307, "/login");
+      //TODO: redirect to login page once auth is implemented
+      //throw redirect(307, "/login");
     }
     if (!name) {
       //redirect to home page
+      //TODO: redirect to login page once auth is implemented
       console.log("no name redirecting to login page");
-      throw redirect(307, "/login");
+      //throw redirect(307, "/login");
     }
     return {
       url: url.pathname,
@@ -20,7 +22,8 @@ export async function load({ url, locals }: { url: any; locals: any }) {
   }
   //redirect to login page
   console.log("no user redirecting to login page");
-  throw redirect(307, "/login");
+  //TODO: redirect to login page once auth is implemented
+  //throw redirect(307, "/login");
 }
 function redirectGeeza() {
   //for when the cunts are lost. Try find where they're meant to be or punt them somewhere else.

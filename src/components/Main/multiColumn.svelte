@@ -6,7 +6,14 @@
     StepBack,
     StepForward,
   } from "lucide-svelte";
-
+  interface GameCard {
+    name: string;
+    imageUrl: string;
+    url: string;
+    combobox: string;
+  }
+  export let data:GameCard[] = [];
+  
   let elemMovies: HTMLDivElement;
 
   function multiColumnLeft(): void {

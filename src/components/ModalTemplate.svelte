@@ -42,6 +42,7 @@
       {$modalStore[0].title ?? "(title missing)"}
       <button
         on:click={() => {
+          dispatch("close");
           modalStore.close();
         }}
         class="btn ml-auto rounded-lg p-2.5 text-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-700"

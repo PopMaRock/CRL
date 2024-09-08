@@ -1,23 +1,38 @@
 <script lang="ts">
-	import SidebarLeft from '$components/Layouts/Main/SidebarLeft.svelte'
-	import SidebarRight from '$components/Layouts/SidebarRight.svelte'
-  import { AppShell } from '@skeletonlabs/skeleton';
-</script>
-<div>
+  import { page } from "$app/stores";
+  import { get } from "svelte/store";
+  import SidebarLeft from "$components/Layouts/Main/SidebarLeft.svelte";
+  import SidebarRight from "$components/Layouts/SidebarRight.svelte";
+  import SidebarRightGame from "$components/Dungeon/SidebarRight.svelte";
+  import { AppShell } from "@skeletonlabs/skeleton";
 
-	<AppShell>
-		<svelte:fragment slot="sidebarLeft">
-			<!-- Hidden below Tailwind's large breakpoint -->
-			<div id="sidebar-right" class="h-full lg:block">
-			<SidebarLeft /></div>
-		</svelte:fragment>
-		<svelte:fragment slot="sidebarRight">
-				<SidebarRight /> 
-		</svelte:fragment>
-		<!-- Router Slot -->
-				<div class="h-screen flex flex-col">
-			<div class="flex-grow">
-				<slot />
-			</div>
-	</AppShell>
+  let currentSidebarRight = SidebarRight;
+  $: {
+    const url = get(page).url.pathname;
+    if (url.includes("play")) {
+      currentSidebarRight = SidebarRightGame;
+    } else {
+      currentSidebarRight = SidebarRight;
+    }
+  }
+</script>
+
+<div>
+  <AppShell>
+    <svelte:fragment slot="sidebarLeft">
+      <!-- Hidden below Tailwind's large breakpoint -->
+      <div id="sidebar-right" class="h-full lg:block">
+        <SidebarLeft />
+      </div>
+    </svelte:fragment>
+	<svelte:fragment slot="sidebarRight">
+      <svelte:component this={currentSidebarRight} />
+    </svelte:fragment>
+    <!-- Router Slot -->
+    <div class="h-screen flex flex-col">
+      <div class="flex-grow">
+        <slot />
+      </div>
+    </div></AppShell
+  >
 </div>

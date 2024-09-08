@@ -5,7 +5,8 @@ import {
   DungeonConversationStore,
   DungeonGameSettingsStore,
 } from "$stores/dungeon";
-import { EngineLlmStore } from "$stores/engine";
+import { EngineLlmStore, EnginePersonaStore } from "$stores/engine";
+import { browser } from "$app/environment";
 
 export class Generator {
   expandPath(path: string): string {
@@ -14,21 +15,44 @@ export class Generator {
 
   promptReplace(prompt: string): string {
     return prompt
-      .replace("#", "")
-      .replace("*", "")
       .replace("\n\n", "\n")
       .replace(/(?<=\w)\.\.(?:\s|$)/g, ".")
       .trimEnd();
   }
 
   resultReplace(result: string): string {
+    //Command R has this habit of responding with > at the start of the response remove it
+    let resp = result;
+    //remove <EOS_TOKEN>
+    //strip/replace HTML
     return cutTrailingSentence(
-      result
-        .replace('."', '".')
-        .replace("#", "")
+      resp
+        .replace(/&nbsp;/g, " ")
+        .replace(/&ldquo;/g, '"')
+        .replace(/&rdquo;/g, '"')
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&cent;/g, "¢")
+        .replace(/&pound;/g, "£")
+        .replace(/&yen;/g, "¥")
+        .replace(/&euro;/g, "€")
+        .replace(/&copy;/g, "")
+        .replace(/&reg;/g, "")
+        .replace(/&trade;/g, "")
+        .replace(/&times;/g, "x")
+        .replace(/&divide;/g, "/")
+        .replace(/&ndash;/g, "-")
+        .replace(/&mdash;/g, "-")
+        .replace(/&hellip;/g, "...")
+        .replace(/&amp;/g, "&")
+        .replace(/<\/?[^>]+(>|$)/g, "") //remove HTML tags
+        //remove remaining > 
+        .replace(">", "")
         .replace("*", "")
         .replace("\n\n", "\n")
-        .replace("(?<=\\w)\\.\\.(?:\\s|$)", ".")
+        //.replace("(?<=\\w)\\.\\.(?:\\s|$)", ".")
         .replace(/#{1,3} Response:/, "")
     ).trimEnd();
   }
@@ -40,48 +64,105 @@ export class Generator {
   }
 
   private async genOutput(response: any, history: any): Promise<void> {
-    // biome-ignore lint/style/useNamingConvention: <explanation>
-    const DGSS = get(DungeonGameSettingsStore);
-    const settings = {
-      systemPrompt: DGSS.llmTextSettings.prompt,
-      history: history,
-      model: DGSS.llmTextSettings.model,
-      settings: {
-        stream: DGSS.llmTextSettings.stream ?? false,
-        baseUrl: get(EngineLlmStore).llm[DGSS.llmActive].baseUrl,
-        temperature: DGSS.llmTextSettings.temperature,
-        topP: DGSS.llmTextSettings.topP,
-        topK: DGSS.llmTextSettings.topK,
-        generateNum: DGSS.llmTextSettings.generateNum,
-        presencePenalty: DGSS.llmTextSettings.presencePenalty,
-        frequencyPenalty: DGSS.llmTextSettings.frequencyPenalty,
-        seed: DGSS.llmTextSettings.seed,
-      },
-    };
-    console.log("Request to LLM: ", settings);
-    try {
-      const answer = await response.request(
-        new Request(`/api/llm/${DGSS.llmActive}/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(settings),
-        })
+    if (browser) {
+      // biome-ignore lint/style/useNamingConvention: <explanation>
+      let DGSS: any = {};
+      DGSS = get(DungeonGameSettingsStore);
+      let prompt = DGSS.llmTextSettings.prompt;
+      let summary = "";
+      const persona = await EnginePersonaStore.get(); //should get the data from the database
+      if (history.length > 25) history.splice(0, history.length - 25);
+      // Define the values for the placeholders
+      const storySummary = "";
+      const recent = history?.map((item: any) => item.content).join(" ") ?? "";
+
+      // Replace %personaName% in personaDesc
+      const updatedPersonaDesc = persona.personaDesc.replace(
+        /%personaName%/g,
+        persona.persona
       );
-      if (!answer) throw new Error("No response from LLM");
-      const assistantMessage: DungeonConversation = {
-        role: "assistant",
-        content: this.resultReplace(answer as string),
-        meta: { timestamp: Date.now(), hasAudio: false },
-        type: "text",
+
+      console.log("prompt before replace: ", prompt);
+      // Replace placeholders in the prompt
+      const mPrompt = prompt
+        .replace(
+          /%personaName%/g,
+          persona.persona ? `User's name: ${persona.persona}` : ""
+        )
+        .replace(
+          /%personaDesc%/g,
+          updatedPersonaDesc ? `Description of user: ${updatedPersonaDesc}` : ""
+        )
+        .replace(
+          /%opening%/g,
+          DGSS.game.opening ? `How it started: ${DGSS.game.opening}` : ""
+        )
+        .replace(
+          /%plotEssentials%/g,
+          DGSS.game.plotEssentials
+            ? `Plot essentials: ${DGSS.game.plotEssentials}`
+            : ""
+        )
+        .replace(
+          /%authorsNotes%/g,
+          DGSS.game.authorsNotes ? `${DGSS.game.authorsNotes}` : ""
+        )
+        .replace(
+          /%storySummary%/g,
+          storySummary ? `Story Summary: ${storySummary}` : ""
+        )
+        .replace(/%recent%/g, recent ? `Recent: ${recent}` : "")
+        .trim();
+      console.log("Prompt: ", mPrompt);
+      const settings = {
+        prompt: mPrompt,
+        model: DGSS.llmTextSettings.model,
+        settings: {
+          stream: DGSS.llmTextSettings.stream ?? false,
+          baseUrl: get(EngineLlmStore).llm[DGSS.llmActive].baseUrl,
+          temperature: DGSS.llmTextSettings.temperature,
+          topP: DGSS.llmTextSettings.topP,
+          topK: DGSS.llmTextSettings.topK,
+          generateNum: DGSS.llmTextSettings.generateNum,
+          presencePenalty: DGSS.llmTextSettings.presencePenalty,
+          frequencyPenalty: DGSS.llmTextSettings.frequencyPenalty,
+          seed: DGSS.llmTextSettings.seed,
+        },
       };
-      //@ts-ignore
-      DungeonConversationStore.update((conversations) => [
-        ...conversations,
-        assistantMessage,
-      ]);
-    } catch (error: any) {
-      console.log("Error in genOutput: ", error);
-      return error;
+      console.log("Request to LLM: ", settings);
+      try {
+        console.log(
+          "Requesting from LLM",
+          `/api/llm/provider/${DGSS.llmActive}/chat`
+        );
+        console.log("with settings", settings);
+        const answer = await response.request(
+          new Request(`/api/llm/provider/${DGSS.llmActive}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(settings),
+          })
+        );
+        console.error("Answer from LLM: ", answer);
+        if (!answer) throw new Error("No response from LLM");
+        const assistantMessage: DungeonConversation = {
+          role: "assistant",
+          content: this.resultReplace(answer as string),
+          meta: { timestamp: Date.now(), hasAudio: false },
+          type: "text",
+        };
+        //@ts-ignore
+
+        DungeonConversationStore.update((conversations) => [
+          ...conversations,
+          assistantMessage,
+        ]);
+        //save conversations to database
+        DungeonConversationStore.save(DGSS.game.id);
+      } catch (error: any) {
+        console.log("Error in genOutput: ", error);
+        return error;
+      }
     }
   }
   public async handleMessage(
@@ -106,7 +187,8 @@ export class Generator {
     if (["say", "ask", '"'].some((substring) => m.includes(substring))) {
       // Update the store value to increase the token value by 50%
       DungeonGameSettingsStore.update((store) => {
-        store.llmTextSettings.generateNum = store.llmTextSettings.defaultGenNum * 1.5;
+        store.llmTextSettings.generateNum =
+          store.llmTextSettings.defaultGenNum * 1.5;
         return store;
       });
     } else {

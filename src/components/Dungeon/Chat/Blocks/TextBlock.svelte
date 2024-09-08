@@ -7,11 +7,13 @@
   import { onDestroy, onMount } from "svelte";
   import { DungeonConversationStore } from "$stores/dungeon";
   import { TextGenerateEffect } from "$components/Dungeon/UI-Effects/text-generation";
+  import { RefreshCw, Trash, Trash2 } from "lucide-svelte";
 
   export let item: DungeonConversation | string;
-  export const blockId: number = 0;
-  export const offerAudio: boolean = false;
-  export const fadein: boolean = false;
+  export let blockId = 0;
+  export let offerAudio = false;
+  export let fadein = false;
+  export let isLast = false;
   const isHover = writable(false);
   function formatText() {
     if (typeof item === "string") return;
@@ -22,8 +24,8 @@
     ) {
       let content = item.content;
       // Italicize quotes
-      content = content.replace(/"([^"]*)"/g, 'You say <i>"$1"</i>');
-      if (content.startsWith(">")) content = content.replace(/>/g, "You ");
+      content = content.replace(/"([^"]*)"/g, '<i>"$1"</i>');
+      if (content.startsWith(">")) content = content.replace(/>/g, "");
       // Wrap in a card
       return `<blockquote class="blockquote font-smoothing text-lg">${content}</blockquote>`;
     }
@@ -93,6 +95,23 @@
       if (typeof item !== "string" && item?.role !== "user") isHover.set(false);
     }}
   >
+    {#if $isHover}
+      <div class="relative">
+        {#if typeof item !== "string"}
+          <button
+            class="absolute top-0 right-0 ml-2 p-1 hover:text-red-700"
+            on:click={() => {
+              DungeonConversationStore.update((conversations) => {
+                conversations.splice(blockId, 1);
+                return conversations;
+              });
+            }}
+          >
+            <Trash2 class="w-6 h-6" />
+          </button>
+        {/if}
+      </div>
+    {/if}
     <div
       id={`chatMessage${blockId}`}
       class={cn(
@@ -117,15 +136,15 @@
           {:else}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <span class="editable" on:click={enableEditing}>
-              {#if fadein}
+              {#if fadein && item.role === "assistant"}
                 <TextGenerateEffect words={content} />
               {:else}
-                {content}
+                {@html formatText()}
               {/if}
             </span>
           {/if}
         {:else}
-          <span>{@html item}</span>
+          <span>{@html formatText()}</span>
         {/if}
       </p>
     </div>

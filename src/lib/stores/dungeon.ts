@@ -1,68 +1,80 @@
 import { get, writable, type Writable } from "svelte/store";
 import { EngineLlmStore } from "./engine";
+import { dbSet } from "$utilities/db";
+
+//TODO: TIDY THIS FUCKIN MESS UP
 
 //DungeonGameSettings
 export const DungeonGameSettingsDefault: DungeonGameSettings = {
-    llmActive: "openai",
-    llmTextSettings: {
-      prompt: `You are an AI dungeon master that provides any kind of roleplaying game content.
-  
-  Instructions:
-  - Be specific, descriptive, and creative.
-  - Avoid repetition and avoid summarization.
-  - Generally use second person (like this: 'He looks at you.'). But use third person if that's what the story seems to follow.
-  - Never decide or write for the user. If the input ends mid sentence, continue where it left off. ">" tokens mean a character action attempt. You should describe what happens when the player attempts that action.
-  - Make sure you always give responses continuing mid sentence even if it stops partway through.`,
-      model: "gpt-3.5-turbo",
-      stream: false,
-      limitContext: 4096,
-      memoryBank: true, //using vectera local
-      historyTruncate: "middle", //can be 'start', 'middle'
-      autoSummarize: false, //Can be false, local or main
-      convertToUkEnglish: false,
-      generateNum: 100, //internal
-      defaultGenNum: 100,
-      temperature: 0.7,
-      topP: 0.95,
-      topK: 50,
-      presencePenalty: 0.5,
-      frequencyPenalty: 1.5,
-      seed: -1, //internal
-    },
-    game: {
-      id: null,
-      name: "",
-      description: "",
-      createdBy: "CRL",
-      genre: "",
-      opening: "",
-      plotEssentials: "",
-      authorsNotes: "",
-      storySummary: "",
-      sd: false,
-      vo: false,
-    },
-    sd: {
-      sdActive: "webui",
-      sdDefaultPositive: "(masterpiece), drawing",
-      sdDefaultNegative: "(bad hands), realistic",
-    },
-    vo: {
-      voActive: "elevenlabs",
-      voDefaultPositive: "happy",
-      voDefaultNegative: "sad",
-      model: "Alice",
-    },
-    accessability: {
-      fadein: true,
-      text: "normal", //can be print, clean, hacker
-    },
-    behaviour: {
-      autoSave: true,
-      autoSaveInterval: 60000,
-    },
-  };
+  llmActive: "openai",
+  llmTextSettings: {
+    prompt: `You are an AI dungeon master that provides any kind of roleplaying game content.
 
+Instructions:
+- Be specific, descriptive, and creative.
+- Avoid repetition and avoid summarization.
+- Generally use second person (like this: 'He looks at you.'). But use third person if that's what the story seems to follow.
+- Never decide or write for the user. If the input ends mid sentence, continue where it left off. ">" tokens mean a character action attempt. You should describe what happens when the player attempts that action.
+- Make sure you always give responses continuing mid sentence even if it stops partway through.
+
+%personaName%
+%personaDesc%
+
+%opening%
+%plotEssentials%
+%authorsNotes%
+%storySummary%
+%recent%`,
+    model: "gpt-3.5-turbo",
+    stream: false,
+    limitContext: 4096,
+    memoryBank: true, //using vectera local
+    historyTruncate: "middle", //can be 'start', 'middle'
+    autoSummarize: false, //Can be false, local or main
+    convertToUkEnglish: false,
+    generateNum: 100, //internal
+    defaultGenNum: 100,
+    temperature: 0.7,
+    topP: 0.95,
+    topK: 50,
+    presencePenalty: 0.5,
+    frequencyPenalty: 1.5,
+    seed: -1, //internal
+  },
+  game: {
+    id: null,
+    name: "",
+    description: "",
+    createdBy: "CRL",
+    genre: "",
+    image: "",
+    opening: "",
+    plotEssentials: "",
+    authorsNotes: "",
+    storySummary: "",
+    sd: false,
+    vo: false,
+  },
+  sd: {
+    sdActive: "webui",
+    sdDefaultPositive: "(masterpiece), drawing",
+    sdDefaultNegative: "(bad hands), realistic",
+  },
+  vo: {
+    voActive: "elevenlabs",
+    voDefaultPositive: "happy",
+    voDefaultNegative: "sad",
+    model: "Alice",
+  },
+  accessability: {
+    fadein: true,
+    text: "normal", //can be print, clean, hacker
+  },
+  behaviour: {
+    autoSave: true,
+    autoSaveInterval: 60000,
+  },
+};
 
 export const DungeonGameStateStore: Writable<any> = writable({
   lootBox: [],
@@ -76,11 +88,31 @@ export const DungeonGameStateStore: Writable<any> = writable({
     lastPlay: Date.now(),
   },
 });
-export const DungeonConversationStore: Writable<DungeonConversation[]> =
-  writable([]);
+// Define the custom store with a save method
+function createDungeonConversationStore() {
+  const { subscribe, set, update } = writable<DungeonConversation[]>([]);
+
+  return {
+    subscribe,
+    set,
+    update,
+    async save(gameId: string) {
+      if(!gameId || gameId.includes(".")) return;
+      const conversations = get(this);
+
+      await dbSet({
+        db: `dungeons/${gameId}/conversations`,
+        data: conversations,
+      });
+    },
+  };
+}
+
+// Create the store instance
+export const DungeonConversationStore = createDungeonConversationStore();
 export const DungeonGameSettingsStore: Writable<DungeonGameSettings> & {
   reset: () => void;
-} = createDungeonGameSettingsStore();
+} & { save: () => void } = createDungeonGameSettingsStore(); //fuck knows why it needs to be done this way...
 export const DungeonPlayerStore: Writable<DungeonPlayer> = writable();
 export const DungeonCharacterStore: Writable<any> = writable({
   characters: [],
@@ -94,7 +126,14 @@ function createDungeonGameSettingsStore() {
     subscribe,
     set,
     update,
-    reset:  () => set(structuredClone(DungeonGameSettingsDefault)),
+    reset: () => set(structuredClone(DungeonGameSettingsDefault)),
+    save: async () => {
+      const tempDungeon = get(DungeonGameSettingsStore);
+      await dbSet({
+        db: `dungeons/${tempDungeon.game.id}/gamesettings`,
+        data: tempDungeon,
+      });
+    },
   };
 }
 
@@ -115,7 +154,6 @@ export function resetDungeonSettingsStore() {
   });
 }
 //defaults:
-
 
 //DungeonGameState
 export const DungeonGameStateDefault: DungeonGameState = {

@@ -16,9 +16,10 @@ export const GET: RequestHandler = async ({ url }: any): Promise<Response> => {
   const db = url.searchParams.get("db");
   const collection = url.searchParams.get("collection");
   const id = url.searchParams.get("id");
+  //console.log("GET: ", db, collection, id);
 
-  if (checkString(db) || checkString(collection)) {
-    return resp({ error: er.badRequest.missing }, 400);
+  if (!db) {
+    return resp({ error: `Missing database name ${er.badRequest}` }, 400);
   }
 
   const dbCon = new JsonDB(new Config(`db/${db}`, true, false, "/"));
@@ -27,14 +28,21 @@ export const GET: RequestHandler = async ({ url }: any): Promise<Response> => {
   }
 
   try {
-    const path = id ? `/${collection}/${id}` : `/${collection}`;
-    if (!(await dbCon.exists(path))) {
-      return resp({ error: id ? "not found" : "empty" }, 404);
+    let data:any;
+    if (!collection) {
+      // Return all data from the database if no collection is specified
+      data = await dbCon.getData("/");
+    } else {
+      const path = id ? `/${collection}/${id}` : `/${collection}`;
+      if (!(await dbCon.exists(path))) {
+        return resp({ error: id ? "not found" : "empty" }, 404);
+      }
+      data = await dbCon.getData(path);
     }
-    const data = await dbCon.getData(path);
+   //console.log("Data: ", data);
     return resp(data, 200);
   } catch (error) {
-    console.log("Error in GET: ", error);
+    console.error("Error in GET: ", error);
     return resp({ error: "Unable to fetch data" }, 500);
   }
 };

@@ -169,6 +169,7 @@ export function cutTrailingAction(text: string): string {
 export function cutTrailingSentence(text: string): string {
   let t = standardizePunctuation(text);
   let lastPunc = Math.max(
+    t.lastIndexOf(","),
     t.lastIndexOf("."),
     t.lastIndexOf("!"),
     t.lastIndexOf("?")
@@ -178,7 +179,7 @@ export function cutTrailingSentence(text: string): string {
     lastPunc = t.length - 1;
   }
 
-  const etToken = t.indexOf("<");
+  /*const etToken = t.indexOf("<");
   if (etToken > 0) {
     lastPunc = Math.min(lastPunc, etToken - 1);
   } else if (etToken === 0) {
@@ -190,12 +191,16 @@ export function cutTrailingSentence(text: string): string {
     lastPunc = Math.min(lastPunc, actToken - 1);
   } else if (actToken === 0) {
     lastPunc = Math.min(lastPunc, actToken);
-  }
+  }*/
 
   t = t.substring(0, lastPunc + 1);
 
   t = fixTrailingQuotes(t);
-  t = cutTrailingAction(t);
+    // Ensure the sentence does not end with a comma and replace it with a full stop if necessary
+    if (t.endsWith(",") || (!t.endsWith("!") && !t.endsWith("?"))) {
+      t = `${t.slice(0, -1)}.`;
+    }
+  //t = cutTrailingAction(t);
   return t;
 }
 /**

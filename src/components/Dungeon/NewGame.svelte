@@ -67,10 +67,7 @@
         image: "",
         meta: { created: Date.now(), lastPlayed: Date.now() },
       });
-      await dbSet({
-        db: `dungeons/${$DungeonGameSettingsStore.game.id}/gamesettings`,
-        data: $DungeonGameSettingsStore,
-      });
+      await DungeonGameSettingsStore.save();
       //Push opening into DungeonConversationStore
       DungeonConversationStore.set([{
         role: "assistant",
@@ -86,10 +83,7 @@
           meta: { timestamp: Date.now(), hasAudio: false },
           type: "text",
         });
-      await dbSet({
-        db: `dungeons/${$DungeonGameSettingsStore.game.id}/conversations`,
-        data: $DungeonConversationStore,
-      });
+        DungeonConversationStore.save($DungeonGameSettingsStore.game.id);
     } catch (e) {
       console.error(e);
       ms.trigger({

@@ -33,11 +33,11 @@ export const POST = async ({ request }) => {
     temperature: settings.temperature ?? 0.1,
     streaming: settings.stream ?? false,
     topP: settings.topP ?? 0.95,
-    topK: settings.topK ?? 50,
+    //topK: settings.topK ?? 50,
     maxTokens: settings.generateNum ?? 100,
     presencePenalty: settings.presencePenalty ?? 0,
     frequencyPenalty: settings.frequencyPenalty ?? 0,
-    seed: settings.seed ?? -1,
+    //seed: settings.seed ?? -1,
   };
 
   console.log("apiConfig before we begin", apiConfig);

@@ -1,4 +1,4 @@
-import { dbGet, dbUpdate } from "$utilities/db";
+import { dbGet, dbSet } from "$utilities/db";
 import { writable, type Writable } from "svelte/store";
 /**
  * These are engine settings for the Dungeon game mode.
@@ -85,7 +85,7 @@ export const EngineVoiceStore: Writable<any> = writable({
   voiceActive: "elevenlabs",
   voice: {
     elevenlabs: {
-      baseUrl: "http://localhost:1234/v1",
+      baseUrl: "http://localhost:1234/",
       requireApiKey: false,
       model: "elevenlabs",
     },
@@ -117,7 +117,7 @@ function createEnginePersonaStore() {
     update,
     get: async () => {
       try {
-        const data = await dbGet("CRL", "personas", "1");
+        const data = await dbGet({db: "CRL", collection:"personas"});
         if (data) {
           set(data);
         }
@@ -131,7 +131,7 @@ function createEnginePersonaStore() {
       let currentValue: any;
       subscribe((value) => (currentValue = value))();
       set(currentValue);
-      await dbUpdate("CRL", "personas", "1", currentValue);
+      await dbSet({db:"CRL", collection:"personas", data:currentValue});
     },
   };
 }

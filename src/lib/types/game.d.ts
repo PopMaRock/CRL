@@ -77,6 +77,7 @@ interface Game {
     description: string;
     createdBy: string;
     genre: string;
+    image: string;
     opening: string;
     plotEssentials: string;
     authorsNotes: string;

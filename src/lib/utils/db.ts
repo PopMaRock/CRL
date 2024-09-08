@@ -5,16 +5,26 @@
  * @param {string} db - The name of the database.
  * @param {string} collection - The name of the collection within the database.
  * @param {string} id - The ID of the document to fetch.
+ * @param {string} url - The base URL to use for the request.
  * @returns {Promise<any>} A promise that resolves to the fetched document data.
  */
-export async function dbGet(
-  db: string,
-  collection: string,
-  id: string
-): Promise<any> {
-  const response = await fetch(
-    `/api/data?db=${db}&collection=${collection}&id=${id}`
-  );
+export async function dbGet(payload: {
+  db: string;
+  collection?: string;
+  id?: string;
+  url?: string;
+}): Promise<any> {
+  const { db, collection, id, url } = payload;
+  const apiUrl = url? new URL('/api/data', url) : new URL('/api/data', window.location.origin);
+  apiUrl.searchParams.append('db', db);
+  if (collection) {
+    apiUrl.searchParams.append('collection', collection);
+  }
+  if (id) {
+    apiUrl.searchParams.append('id', id);
+  }
+
+  const response = await fetch(apiUrl.toString());
   return response.json();
 }
 /**
@@ -25,11 +35,13 @@ export async function dbGet(
  * @param {any} data - The data to be added to the collection or database.
  * @returns {Promise<any>} A promise that resolves to the response from the server.
  */
-export async function dbSet(
-  payload: { db: string; collection?: string; data: any }
-): Promise<any> {
+export async function dbSet(payload: {
+  db: string;
+  collection?: string;
+  data: any;
+}): Promise<any> {
   const { db, collection, data } = payload;
-  
+
   const response = await fetch("/api/data", {
     method: "POST",
     headers: {

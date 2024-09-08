@@ -1,6 +1,7 @@
 <script lang="ts">
   import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
-import { DungeonGameSettingsStore } from "$stores/dungeon";
+  import ImageGallery from "$components/Main/GameImage.svelte";
+  import { DungeonGameSettingsStore } from "$stores/dungeon";
   import {
     Accordion,
     AccordionItem,
@@ -8,10 +9,21 @@ import { DungeonGameSettingsStore } from "$stores/dungeon";
     RadioItem,
     SlideToggle,
   } from "@skeletonlabs/skeleton";
+  export let allowGameImageSelect = false;
 </script>
-
-<TextboxGroup type="text" label="Game Title" name="gameTitle" title="Enter the title of the game" bind:value={$DungeonGameSettingsStore.game.name} iconHelp={true} 
-helpText="Keep it simple. [No effect on AI Prompt]"/>
+{#if allowGameImageSelect}
+  <!-- thing for the thing -->
+{/if}
+<ImageGallery onlyGameImage={true}/>
+<TextboxGroup
+  type="text"
+  label="Game Title"
+  name="gameTitle"
+  title="Enter the title of the game"
+  bind:value={$DungeonGameSettingsStore.game.name}
+  iconHelp={true}
+  helpText="Keep it simple. [No effect on AI Prompt]"
+/>
 <div>
   <SlideToggle
     name="memoryBank"
@@ -19,7 +31,8 @@ helpText="Keep it simple. [No effect on AI Prompt]"/>
     class="mt-4"
     size="sm"
     bind:checked={$DungeonGameSettingsStore.llmTextSettings.memoryBank}
-    >Context vector memory is {$DungeonGameSettingsStore.llmTextSettings.memoryBank
+    >Context vector memory is {$DungeonGameSettingsStore.llmTextSettings
+      .memoryBank
       ? "on"
       : "off"}</SlideToggle
   >
@@ -78,8 +91,8 @@ helpText="Keep it simple. [No effect on AI Prompt]"/>
     class="mt-4"
     size="sm"
     bind:checked={$DungeonGameSettingsStore.llmTextSettings.convertToUkEnglish}
-    >Translate to Traditional English is {$DungeonGameSettingsStore.llmTextSettings
-      .convertToUkEnglish
+    >Translate to Traditional English is {$DungeonGameSettingsStore
+      .llmTextSettings.convertToUkEnglish
       ? "on"
       : "off"}</SlideToggle
   >
@@ -89,7 +102,9 @@ helpText="Keep it simple. [No effect on AI Prompt]"/>
     <svelte:fragment slot="summary">Advanced</svelte:fragment>
     <svelte:fragment slot="content">
       <div class="flex items-center">
-        <label for="historyTruncate" class="label font-bold mr-3">Truncate History from</label>
+        <label for="historyTruncate" class="label font-bold mr-3"
+          >Truncate History from</label
+        >
         <RadioGroup
           id="historyTruncate"
           active="variant-filled-primary"
