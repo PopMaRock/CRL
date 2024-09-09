@@ -13,7 +13,7 @@
 
 <div class={cn($$props.class, "dark:variant-filled-surface rounded-md mt-5 mb-5")}>
   {#if showLabel}
-    <label for={name} class="pl-3 pt-3 font-semibold text-sm" {title}
+    <label for={name} class="label pl-2 pt-2 font-bold" {title}
       >{label}</label
     >
   {/if}

@@ -64,7 +64,7 @@
         name: $DungeonGameSettingsStore.game.name,
         desc: $DungeonGameSettingsStore.game.description ?? "",
         genre: $DungeonGameSettingsStore.game.genre,
-        image: "",
+        image: $DungeonGameSettingsStore.game.image ?? "",
         meta: { created: Date.now(), lastPlayed: Date.now() },
       });
       await DungeonGameSettingsStore.save();

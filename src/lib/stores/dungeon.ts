@@ -25,7 +25,7 @@ Instructions:
 %authorsNotes%
 %storySummary%
 %recent%`,
-    model: "gpt-3.5-turbo",
+    model: "gpt4o-mini",
     stream: false,
     limitContext: 4096,
     memoryBank: true, //using vectera local
@@ -112,7 +112,7 @@ function createDungeonConversationStore() {
 export const DungeonConversationStore = createDungeonConversationStore();
 export const DungeonGameSettingsStore: Writable<DungeonGameSettings> & {
   reset: () => void;
-} & { save: () => void } = createDungeonGameSettingsStore(); //fuck knows why it needs to be done this way...
+} & { save: () => Promise<void> } = createDungeonGameSettingsStore(); //fuck knows why it needs to be done this way...
 export const DungeonPlayerStore: Writable<DungeonPlayer> = writable();
 export const DungeonCharacterStore: Writable<any> = writable({
   characters: [],

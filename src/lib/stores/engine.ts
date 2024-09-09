@@ -22,7 +22,16 @@ Instructions:
 - Avoid repetition and avoid summarization.
 - Generally use second person (like this: 'He looks at you.'). But use third person if that's what the story seems to follow.
 - Never decide or write for the user. If the input ends mid sentence, continue where it left off. ">" tokens mean a character action attempt. You should describe what happens when the player attempts that action.
-- Make sure you always give responses continuing mid sentence even if it stops partway through.`,
+- Make sure you always give responses continuing mid sentence even if it stops partway through.
+
+%personaName%
+%personaDesc%
+
+%opening%
+%plotEssentials%
+%authorsNotes%
+%storySummary%
+%recent%`,
     //model: "gpt-4o-mini",
     stream: false,
     limitContext: 4096,
@@ -41,7 +50,7 @@ Instructions:
   },
   llm: {
     openai: {
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
     },
     lmstudio: {
       baseUrl: "http://localhost:1234/v1",

@@ -4,43 +4,9 @@
   import NewGame from "$components/Dungeon/NewGame.svelte";
   import Carousel from "$components/Main/carousel.svelte";
   import MultiColumn from "$components/Main/multiColumn.svelte";
+  import { dbGet } from "$utilities/db";
+  import { formatTimeAgo } from "$utilities/utils";
   const modalStore = getModalStore();
-
-  async function doThing() {
-    //fir posting data
-    const payload = {
-      db: "test",
-      collection: "testies",
-      payload: {
-        name: "test",
-        value: 123,
-      },
-    };
-    //fetching data
-    const res = await fetch("/api/data?db=test&collection=testies", {
-      method: "GET",
-    });
-    /*
-        const res = await fetch('/api/data', {
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-    });*/
-    //check if res status if it's 404
-    console.log(res);
-    if (res.status === 404) {
-      console.log("404");
-      return;
-    }
-    if (res.status === 200) {
-      const data = await res.json();
-      console.log(data);
-    } else {
-      console.log("Unexpected response status:", res.status);
-    }
-  }
   const modalComponent: ModalComponent = {
     ref: NewGame,
     props: { stage: 1 },
@@ -87,30 +53,59 @@
         */
     modalStore.trigger(modal);
   }
+
+  async function getRecentlyPlayed() {
+    const data = await dbGet({ db: "CRL", collection: "dungeons" });
+    console.log("data returned", data);
+
+    // Convert the object to an array of game objects
+    const dataArray = Object.keys(data).map((key) => ({
+      id: key,
+      ...data[key],
+    }));
+
+    const recentlyPlayed = dataArray.map((game: any) => ({
+      id: game.id,
+      name: game.name,
+      desc:
+        game.desc && game.desc.trim() !== ""
+          ? game.desc
+          : "This is a filler description that only exists as an example of what things look like.",
+      genre: game.genre,
+      image: game.image,
+      lastPlayed: formatTimeAgo(game?.meta?.lastPlayed),
+    }));
+
+    console.log("Recently played", recentlyPlayed);
+    return recentlyPlayed;
+  }
 </script>
 
 <div class="mx-16">
   <div class="overflow-hidden h-1/4">
     <div class="max-w-[120vh]">
       <div class="flex items-center justify-between mt-10">
-        <h1 class="text-4xl font-bold sm:text-6xl">
-          DUNGEON
-        </h1>
+        <h1 class="text-4xl font-bold sm:text-6xl">DUNGEON</h1>
         <div class="flex gap-x-6 items-center">
           <button
-          on:click={createOwnGame}
+            on:click={createOwnGame}
             class="rounded-md btn variant-filled-primary px-3.5 py-2.5 text-sm font-semibold shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-            >New Game</button>
+            >New Game</button
+          >
           <button class="text-sm font-semibold leading-6"
             >Continue <span aria-hidden="true">→</span></button
           >
         </div>
       </div>
       <div class="mt-10 w-full">
-        <Carousel class="min-w-[40vh]"/>
+        <Carousel class="min-w-[40vh]" />
       </div>
       <div class="mt-5 w-full">
-        <MultiColumn />
+        {#await getRecentlyPlayed()}
+          Loading....
+        {:then games}
+          <MultiColumn data={games}/>
+        {/await}
       </div>
     </div>
   </div>

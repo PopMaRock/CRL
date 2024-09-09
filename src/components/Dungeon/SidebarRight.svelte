@@ -35,7 +35,7 @@
 
 <div
   bind:this={srDiv}
-  class="bg-surface-50-900-token grid h-full grid-cols-[auto_1fr] overflow-hidden border-l border-surface-500/30 {$$props.class ??
+  class="bg-surface-50-900-token grid max-h-screen h-full grid-cols-[auto_1fr] overflow-hidden border-l border-surface-500/30 {$$props.class ??
     ''}"
 >
   {#if srOpen}

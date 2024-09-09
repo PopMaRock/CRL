@@ -24,18 +24,16 @@ export const POST = async ({ request }) => {
   if (!body) return resp({ error: er.badRequest.missing }, 400);
 
   const {
-    systemPrompt,
-    history,
+    prompt,
     model,
     settings,
-  }: { systemPrompt: string; history: any; model: string; settings: Settings } =
+  }: { prompt: string; model: string; settings: Settings } =
     body;
   let apiConfig: any = { apiKey: VITE_OPENAI_API_KEY, configuration: {} };
-  let summary = "";
 
   apiConfig = {
     ...apiConfig,
-    model: model ?? 'gpt-3.5-turbo',
+    model: model ?? 'gpt-4o-mini',
     temperature: settings.temperature,
     streaming: settings.stream,
     topP: settings.topP,
@@ -45,17 +43,8 @@ export const POST = async ({ request }) => {
     frequencyPenalty: settings.frequencyPenalty,
     seed: settings.seed,
   };
-
-  if (history.length > 25) history.splice(0, history.length - 25);
-
-  console.log("apiConfig before we begin", apiConfig);
-  const mPrompt = `
-            ${systemPrompt}
-            ${summary ? `\n\nSummary: ${summary}\n\n` : ""}
-            Recent: ${history?.map((item: any) => item.content).join(" ")??''}
-            `.trim();
   //Check token count against context limit. If over, trucate from middle or start (depending on what user has picked.)
-  
+  if (settings.stream) {
   const readableStream = new ReadableStream({
     async start(controller) {
       const model = new ChatOpenAI({
@@ -66,7 +55,7 @@ export const POST = async ({ request }) => {
         }),
       });
       try {
-        await model.invoke([new SystemMessage(mPrompt)]);
+        await model.invoke([new SystemMessage(prompt)]);
         /*await model.invoke([
                     new SystemMessage(systemPrompt),
                     new AIMessage(
@@ -87,4 +76,20 @@ export const POST = async ({ request }) => {
   return new Response(readableStream, {
     headers: { "Content-Type": "text/plain" },
   });
+// biome-ignore lint/style/noUselessElse: <explanation>
+} else {
+  const llm = new ChatOpenAI({ ...apiConfig }); // Pass apiConfig as an object
+  try {
+    const response = await llm.invoke([new SystemMessage(prompt)]);
+    return new Response(response.content.toString(), {
+      headers: { "Content-Type": "text/plain" },
+    });
+  } catch (e) {
+    console.log("error", e);
+    return new Response(JSON.stringify({ error: er.serverFail }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
 };

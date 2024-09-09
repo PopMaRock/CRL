@@ -9,11 +9,14 @@
     RadioItem,
     SlideToggle,
   } from "@skeletonlabs/skeleton";
+  import Button from "../Chat/button.svelte";
+  import Textarea from "$components/Main/Forms/Textarea.svelte";
   export let allowGameImageSelect = false;
 </script>
 {#if allowGameImageSelect}
   <!-- thing for the thing -->
 {/if}
+<div class="h-full overflow-y-auto">
 <ImageGallery onlyGameImage={true}/>
 <TextboxGroup
   type="text"
@@ -23,6 +26,13 @@
   bind:value={$DungeonGameSettingsStore.game.name}
   iconHelp={true}
   helpText="Keep it simple. [No effect on AI Prompt]"
+/>
+<Textarea
+  name="gameDescription"
+  label="Game Description"
+  title="This is not used in AI prompting. Only for your reference"
+  bind:value={$DungeonGameSettingsStore.game.description}
+  placeHolder="Enter a description of your game"
 />
 <div>
   <SlideToggle
@@ -127,3 +137,8 @@
     </svelte:fragment>
   </AccordionItem>
 </Accordion>
+<div class="mt-auto flex gap-4">
+  <Button class="btn variant-filled-primary w-1/2">Export Game</Button>
+  <Button class="btn variant-filled-primary w-1/2">Import Game</Button>
+</div>
+</div>

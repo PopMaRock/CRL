@@ -103,3 +103,47 @@ export async function testLlmConnection(llmActive: string, toast?:any, baseUrl?:
     }
   }
 }
+/**
+ * Formats a timestamp into a human-readable time ago format.
+ *
+ * @param timestamp - The timestamp to format, in milliseconds.
+ * @returns The formatted time ago string.
+ */
+export function formatTimeAgo(timestamp: number, short = false) {
+	const timeElapsedInSec = (new Date().getTime() - timestamp) / 1000;
+
+	const secsPerMin = 60;
+	const secsPerHour = secsPerMin * 60;
+	const secsPerDay = secsPerHour * 24;
+	const secsPerMonth = secsPerDay * 30;
+	const secsPerYear = secsPerDay * 365;
+
+	let value:number;
+	let unit:string;
+
+	if (timeElapsedInSec < secsPerMin) {
+		value = Math.round(timeElapsedInSec);
+		unit = short ? 's' : ' second';
+	} else if (timeElapsedInSec < secsPerHour) {
+		value = Math.floor(timeElapsedInSec / secsPerMin);
+		unit = short ? 'm' : ' minute';
+	} else if (timeElapsedInSec < secsPerDay) {
+		value = Math.floor(timeElapsedInSec / secsPerHour);
+		unit = short ? 'h' : ' hour';
+	} else if (timeElapsedInSec < secsPerMonth) {
+		value = Math.floor(timeElapsedInSec / secsPerDay);
+		unit = short ? 'd' : ' day';
+	} else if (timeElapsedInSec < secsPerYear) {
+		value = Math.floor(timeElapsedInSec / secsPerMonth);
+		unit = short ? 'mo' : ' month';
+	} else {
+		value = Math.floor(timeElapsedInSec / secsPerYear);
+		unit = short ? 'y' : ' year';
+	}
+
+	if (!short && value !== 1) {
+		unit += 's';
+	}
+
+	return `${value}${unit}`;
+}
