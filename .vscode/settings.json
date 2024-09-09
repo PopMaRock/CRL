@@ -1,14 +1,21 @@
 {
     "cSpell.words": [
+        "biomejs",
         "clsx",
         "fadein",
+        "iconify",
         "langchain",
         "lucide",
         "openai",
+        "purgecss",
         "readablestream",
         "scunnered",
         "Shouty",
         "skeletonlabs",
+        "tailwindcss",
+        "tiktoken",
+        "unplugin",
+        "vectra",
         "wanky"
     ],
     "svelte.plugin.svelte.compilerWarnings": {

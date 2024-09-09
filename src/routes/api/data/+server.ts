@@ -1,7 +1,7 @@
 import { Config, JsonDB } from "node-json-db";
 // https://www.npmjs.com/package/node-json-db
 import type { RequestHandler } from "./$types";
-import { checkString, er, resp } from "$utilities/apiHelper";
+import { sanitizeFilename, er, resp } from "$utilities/apiHelper";
 
 /**
  * GET handler to fetch data from the database.
@@ -102,7 +102,7 @@ export const PUT: RequestHandler = async ({
       status: 400,
     });
   }
-  /*if (!checkString(db) || checkString(collection)) {
+  /*if (!sanitizeFilename(db) || sanitizeFilename(collection)) {
     return new Response(JSON.stringify({ error: "Invalid parameters" }), {
       status: 400,
     });
@@ -144,7 +144,7 @@ export const DELETE: RequestHandler = async ({
 }: any): Promise<Response> => {
   const { db, collection, id } = await request.json();
 
-  if (checkString(db)) {
+  if (sanitizeFilename(db)) {
     return resp({ error: er.badRequest.missing }, 400);
   }
 
@@ -196,7 +196,7 @@ export const HEAD: RequestHandler = async ({ url }: any): Promise<Response> => {
   const collection = url.searchParams.get("collection");
   const id = url.searchParams.get("id");
 
-  if (checkString(db) || checkString(collection)) {
+  if (sanitizeFilename(db) || sanitizeFilename(collection)) {
     return new Response(null, {
       status: 400,
       statusText: "Bad Request: Missing parameters",

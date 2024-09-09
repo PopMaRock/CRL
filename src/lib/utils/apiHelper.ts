@@ -19,59 +19,12 @@ export const er = {
  * @param {string} str - The string to be checked.
  * @returns {boolean} - Returns true if the string is invalid, otherwise false.
  */
-export function checkString(str: string): boolean {
-  const invalidChars = [
-    ".",
-    "/",
-    "\\",
-    " ",
-    "á",
-    "é",
-    "í",
-    "ó",
-    "ú",
-    "ñ",
-    "ü",
-    ",",
-    "_",
-    "-",
-    "?",
-    "<",
-    ">",
-    ":",
-    "*",
-    "|",
-    '"',
-  ];
-  const controlChars = [
-    ...Array.from(Array(0x20).keys()),
-    ...Array.from(Array(0x20).keys()).map((i) => i + 0x80),
-  ];
-  const windowsReservedFilenames = [
-    "CON",
-    "PRN",
-    "AUX",
-    "NUL",
-    "COM1",
-    "COM2",
-    "COM3",
-    "COM4",
-    "COM5",
-    "COM6",
-    "COM7",
-    "COM8",
-    "COM9",
-    "LPT1",
-    "LPT2",
-    "LPT3",
-    "LPT4",
-    "LPT5",
-    "LPT6",
-    "LPT7",
-    "LPT8",
-    "LPT9",
-  ];
-  return (
+export function sanitizeFilename(str: string, returnString = false): boolean | string {
+  const invalidChars = ['<', '>', ':', '"', '/', '\\', '|', '?', '*'];
+  const controlChars = Array.from({ length: 32 }, (_, i) => i);
+  const windowsReservedFilenames = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'];
+
+  const isInvalid = (
     !str ||
     str.length < 3 ||
     str.length > 255 ||
@@ -80,6 +33,29 @@ export function checkString(str: string): boolean {
     controlChars.some((char) => str.includes(String.fromCharCode(char))) ||
     windowsReservedFilenames.includes(str.toUpperCase())
   );
+
+  if (!returnString) {
+    return isInvalid;
+  }
+
+  // Clean up the string
+  let cleanedStr = str.toLowerCase();
+  cleanedStr = cleanedStr.replace(new RegExp(`[${invalidChars.join('')}]`, 'g'), '');
+  cleanedStr = cleanedStr.replace(new RegExp(`[${controlChars.map((char) => String.fromCharCode(char)).join('')}]`, 'g'), '');
+
+  // Ensure the cleaned string is not a reserved filename
+  if (windowsReservedFilenames.includes(cleanedStr.toUpperCase())) {
+    cleanedStr = `_${cleanedStr}`;
+  }
+
+  // Ensure the cleaned string length is within the valid range
+  if (cleanedStr.length < 3) {
+    cleanedStr = cleanedStr.padEnd(3, '_');
+  } else if (cleanedStr.length > 255) {
+    cleanedStr = cleanedStr.substring(0, 255);
+  }
+
+  return cleanedStr;
 }
 
 //VECTOR LONG TERM MEMORY

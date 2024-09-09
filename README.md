@@ -31,7 +31,6 @@ If you are, delete 'node_modules' folder and run 'npm install'
 ### Builton
 SvelteKit, Vite, LangChain to run locally with SDForge (image models) and LMStudio (text models).
 
-### Inspired by great repos such as:
-https://github.com/Solemensis/Chad-Rpg
-https://github.com/steamship-core/ai-adventure
-https://github.com/SillyTavern/SillyTavern
+### thanks
+Special thanks to SillyTavern for sillytavern-transformers which allow running of transformers within NodeJS.<br/>
+If you haven't tried SillyTavern, visit: https://github.com/SillyTavern/SillyTavern
