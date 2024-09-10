@@ -15,7 +15,7 @@
         "useImportType": "off",
         "useNodejsImportProtocol": "off",
         "noShoutyConstants": "warn",
-        "useNamingConvention": "error"
+        "useNamingConvention": "info"
       },
       "suspicious": {
         "noAssignInExpressions": "off",

@@ -1,5 +1,5 @@
 import { ChatOpenAI, type ChatOpenAIFields } from "@langchain/openai";
-import { SystemMessage } from "@langchain/core/messages";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { er, resp } from "$utilities/apiHelper";
 
 interface Settings {
@@ -22,11 +22,20 @@ export const POST = async ({ request }) => {
   const {
     systemPrompt,
     model,
+    userMessage,
     settings,
-  }: { systemPrompt: string; model: string; settings: Settings } = body;
+  }: {
+    systemPrompt: string;
+    model?: string;
+    userMessage?: string;
+    settings: Settings;
+  } = body;
 
-  // biome-ignore lint/style/useNamingConvention: <LangChain write has a retarded naming convention>
-  let apiConfig: ChatOpenAIFields = { apiKey: 'NA', configuration: {baseURL: settings.baseUrl} };
+  let apiConfig: ChatOpenAIFields = {
+    apiKey: "NA",
+    // biome-ignore lint/style/useNamingConvention: <retarded name conventions - LangChainJS issue>
+    configuration: { baseURL: settings.baseUrl ?? "http://localhost:1234/v1" },
+  };
 
   apiConfig = {
     ...apiConfig,
@@ -43,15 +52,20 @@ export const POST = async ({ request }) => {
   console.log("apiConfig before we begin", apiConfig);
   const mPrompt = `${systemPrompt}`.trim();
   // Check token count against context limit. If over, truncate from middle or start (depending on what user has picked).
-
-  const llm = new ChatOpenAI({...apiConfig}); // Pass apiConfig as an object
+  const llm = new ChatOpenAI({ ...apiConfig }); // Pass apiConfig as an object
 
   try {
-    const response = await llm.invoke([new SystemMessage(mPrompt)]);
+    const messages = [new SystemMessage(mPrompt)];
+
+    if (userMessage) {
+      messages.push(new HumanMessage(userMessage));
+    }
+
+    const response = await llm.invoke(messages);
     console.log("response", response);
-    return resp({response: response.content}, 200);
+    return resp({ response: response.content }, 200);
   } catch (e) {
     console.log("error", e);
-    return resp({ error: er.serverFail }, 500);
+    return resp({ e }, 500);
   }
 };

@@ -17,6 +17,7 @@ export const POST: RequestHandler = async ({ request }) => {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (error) {
+        console.error("/api/transformers/summarise",error);
         return new Response(JSON.stringify({ error: 'Failed to process request' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
@@ -31,8 +32,15 @@ export const POST: RequestHandler = async ({ request }) => {
  */
 async function getTransformersSummary(text:string):Promise<number[]> {
     const pipe = await module.getPipeline('summarization');
-    // biome-ignore lint/style/useNamingConvention: <explanation>
-    const result = await pipe(text, {max_length:250, min_length:100, do_sample:false});
-    const vector = Array.from(result.data as number[]);
-    return vector;
+    //Throw shit at the pipe and see what sticks....
+    const result = await pipe(text, {
+        max_length: 250,          // Maximum length of the summary
+        min_length: 150,          // Minimum length of the summary
+        do_sample: false,          // Use sampling for diversity
+        no_repeat_ngram_size: 3,  // Avoid repeating 3-grams
+        num_beams: 6,             // Number of beams for beam search
+        early_stopping: true      // Stop early if a good summary is found
+    });
+    //const vector = Array.from(result.data as number[]);
+    return result;
 }

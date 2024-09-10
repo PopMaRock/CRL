@@ -2,29 +2,43 @@
   import { DungeonGameSettingsStore } from "$stores/dungeon";
   import { EnginePersonaStore } from "$stores/engine";
   import { crlGenerate } from "$utilities/utils";
-  import { Accordion, AccordionItem } from "@skeletonlabs/skeleton";
+  import {
+    Accordion,
+    AccordionItem,
+    getToastStore,
+  } from "@skeletonlabs/skeleton";
   import { WandSparkles } from "lucide-svelte";
   let loading = false;
-
+  const toast = getToastStore();
+  //---The meaty stuff
   async function genPremise() {
     loading = true;
-    $DungeonGameSettingsStore.game.opening = await crlGenerate(
-      "game",
-      `Write a brief opening to a new role playing adventure which revolves around the user.
+    try {
+      $DungeonGameSettingsStore.game.opening = await crlGenerate(
+        "game",
+        `Write a brief opening to a new role playing adventure which revolves around the user.
 
         User's name: ${$EnginePersonaStore.persona}
         User's description: ${$EnginePersonaStore.persona}
         Genre: ${$DungeonGameSettingsStore.game.genre}
 
         You should write in the second person i.e. "You are ${$EnginePersonaStore.persona} a...."`,
-      100,
-      0.5,
-      1,
-      0.5,
-      1.5,
-      false
-    );
-    loading = false;
+        100,
+        0.5,
+        1,
+        0.5,
+        1.5,
+        false
+      );
+    } catch (e: any) {
+      toast.trigger({
+        message: `${e?.toString()}`,
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -33,11 +47,18 @@
     <label for="opening" class="label pl-3 pt-3 font-semibold text-sm"
       >Opening</label
     >
-    <button title="Generate opening" class="ml-4" disabled={loading} on:click={genPremise}>
+    <button
+      title="Generate opening"
+      class="ml-4"
+      disabled={loading}
+      on:click={genPremise}
+    >
       {#if loading}
-      <WandSparkles class="animate-ping items-center mt-2 ml-4 mr-2 h-5 w-5" />
+        <WandSparkles
+          class="animate-ping items-center mt-2 ml-4 mr-2 h-5 w-5"
+        />
       {:else}
-      <WandSparkles class="items-center mt-2 ml-4 mr-2 h-5 w-5" />
+        <WandSparkles class="items-center mt-2 ml-4 mr-2 h-5 w-5" />
       {/if}
     </button>
   </div>

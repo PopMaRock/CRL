@@ -50,9 +50,9 @@ const tasks: Record<string, Task> = {
         quantized: false,
     },
     'summarization':{
-        defaultModel: 'Falconsai/text_summarization',
+        defaultModel: 'Xenova/long-t5-tglobal-base-16384-book-summary',
         pipeline: null,
-        quantized: false,
+        quantized: true,
     },
 };
 

@@ -1,3 +1,5 @@
+import { getTokens } from "./utils";
+
 export function resp(body: any, status: number) {
   return new Response(JSON.stringify(body), {
     status: status,
@@ -56,6 +58,37 @@ export function sanitizeFilename(str: string, returnString = false): boolean | s
   }
 
   return cleanedStr;
+}
+export async function stripConversation(text:string, contextLimit:number){
+  if(!text) return text; //get outta her' with this shite.
+  let tx = text;
+   //see before we do this, count the text and add 35% to see if it's still less than limit, because this might be a waste of time.
+  if ((tx.length + tx.length * 0.35) < contextLimit) return tx;
+  // Count the tokens
+  let tokens = await getTokens(tx);
+
+  // If we're over the limit, trim from the start
+  const averageTokenLength = 5; // average token length - pure guesstabation.
+  while (tokens > contextLimit) {
+    const wordsToRemove = estimateWordsToRemove(
+      tokens,
+      contextLimit,
+      averageTokenLength
+    );
+    const wordsArray = tx.split(" ");
+    tx = wordsArray.slice(wordsToRemove).join(" ");
+    tokens = await getTokens(tx);
+  }
+  return tx;
+}
+// Function to estimate the number of words to remove
+function estimateWordsToRemove(
+  tokens: number,
+  contextLimit: number,
+  averageTokenLength: number
+): number {
+  const excessTokens = tokens - contextLimit;
+  return Math.ceil(excessTokens / averageTokenLength);
 }
 
 //VECTOR LONG TERM MEMORY

@@ -9,11 +9,10 @@ export function cn(...inputs: ClassValue[]) {
 import cl100k_base from "tiktoken/encoders/cl100k_base";
 import { Tiktoken } from "tiktoken";
 import { addProcessToQueue } from "$stores/processes";
-import { get, type Writable } from "svelte/store";
+import { get } from "svelte/store";
 import { EngineLlmStore } from "$stores/engine";
 import { DungeonGameSettingsStore } from "$stores/dungeon";
 import { browser } from "$app/environment";
-import { getToastStore } from "@skeletonlabs/skeleton";
 
 export async function getTokens(text: string): Promise<any> {
   if (!text) return undefined;
@@ -76,9 +75,16 @@ export async function crlGenerate(
   );
   const data = await response.json();
   console.log(data);
+  if (data.error) {
+    throw new Error(data.error);
+  }
   return data.response;
 }
-export async function testLlmConnection(llmActive: string, toast?:any, baseUrl?: string) {
+export async function testLlmConnection(
+  llmActive: string,
+  toast?: any,
+  baseUrl?: string
+) {
   if (browser) {
     try {
       const response = await fetch(
@@ -88,18 +94,20 @@ export async function testLlmConnection(llmActive: string, toast?:any, baseUrl?:
       if (!response.ok) {
         throw new Error(data?.error || "Failed to connect to LmStudio");
       }
-      if(toast)toast.trigger({
-        message: `Connection to ${llmActive} successful`,
-        background: "variant-filled-success",
-        timeout: 5000,
-      });
+      if (toast)
+        toast.trigger({
+          message: `Connection to ${llmActive} successful`,
+          background: "variant-filled-success",
+          timeout: 5000,
+        });
     } catch (error) {
       console.error("Failed to connect to LLM.", error);
-      if(toast)toast.trigger({
-        message: `Connection to ${llmActive} failed: ${error}`,
-        background: "variant-filled-error",
-        timeout: 5000,
-      });
+      if (toast)
+        toast.trigger({
+          message: `Connection to ${llmActive} failed: ${error}`,
+          background: "variant-filled-error",
+          timeout: 5000,
+        });
     }
   }
 }
@@ -110,40 +118,40 @@ export async function testLlmConnection(llmActive: string, toast?:any, baseUrl?:
  * @returns The formatted time ago string.
  */
 export function formatTimeAgo(timestamp: number, short = false) {
-	const timeElapsedInSec = (new Date().getTime() - timestamp) / 1000;
+  const timeElapsedInSec = (new Date().getTime() - timestamp) / 1000;
 
-	const secsPerMin = 60;
-	const secsPerHour = secsPerMin * 60;
-	const secsPerDay = secsPerHour * 24;
-	const secsPerMonth = secsPerDay * 30;
-	const secsPerYear = secsPerDay * 365;
+  const secsPerMin = 60;
+  const secsPerHour = secsPerMin * 60;
+  const secsPerDay = secsPerHour * 24;
+  const secsPerMonth = secsPerDay * 30;
+  const secsPerYear = secsPerDay * 365;
 
-	let value:number;
-	let unit:string;
+  let value: number;
+  let unit: string;
 
-	if (timeElapsedInSec < secsPerMin) {
-		value = Math.round(timeElapsedInSec);
-		unit = short ? 's' : ' second';
-	} else if (timeElapsedInSec < secsPerHour) {
-		value = Math.floor(timeElapsedInSec / secsPerMin);
-		unit = short ? 'm' : ' minute';
-	} else if (timeElapsedInSec < secsPerDay) {
-		value = Math.floor(timeElapsedInSec / secsPerHour);
-		unit = short ? 'h' : ' hour';
-	} else if (timeElapsedInSec < secsPerMonth) {
-		value = Math.floor(timeElapsedInSec / secsPerDay);
-		unit = short ? 'd' : ' day';
-	} else if (timeElapsedInSec < secsPerYear) {
-		value = Math.floor(timeElapsedInSec / secsPerMonth);
-		unit = short ? 'mo' : ' month';
-	} else {
-		value = Math.floor(timeElapsedInSec / secsPerYear);
-		unit = short ? 'y' : ' year';
-	}
+  if (timeElapsedInSec < secsPerMin) {
+    value = Math.round(timeElapsedInSec);
+    unit = short ? "s" : " second";
+  } else if (timeElapsedInSec < secsPerHour) {
+    value = Math.floor(timeElapsedInSec / secsPerMin);
+    unit = short ? "m" : " minute";
+  } else if (timeElapsedInSec < secsPerDay) {
+    value = Math.floor(timeElapsedInSec / secsPerHour);
+    unit = short ? "h" : " hour";
+  } else if (timeElapsedInSec < secsPerMonth) {
+    value = Math.floor(timeElapsedInSec / secsPerDay);
+    unit = short ? "d" : " day";
+  } else if (timeElapsedInSec < secsPerYear) {
+    value = Math.floor(timeElapsedInSec / secsPerMonth);
+    unit = short ? "mo" : " month";
+  } else {
+    value = Math.floor(timeElapsedInSec / secsPerYear);
+    unit = short ? "y" : " year";
+  }
 
-	if (!short && value !== 1) {
-		unit += 's';
-	}
+  if (!short && value !== 1) {
+    unit += "s";
+  }
 
-	return `${value}${unit}`;
+  return `${value}${unit}`;
 }

@@ -47,7 +47,7 @@
       : "off"}</SlideToggle
   >
 </div>
-<label for="autoSummarize">Auto Summarize</label>
+<label for="autoSummarize" title="'Local' is not good...">Auto Summarize</label>
 <RadioGroup
   name="autoSummarize"
   active="variant-filled-primary"

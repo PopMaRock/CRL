@@ -56,7 +56,7 @@
 
   async function getRecentlyPlayed() {
     const data = await dbGet({ db: "CRL", collection: "dungeons" });
-    console.log("data returned", data);
+    if(!data || data?.error) return []
 
     // Convert the object to an array of game objects
     const dataArray = Object.keys(data).map((key) => ({
@@ -104,7 +104,7 @@
         {#await getRecentlyPlayed()}
           Loading....
         {:then games}
-          <MultiColumn data={games}/>
+          <MultiColumn data={games} />
         {/await}
       </div>
     </div>

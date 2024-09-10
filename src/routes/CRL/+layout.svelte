@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { get } from "svelte/store";
   import SidebarLeft from "$components/Layouts/Main/SidebarLeft.svelte";
   import SidebarRight from "$components/Layouts/SidebarRight.svelte";
   import SidebarRightGame from "$components/Dungeon/SidebarRight.svelte";
@@ -8,7 +7,7 @@
 
   let currentSidebarRight = SidebarRight;
   $: {
-    const url = get(page).url.pathname;
+    const url = $page.url.pathname;
     if (url.includes("play")) {
       currentSidebarRight = SidebarRightGame;
     } else {

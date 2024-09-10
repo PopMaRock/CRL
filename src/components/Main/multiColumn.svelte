@@ -84,6 +84,7 @@
     bind:this={elemMovies}
     class="snap-x snap-mandatory scroll-smooth flex gap-2 pb-2 overflow-hidden"
   >
+  {#if data.length > 0}
     {#each data as game,index}
       <div
         class="block card card-hover shrink-0 snap-start w-[29vh] h-[40vh] overflow-hidden relative"
@@ -106,8 +107,8 @@
             class="absolute top-0 left-0 p-2 pl-4 text-white w-full bg-gradient-to-b from-black/30 via-black/30 to-transparent flex items-center justify-between"
           >
             <div>
-              <span class="font-bold text-xs">by Biosonik</span>
-              <span class="font-bold text-xs">{game.lastPlayed}</span>
+              <span class="font-bold text-xs"><!-- holder for creator name --></span>
+              <span class="font-bold text-xs">{game.lastPlayed} ago</span>
             </div>
             
             <button class="ml-auto" use:popup={{
@@ -120,7 +121,7 @@
             </button>
             <div class="card w-48 shadow-xl py-2" data-popup={`gameOptionsBox${index}`}>
                 <ListBox rounded="rounded-none">
-                    <ListBoxItem bind:group={pishAndPoop[index]} name="action" value="edit">Edit</ListBoxItem>
+                    <ListBoxItem bind:group={pishAndPoop[index]} name="action" value="edit">Export</ListBoxItem>
                     <ListBoxItem bind:group={pishAndPoop[index]} name="action" value="delete">Delete</ListBoxItem>
                 </ListBox>
                 <div class="arrow bg-surface-100-800-token" />
@@ -139,6 +140,9 @@
         </footer>
       </div>
     {/each}
+    {:else}
+      <p>No games found</p>
+  {/if}
   </div>
   <!-- Button: Left -->
   <button

@@ -51,8 +51,8 @@ export const POST = async ({ request }) => {
     const response = await llm.invoke([new SystemMessage(mPrompt)]);
     console.log("response", response);
     return resp({ response: response.content }, 200);
-  } catch (e) {
+  } catch (e:any) {
     console.log("error", e);
-    return resp({ error: er.serverFail }, 500);
+    return resp({ error: e.error.message }, 500);
   }
 };

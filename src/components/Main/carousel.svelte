@@ -22,21 +22,29 @@
     scrollToCurrentIndex();
   }
 
-  function carouselRight(): void {
-    currentIndex = (currentIndex === unsplashIds.length - 1) ? 0 : currentIndex + 1;
-    scrollToCurrentIndex();
+  function carouselRight() {
+    if (elemCarousel) {
+      currentIndex = (currentIndex === unsplashIds.length - 1) ? 0 : currentIndex + 1;
+      scrollToCurrentIndex();
+    } else {
+      console.error('elemCarousel is not initialized');
+    }
   }
-
+  
   function carouselThumbnail(index: number) {
     currentIndex = index;
     scrollToCurrentIndex();
   }
 
   function scrollToCurrentIndex() {
-    elemCarousel.scroll({
-      left: elemCarousel.clientWidth * currentIndex,
-      behavior: 'smooth'
-    });
+    if (elemCarousel) {
+      elemCarousel.scroll({
+        left: elemCarousel.clientWidth * currentIndex,
+        behavior: 'smooth'
+      });
+    } else {
+      console.error('elemCarousel is not initialized');
+    }
   }
 
   function startAutoScroll() {
@@ -50,11 +58,13 @@
   }
 
   onMount(() => {
-    startAutoScroll();
+    scrollToCurrentIndex(); // Ensure the initial scroll happens after the component is mounted
+    startAutoScroll(); // Start auto-scrolling after the component is mounted
   });
 
+  // Cleanup interval on component destroy
   onDestroy(() => {
-    stopAutoScroll();
+    clearInterval(interval);
   });
 </script>
 
