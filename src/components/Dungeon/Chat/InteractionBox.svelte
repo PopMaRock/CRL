@@ -3,7 +3,7 @@
 	import { writable } from 'svelte/store'
 	import SuggestionSheet from './SuggestionSheet.svelte' // Adjust the import based on your file structure
 	import { LoaderIcon, MoveLeft, PencilIcon, SendIcon } from 'lucide-svelte'
-	import Button from './button.svelte'
+	import Button from '../../Base/FormElements/button.svelte'
 	export let input: string
 	export let isLoading: boolean
 	export let setInput: (value: string) => void

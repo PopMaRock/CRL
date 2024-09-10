@@ -17,9 +17,6 @@ const config: UserConfig = {
 		__version__: JSON.stringify(process.env.npm_package_version),
 
 	},
-	build: {
-		sourcemap: true
-	},
 	plugins: [
 		[
 			sveltekit(),

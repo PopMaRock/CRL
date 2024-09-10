@@ -1,27 +1,18 @@
 import type { RequestHandler } from './$types';
 import module from '../../../../transformers';
+import { resp } from '$utilities/apiHelper';
 
 export const POST: RequestHandler = async ({ request }) => {
     try {
         const { text } = await request.json();
-
         if (!text) {
-            return new Response(JSON.stringify({ error: 'Text is required' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' }
-            });
+            return resp({ error: 'Text is required'},400);
         }
-
         const summary = await getTransformersSummary(text);
-        return new Response(JSON.stringify({ summary }), {
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return resp({ summary },200);
     } catch (error) {
         console.error("/api/transformers/summarise",error);
-        return new Response(JSON.stringify({ error: 'Failed to process request' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return resp({ error: 'Failed to process request'},500);
     }
 };
 

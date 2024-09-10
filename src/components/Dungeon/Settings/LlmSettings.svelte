@@ -1,6 +1,6 @@
 <script lang="ts">
-import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
-  import { DungeonGameSettingsStore } from "$stores/dungeon";
+import TextboxGroup from "$components/Base/FormElements/TextboxGroup.svelte";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   import { getTokens } from "$utilities/utils";
   import {
     Accordion,

@@ -10,7 +10,7 @@
 	import { AppRail, AppRailAnchor, AppRailTile, Avatar, LightSwitch } from '@skeletonlabs/skeleton'
 	import { logicalPropertiesHorizontalSlide } from '$lib/utils/transitions'
 	import { onMount } from 'svelte'
-  import User from '../Persona.svelte';
+  import User from '../../Base/Persona/Persona.svelte';
 	let currentRailCategory: undefined | string = undefined
 	$: listboxItemActive = (href: string) =>
 		$page.url.pathname?.includes(href) ? 'bg-primary-active-token' : ''

@@ -2,16 +2,16 @@
   import GameIconsSideswipe from "~icons/game-icons/sideswipe";
   import { logicalPropertiesHorizontalSlide } from "$lib/utils/transitions";
   import { onMount } from "svelte";
-  import { EngineLlmStore } from "$stores/engine";
   import { fade } from "svelte/transition";
-  import Button from "$components/Dungeon/Chat/button.svelte";
+  import Button from "$components/Base/FormElements/button.svelte";
   import { getToastStore, Tab, TabGroup } from "@skeletonlabs/skeleton";
   import { testLlmConnection } from "$utilities/utils";
   import Opening from "./Settings/Opening.svelte";
   import Story from "./Settings/Story.svelte";
   import GameSettings from "./Settings/GameSettings.svelte";
   import LlmSettings from "./Settings/LlmSettings.svelte";
-  import { DungeonGameSettingsStore } from "$stores/dungeon";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
+  import { EngineLlmStore } from "$stores/engine/EngineLlm";
   //variable to manage open/close sidebar
   let srOpen = false;
   let srDiv: any;

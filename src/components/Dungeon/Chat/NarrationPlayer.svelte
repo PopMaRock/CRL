@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { writable, type Writable } from 'svelte/store';
-	import Button from './button.svelte'
+	import Button from '../../Base/FormElements/button.svelte'
 	import { useAudio, type AudioControls, type AudioState } from './useAudio'
 
   export let blockId: number;

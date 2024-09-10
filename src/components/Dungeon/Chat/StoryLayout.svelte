@@ -1,88 +1,82 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import {
-    DungeonConversationStore,
-    DungeonGameSettingsStore,
-  } from "$stores/dungeon";
+  import { afterUpdate, onMount } from "svelte";
   import TextBlock from "./Blocks/TextBlock.svelte";
   import { createEventDispatcher } from "svelte";
   import { writable } from "svelte/store";
   import { ArrowDown, ArrowRightIcon } from "lucide-svelte";
-  import Button from "./button.svelte";
+  import Button from "../../Base/FormElements/button.svelte";
   import { useBackgroundMusic } from "./useAudio"; // Import the function
   import InteractionBox from "./InteractionBox.svelte";
   import DynaBackground from "../DynaBackground.svelte";
   import TypingIndicator from "./TypingIndicator.svelte";
+  import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   export let response: any; //this needs to constantly be passed around, like a country girl at a frat party.
   export let errorMessage = "";
 
-	const inView = writable(true)
-	const dispatch = createEventDispatcher()
+  const inView = writable(true);
+  const dispatch = createEventDispatcher();
 
-	let scrollEndDiv: HTMLDivElement
+  let scrollEndDiv: HTMLDivElement;
 
-	const scrollToBottom = () => {
-		const container = document.getElementById('scroll-end-div')
-		container?.scrollIntoView({ behavior: 'smooth' })
-	}
+  const scrollToBottom = () => {
+    const container = document.getElementById("scroll-end-div");
+    container?.scrollIntoView({ behavior: "smooth" });
+  };
 
-	let actionOption = 'do'
-	let message = ''
+  let actionOption = "do";
+  let message = "";
 
-	//const { setUrl: setBackgroundMusicUrl } = useBackgroundMusic() // Destructure the setUrl function
+  //const { setUrl: setBackgroundMusicUrl } = useBackgroundMusic() // Destructure the setUrl function
 
-	onMount(() => {
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				inView.set(entry.isIntersecting)
-			},
-			{ threshold: 0.1 }
-		)
+  onMount(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView.set(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
 
-		if (scrollEndDiv) {
-			observer.observe(scrollEndDiv)
-		}
+    if (scrollEndDiv) {
+      observer.observe(scrollEndDiv);
+    }
 
-		return () => {
-			if (scrollEndDiv) {
-				observer.unobserve(scrollEndDiv)
-			}
-		}
-	})
-	function dispatchMessage(e: Event) {
-		e.preventDefault()
-		if (message.length < 1) {
-			errorMessage = 'Please enter a message.'
-			return
-		}
-		errorMessage = ''
-		console.log('actionOption ', actionOption)
-		dispatch('sendMessage', { message, actionOption })
-	}
-	let input = ''
-	let agentHandle = ''
-	let acceptsContinue = true
-	let _acceptsInput = true
-	let _showsContinue = true
-	let countdownToScrollActive = false
-	const setInput = (value: string) => {
-		input = value
-	}
-	const advance = () => {
-		message = 'empty'
-		actionOption = 'continue'
-		dispatchMessage(new Event('click'))
-	}
-	// Watch $response.loading and invoke scrollToBottom when it becomes false
-	$: if ($response.loading) {
-		if(!countdownToScrollActive) {
-			setTimeout(() => {
-				scrollToBottom()
-				countdownToScrollActive = false
-			}, 150)
-			countdownToScrollActive = true
-		}
-	}
+    return () => {
+      if (scrollEndDiv) {
+        observer.unobserve(scrollEndDiv);
+      }
+    };
+  });
+  function dispatchMessage(e: Event) {
+    e.preventDefault();
+    if (message.length < 1) {
+      errorMessage = "Please enter a message.";
+      return;
+    }
+    errorMessage = "";
+    console.log("actionOption ", actionOption);
+    dispatch("sendMessage", { message, actionOption });
+  }
+  let input = "";
+  let agentHandle = "";
+  let acceptsContinue = true;
+  let _acceptsInput = true;
+  let _showsContinue = true;
+  let countdownToScrollActive = false;
+  const setInput = (value: string) => {
+    input = value;
+  };
+  const advance = () => {
+    message = "empty";
+    actionOption = "continue";
+    dispatchMessage(new Event("click"));
+  };
+  // Call scrollToBottom after each update to push scroll to the bottom
+  afterUpdate(() => {
+    if ($DungeonConversationStore.length > 0 || $response.loading) {
+      scrollToBottom();
+    }
+  });
 </script>
 
 <div

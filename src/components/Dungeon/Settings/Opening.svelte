@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { DungeonGameSettingsStore } from "$stores/dungeon";
-  import { EnginePersonaStore } from "$stores/engine";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
+  import { EnginePersonaStore } from "$stores/engine/EnginePersona";
   import { crlGenerate } from "$utilities/utils";
   import {
     Accordion,

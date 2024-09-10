@@ -1,7 +1,6 @@
 <script lang="ts">
-  import TextboxGroup from "$components/Main/Forms/TextboxGroup.svelte";
-  import ImageGallery from "$components/Main/GameImage.svelte";
-  import { DungeonGameSettingsStore } from "$stores/dungeon";
+  import TextboxGroup from "$components/Base/FormElements/TextboxGroup.svelte";
+  import ImageGallery from "$components/Base/Layouts/Parts/GameImage.svelte";
   import {
     Accordion,
     AccordionItem,
@@ -9,8 +8,9 @@
     RadioItem,
     SlideToggle,
   } from "@skeletonlabs/skeleton";
-  import Button from "../Chat/button.svelte";
-  import Textarea from "$components/Main/Forms/Textarea.svelte";
+  import Button from "../../Base/FormElements/button.svelte";
+  import Textarea from "$components/Base/FormElements/Textarea.svelte";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   export let allowGameImageSelect = false;
 </script>
 {#if allowGameImageSelect}

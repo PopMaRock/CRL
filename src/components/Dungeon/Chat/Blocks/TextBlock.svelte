@@ -5,10 +5,9 @@
   import BlockContainer from "./BlockContainer.svelte";
   import { fade } from "svelte/transition";
   import { onDestroy, onMount } from "svelte";
-  import { DungeonConversationStore } from "$stores/dungeon";
-  import { TextGenerateEffect } from "$components/Dungeon/UI-Effects/text-generation";
-  import { RefreshCw, Trash, Trash2 } from "lucide-svelte";
-
+  import { TextGenerateEffect } from "$components/Base/UI-Effects/text-generation";
+  import { Trash2 } from "lucide-svelte";
+  import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
   export let item: DungeonConversation | string;
   export let blockId = 0;
   export let offerAudio = false;

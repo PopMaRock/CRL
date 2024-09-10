@@ -1,25 +1,19 @@
 <script lang="ts">
   import { readablestreamStore } from "$stores/readableStreamStore";
-  import { Generator } from "$lib/modes/dungeon/generator/generator.class";
-  import {
-    DungeonConversationStore,
-    DungeonGameSettingsStore,
-  } from "$stores/dungeon";
   import { onDestroy, onMount } from "svelte";
   import StoryLayout from "$components/Dungeon/Chat/StoryLayout.svelte";
   import { page } from "$app/stores";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
+  import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
+  import { Generator } from "$utilities/generator.class";
   export let data: {
     gameId: string;
-    dungeonGameSettings: any;
-    dungeonConversations: any;
   };
   const gen = new Generator();
   const response = readablestreamStore();
   let errorMessage = "";
   onMount(async () => {
     // Set the stores with the data received from the server
-    DungeonGameSettingsStore.set(data.dungeonGameSettings);
-    DungeonConversationStore.set(data.dungeonConversations);
     console.log("mounted Dungeon session");
     console.log("data", data.gameId);
     console.log("page", $page);
@@ -50,7 +44,6 @@
     sendMessage(message, actionOption);
   }
 </script>
-{#await data.dungeonConversations}
-{:then}
+{#if data && $DungeonConversationStore && $DungeonGameSettingsStore}
 <StoryLayout {response} bind:errorMessage on:sendMessage={handleSendMessage} />
-{/await}
+{/if}

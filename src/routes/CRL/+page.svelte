@@ -1,5 +1,5 @@
 <script>
-  import CharacterVerticalCarousel from "$components/Main/CharacterVerticalCarousel.svelte";
+  import CharacterVerticalCarousel from "$components/Base/Layouts/Parts/CharacterVerticalCarousel.svelte";
 import { fade } from "svelte/transition"
 export let data;
 </script>

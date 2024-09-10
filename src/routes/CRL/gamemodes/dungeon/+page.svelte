@@ -2,10 +2,10 @@
   import type { ModalComponent, ModalSettings } from "@skeletonlabs/skeleton";
   import { getModalStore } from "@skeletonlabs/skeleton";
   import NewGame from "$components/Dungeon/NewGame.svelte";
-  import Carousel from "$components/Main/carousel.svelte";
-  import MultiColumn from "$components/Main/multiColumn.svelte";
-  import { dbGet } from "$utilities/db";
+  import Carousel from "$components/Base/Layouts/Parts/carousel.svelte";
+  import MultiColumn from "$components/Base/Layouts/Parts/multiColumn.svelte";
   import { formatTimeAgo } from "$utilities/utils";
+  import { dbGet } from "$utilities/data/db";
   const modalStore = getModalStore();
   const modalComponent: ModalComponent = {
     ref: NewGame,

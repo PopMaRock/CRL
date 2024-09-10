@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Textarea from "$components/Main/Forms/Textarea.svelte";
-  import { DungeonGameSettingsStore } from "$stores/dungeon";
-  import { EnginePersonaStore } from "$stores/engine";
+  import Textarea from "$components/Base/FormElements/Textarea.svelte";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
+  import { EnginePersonaStore } from "$stores/engine/EnginePersona";
   import { crlGenerate } from "$utilities/utils";
   import { WandSparkles } from "lucide-svelte";
   let loading = false;

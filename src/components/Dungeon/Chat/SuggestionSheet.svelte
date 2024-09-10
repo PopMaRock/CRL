@@ -3,7 +3,7 @@
 	import { SparklesIcon } from 'lucide-svelte'
 	import Alert from './Alert.svelte' // Adjust the import based on your file structure
 	import Skeleton from './Skeleton.svelte' // Adjust the import based on your file structure
-	import Button from './button.svelte'
+	import Button from '../../Base/FormElements/button.svelte'
 
 	export let setSelectedOption: (value: string) => void
 	export let setInput: (value: string) => void

@@ -1,18 +1,15 @@
 <script lang="ts">
   import { getToastStore, Tab, TabGroup } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
-  import Modal from "../ModalTemplate.svelte";
+  import Modal from "../Base/ModalTemplate.svelte";
   import Scenarios from "./Settings/Scenarios.svelte";
   import Opening from "./Settings/Opening.svelte";
   import Story from "./Settings/Story.svelte";
   import GameSettings from "./Settings/GameSettings.svelte";
   import LlmSettings from "./Settings/LlmSettings.svelte";
-  import {
-    DungeonConversationStore,
-    DungeonGameSettingsStore,
-    resetDungeonSettingsStore,
-  } from "$stores/dungeon";
-  import { dbSet, dbUpdate } from "$utilities/db";
+  import { DungeonGameSettingsStore, resetDungeonSettingsStore } from "$stores/dungeon/DungeonGameSettings";
+  import { dbUpdate } from "$utilities/data/db";
+  import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
   export let stage: number;
   const ms = getToastStore();
   let loading = false;
