@@ -1,4 +1,5 @@
-import { dbSet } from "$utilities/data/db";
+import type { DungeonConversation } from "$lib/types/game";
+import { dbGet, dbSet } from "$utilities/data/db";
 import { get, writable } from "svelte/store";
 
 // Create the store instance
@@ -12,6 +13,7 @@ function createDungeonConversationStore() {
     set,
     update,
     async save(gameId: string) {
+      console.log("DungeonConversationStore save gameId:", gameId);
       if (!gameId || gameId.includes(".")) return;
       const conversations = get(this);
 
@@ -19,6 +21,20 @@ function createDungeonConversationStore() {
         db: `dungeons/${gameId}/conversations`,
         data: conversations,
       });
+    },
+    async get(gameId: string, fetch?: Window["fetch"]) {
+      console.log("DungeonConversationStore get gameId:", gameId);
+      if (!gameId || gameId.includes(".")) return;
+      const result = await dbGet({
+        db: `dungeons/${gameId}/conversations`, fetch
+      });
+      if (!result) {
+        // Reset DungeonConversationStore
+        this.set([]);
+      } else {
+        // Set DungeonConversationStore to the response
+        this.set(result as DungeonConversation[]);
+      }
     },
   };
 }

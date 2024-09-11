@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   import { EnginePersonaStore } from "$stores/engine/EnginePersona";
-  import { crlGenerate } from "$utilities/utils";
+  import { Generator } from "$utilities/Generator/llmGenerator";
   import {
     Accordion,
     AccordionItem,
@@ -14,7 +14,8 @@
   async function genPremise() {
     loading = true;
     try {
-      $DungeonGameSettingsStore.game.opening = await crlGenerate(
+      const gen = new Generator();
+      $DungeonGameSettingsStore.game.opening = await gen.crlGenerate(
         "game",
         `Write a brief opening to a new role playing adventure which revolves around the user.
 

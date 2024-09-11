@@ -2,12 +2,13 @@
   import Textarea from "$components/Base/FormElements/Textarea.svelte";
   import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   import { EnginePersonaStore } from "$stores/engine/EnginePersona";
-  import { crlGenerate } from "$utilities/utils";
+  import { Generator } from "$utilities/Generator/llmGenerator";
   import { WandSparkles } from "lucide-svelte";
   let loading = false;
   async function genStory() {
     loading = true;
-    $DungeonGameSettingsStore.game.storySummary = await crlGenerate(
+    const gen = new Generator();
+    $DungeonGameSettingsStore.game.storySummary = await gen.crlGenerate(
       "game",
       `
         Invent a brief story summary containing interesting things that may have happened since the stated Opening.

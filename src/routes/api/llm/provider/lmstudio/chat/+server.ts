@@ -8,29 +8,34 @@ import { SystemMessage } from "@langchain/core/messages";
 import { er, resp } from "$utilities/apiHelper";
 
 interface Settings {
-  generateNum: number;
-  defaultGenNum: number;
+  maxTokens: number;
   temperature: number;
   topP: number;
-  topK: number;
-  batchSize: number;
+  //topK: number;
+  //batchSize: number;
   presencePenalty: number;
   frequencyPenalty: number;
-  seed: number;
-  stream: boolean;
+  // seed: number;
+  streaming: boolean;
   baseUrl?: string; // Optional property
 }
 
 export const POST = async ({ request }) => {
   const body = await request.json();
-  if (!body) return resp({ error: er.badRequest.missing }, 400);
+  if (!body) return resp({ error: "missing body" }, 400);
 
   const {
     prompt,
     model,
     settings,
-  }: { prompt: string; model: string; settings: Settings } =
-    body;
+  }: {
+    prompt: string;
+    model?: string;
+    settings: Settings;
+  } = body;
+
+  // Log the settings object to inspect structure
+  console.log("body:", body);
 
   let apiConfig: ChatOpenAIFields = {
     apiKey: "NA",
@@ -41,17 +46,16 @@ export const POST = async ({ request }) => {
   apiConfig = {
     ...apiConfig,
     temperature: settings.temperature,
-    streaming: settings.stream,
+    streaming: settings.streaming,
     topP: settings.topP,
-    //topK: settings.topK,
-    maxTokens: settings.generateNum,
     presencePenalty: settings.presencePenalty,
     frequencyPenalty: settings.frequencyPenalty,
-    //seed: settings.seed,
+    //topK: settings.topK,
+    maxTokens: settings.maxTokens,
   };
 
   //Check token count against context limit. If over, trucate from middle or start (depending on what user has picked.)
-  if (settings.stream) {
+  if (settings.streaming) {
     const readableStream = new ReadableStream({
       async start(controller) {
         const model = new ChatOpenAI({
@@ -85,7 +89,7 @@ export const POST = async ({ request }) => {
       });
     } catch (e) {
       console.log("error", e);
-      return new Response(JSON.stringify({ error: er.serverFail }), {
+      return new Response(JSON.stringify({ error: e }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });

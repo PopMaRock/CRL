@@ -59,7 +59,8 @@ interface LLMTextSettings {
     stream: boolean;
     limitContext: number;
     memoryBank: boolean;
-    autoSummarize: boolean | 'local' | 'main';
+    autoSummarise: boolean | 'local' | 'main';
+    summariseAfter: number;
     historyTruncate: 'start' | 'middle'
     convertToUkEnglish: boolean;
     generateNum: number;
@@ -116,4 +117,18 @@ interface Meta {
     lastPlay?: number;
     timestamp?: number;
     hasAudio?: boolean;
+}
+export interface Summary {
+  summary: string;
+  positionSummarised: number;
+  timestamp: number; // Use number for timestamp as Date.now() returns a number
+}
+
+export interface DungeonManagerType {
+  state: Record<string, any>;
+  summaries: Summary[];
+  player: Record<string, any>;
+  characters: Record<string, any>[];
+  currentCharacter: Record<string, any>;
+  currentLocation: Record<string, any>;
 }

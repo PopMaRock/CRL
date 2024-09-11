@@ -1,5 +1,6 @@
+import type { DungeonGameSettings } from "$lib/types/game";
 import { EngineLlmStore } from "$stores/engine/EngineLlm";
-import { dbSet } from "$utilities/data/db";
+import { dbGet, dbSet } from "$utilities/data/db";
 import { get, writable, type Writable } from "svelte/store";
 
 const DungeonGameSettingsDefault: DungeonGameSettings = {
@@ -26,12 +27,13 @@ const DungeonGameSettingsDefault: DungeonGameSettings = {
     limitContext: 4096,
     memoryBank: true, //using vectera local
     historyTruncate: "middle", //can be 'start', 'middle'
-    autoSummarize: "main", //Can be false, local or main
+    autoSummarise: "main", //Can be false, local or main
+    summariseAfter: 10, //automatically summarise after this many turns so it's really 20 messages
     convertToUkEnglish: false,
     generateNum: 100, //internal
     defaultGenNum: 100,
     temperature: 0.7,
-    topP: 0.95,
+    topP: 0.90,
     topK: 50,
     presencePenalty: 0.5,
     frequencyPenalty: 1.5,
@@ -89,11 +91,22 @@ function createDungeonGameSettingsStore() {
         data: tempDungeon,
       });
     },
+    async get(gameId: string, fetch?: Window["fetch"]) {
+      if (!gameId || gameId.includes(".")) return;
+      const result = await dbGet({
+        db: `dungeons/${gameId}/gamesettings`,
+      });
+      if (!result) {
+        // Reset DungeonGameSettingsStore
+        this.reset();
+      } else {
+        // Set DungeonGameSettingsStore to the response
+        this.set(result);
+      }
+    }
   };
 }
-export const DungeonGameSettingsStore: Writable<DungeonGameSettings> & {
-  reset: () => void;
-} & { save: () => Promise<void> } = createDungeonGameSettingsStore(); //fuck knows why it needs to be done this way...
+export const DungeonGameSettingsStore = createDungeonGameSettingsStore(); //fuck knows why it needs to be done this way...
 export function resetDungeonSettingsStore() {
   // Clear the DungeonGameSettingsStore
   DungeonGameSettingsStore.reset();

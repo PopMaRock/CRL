@@ -2,6 +2,7 @@
   import CharacterVerticalCarousel from "$components/Base/Layouts/Parts/CharacterVerticalCarousel.svelte";
 import { fade } from "svelte/transition"
 export let data;
+console.log(data);
 </script>
 <div transition:fade={{ duration: 700 }}>
     <!-- TAILWIND HERO -->

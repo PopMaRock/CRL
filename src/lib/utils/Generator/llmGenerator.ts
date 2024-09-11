@@ -1,78 +1,30 @@
 import { get } from "svelte/store";
 import { getSimilarity } from "$utilities/data/similarity";
 import { browser } from "$app/environment";
-import { cutTrailingSentence, firstToSecondPerson } from "./utils";
 import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
 import { EnginePersonaStore } from "$stores/engine/EnginePersona";
 import { EngineLlmStore } from "$stores/engine/EngineLlm";
 import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
-
+import {
+  firstToSecondPerson,
+  promptReplace,
+  resultReplace,
+} from "./llmGenerator.helper";
+import type { DungeonConversation } from "$lib/types/game";
+import { DungeonManager } from "$stores/dungeon/DungeonManager";
 export class Generator {
-  expandPath(path: string): string {
-    return path.replace("~", process.env.HOME || "");
-  }
-
-  promptReplace(prompt: string): string {
-    return prompt
-      .replace("\n\n", "\n")
-      .replace(/(?<=\w)\.\.(?:\s|$)/g, ".")
-      .trimEnd();
-  }
-
-  resultReplace(result: string): string {
-    //Command R has this habit of responding with > at the start of the response remove it
-    let resp = result;
-    //remove <EOS_TOKEN>
-    //strip/replace HTML
-    return cutTrailingSentence(
-      resp
-        .replace(/&nbsp;/g, " ")
-        .replace(/&ldquo;/g, '"')
-        .replace(/&rdquo;/g, '"')
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, '"')
-        .replace(/&apos;/g, "'")
-        .replace(/&cent;/g, "¢")
-        .replace(/&pound;/g, "£")
-        .replace(/&yen;/g, "¥")
-        .replace(/&euro;/g, "€")
-        .replace(/&copy;/g, "")
-        .replace(/&reg;/g, "")
-        .replace(/&trade;/g, "")
-        .replace(/&times;/g, "x")
-        .replace(/&divide;/g, "/")
-        .replace(/&ndash;/g, "-")
-        .replace(/&mdash;/g, "-")
-        .replace(/&hellip;/g, "...")
-        .replace(/&amp;/g, "&")
-        .replace(/<\/?[^>]+(>|$)/g, "") //remove HTML tags
-        //remove remaining > 
-        .replace(">", "")
-        .replace("*", "")
-        .replace("\n\n", "\n")
-        //.replace("(?<=\\w)\\.\\.(?:\\s|$)", ".")
-        .replace(/#{1,3} Response:/, "")
-    ).trimEnd();
-  }
-
-  cutDownPrompt(prompt: string): string {
-    const splitPrompt = prompt.split(">");
-    const expendableText = splitPrompt.slice(2).join(">");
-    return splitPrompt[0] + (expendableText ? `>${expendableText}` : "");
-  }
-
-  private async genOutput(response: any, history: any): Promise<void> {
+  async genOutput(
+    response: any,
+    history: any,
+    storySummary?: string
+  ): Promise<void> {
     if (browser) {
-      // biome-ignore lint/style/useNamingConvention: <explanation>
       let DGSS: any = {};
       DGSS = get(DungeonGameSettingsStore);
       let prompt = DGSS.llmTextSettings.prompt;
-      let summary = "";
       const persona = await EnginePersonaStore.get(); //should get the data from the database
       if (history.length > 25) history.splice(0, history.length - 25);
       // Define the values for the placeholders
-      const storySummary = "";
       const recent = history?.map((item: any) => item.content).join(" ") ?? "";
 
       // Replace %personaName% in personaDesc
@@ -117,15 +69,13 @@ export class Generator {
         prompt: mPrompt,
         model: DGSS.llmTextSettings.model,
         settings: {
-          stream: DGSS.llmTextSettings.stream ?? false,
+          streaming: DGSS.llmTextSettings.stream ?? false,
           baseUrl: get(EngineLlmStore).llm[DGSS.llmActive].baseUrl,
           temperature: DGSS.llmTextSettings.temperature,
           topP: DGSS.llmTextSettings.topP,
-          topK: DGSS.llmTextSettings.topK,
-          generateNum: DGSS.llmTextSettings.generateNum,
+          maxTokens: DGSS.llmTextSettings.generateNum,
           presencePenalty: DGSS.llmTextSettings.presencePenalty,
           frequencyPenalty: DGSS.llmTextSettings.frequencyPenalty,
-          seed: DGSS.llmTextSettings.seed,
         },
       };
       console.log("Request to LLM: ", settings);
@@ -146,7 +96,7 @@ export class Generator {
         if (!answer) throw new Error("No response from LLM");
         const assistantMessage: DungeonConversation = {
           role: "assistant",
-          content: this.resultReplace(answer as string),
+          content: resultReplace(answer as string),
           meta: { timestamp: Date.now(), hasAudio: false },
           type: "text",
         };
@@ -157,19 +107,73 @@ export class Generator {
           assistantMessage,
         ]);
         //save conversations to database
-        DungeonConversationStore.save(DGSS.game.id);
+        await DungeonConversationStore.save(DGSS.game.id);
       } catch (error: any) {
         console.log("Error in genOutput: ", error);
         return error;
       }
     }
   }
-  public async handleMessage(
+  async crlGenerate(
+    weAre: "engine" | "game",
+    prompt: string,
+    maxTokens?: number,
+    temperature?: number,
+    topP?: number,
+    frequencyPenalty?: number,
+    presencePenalty?: number,
+    streaming?: boolean,
+    stop: string[] = []
+  ): Promise<any> {
+    let mStore: any;
+    if (weAre === "engine") mStore = get(EngineLlmStore);
+    else mStore = get(DungeonGameSettingsStore);
+    const response = await fetch(
+      `/api/llm/provider/${mStore.llmActive}/rawchat`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: mStore.llmTextSettings.model,
+          systemPrompt: prompt,
+          settings: {
+            baseUrl:
+              mStore.llmActive === "lmstudio"
+                ? get(EngineLlmStore).llm.lmstudio.baseUrl
+                : "",
+            maxTokens: maxTokens ?? mStore.llmTextSettings.genTokens ?? 300,
+            temperature:
+              temperature ?? mStore.llmTextSettings.temperature ?? 0.7,
+            topP: topP ?? mStore.llmTextSettings.topP ?? 1,
+            frequencyPenalty:
+              frequencyPenalty ??
+              mStore.llmTextSettings.frequencyPenalty ??
+              0.5,
+            presencePenalty:
+              presencePenalty ?? mStore.llmTextSettings.presencePenalty ?? 1.5,
+            streaming: streaming ?? mStore.llmTextSettings.streaming ?? false,
+          },
+          stop: stop ?? [],
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    return data.response;
+  }
+  async handleMessage(
     response: any,
     message: string,
-    actionOption: string
+    actionOption: string,
+    config: any //because browser can't fuckin access it //FIXME: Setup
   ): Promise<void> {
     let m = message.trim();
+    console.log("m is", m);
     m = m[0].toLowerCase() + m.slice(1);
     if (![".", "?", "!"].includes(m.slice(-1))) {
       m += ".";
@@ -198,13 +202,12 @@ export class Generator {
       });
     }
 
-    m = this.promptReplace(m);
+    m = promptReplace(m);
     const lastPrompt = m.includes(">") ? m.split(">").pop() : m;
     //If it's a continue, don't add the user message to the conversation
     console.log("Action option in Generator: ", actionOption);
     if (actionOption !== "continue") {
       console.log("Adding message to conversation");
-      //@ts-ignore
       DungeonConversationStore.update((conversations) => [
         ...conversations,
         {
@@ -215,17 +218,27 @@ export class Generator {
         },
       ]);
     }
-    //Build the history as LLM will only accept [{role: '', content: ''}] format
-    const history = get(DungeonConversationStore).map((conversation) => {
-      return { role: conversation.role, content: conversation.content };
-    });
-    try {
-      await this.genOutput(response, history); //do generation
-    } catch (error) {
-      console.log("Error in handleMessage: ", error);
-    }
 
-    const tempStory: any = get(DungeonConversationStore);
+    //Build the history as LLM will only accept [{role: '', content: ''}] format
+    let history = structuredClone(get(DungeonConversationStore));
+    const dungeonManager = get(DungeonManager);
+    const dgss = get(DungeonGameSettingsStore);
+    //if autoSummarise is on, AND there is a summary, check config.summProtect and splice out the last config.summProtect messages from history
+    let summaries = dungeonManager.summaries;
+    if (dgss.llmTextSettings.autoSummarise !== false) {
+      if (summaries.length > 0) {
+        if (history.length > config.summProtect)
+          history.splice(0, history.length - config.summProtect);
+      }
+    }
+    console.log("History after bullshit splice ", history);
+
+    await this.genOutput(
+      response,
+      history,
+      summaries?.map((s) => s.summary).join("\n") ?? ""
+    ); //do generation
+    /*const tempStory: any = get(DungeonConversationStore);
     if (tempStory.length >= 2) {
       const similarity = getSimilarity(
         tempStory[tempStory.length - 1].content,
@@ -233,10 +246,10 @@ export class Generator {
       );
       if (similarity > 0.9) {
         tempStory.pop();
+        DungeonConversationStore.set(tempStory);
       }
-    }
+    }*/
     //feed tempStory back into AIDConversation
     //@ts-ignore
-    DungeonConversationStore.set(tempStory);
   }
 }

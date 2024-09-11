@@ -24,12 +24,13 @@ export const EngineLlmStore: Writable<any> = writable({
       limitContext: 4096,
       memoryBank: true, //using vectera local
       historyTruncate: "middle", //can be 'start', 'middle'
-      autoSummarize: false, //Can be false, local or main
+      autoSummarise: 'main', //Can be false, local or main
+      summariseAfter: 10, //automatically summarise after this many turns so it's really 20 messages
       convertToUkEnglish: false,
       generateNum: 100,
       defaultGenNum: 100,
       temperature: 0.7,
-      topP: 0.95,
+      topP: 0.90,
       topK: 50,
       presencePenalty: 0.5,
       frequencyPenalty: 1.5,

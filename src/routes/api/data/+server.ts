@@ -22,13 +22,15 @@ export const GET: RequestHandler = async ({ url }: any): Promise<Response> => {
     return resp({ error: `Missing database name ${er.badRequest}` }, 400);
   }
 
-  const dbCon = new JsonDB(new Config(`db/${db}`, true, false, "/"));
+  const dbCon = new JsonDB(
+    new Config(`data/users/default-user/db/${db}`, true, false, "/")
+  );
   if (!dbCon) {
     return resp({ error: er.serverFail.db }, 400);
   }
 
   try {
-    let data:any;
+    let data: any;
     if (!collection) {
       // Return all data from the database if no collection is specified
       data = await dbCon.getData("/");
@@ -39,7 +41,7 @@ export const GET: RequestHandler = async ({ url }: any): Promise<Response> => {
       }
       data = await dbCon.getData(path);
     }
-   //console.log("Data: ", data);
+    //console.log("Data: ", data);
     return resp(data, 200);
   } catch (error) {
     console.error("Error in GET: ", error);
@@ -73,7 +75,9 @@ export const POST: RequestHandler = async ({
       return resp({ error: er.badRequest.nonObject }, 400);
     }
 
-    const dbCon = new JsonDB(new Config(`db/${db}`, true, false, "/"));
+    const dbCon = new JsonDB(
+      new Config(`data/users/default-user/db/${db}`, true, false, "/")
+    );
     const path = collection ? `/${collection}` : "/";
     await dbCon.push(path, data);
     return resp({ status: "Post complete" }, 200);
@@ -108,7 +112,9 @@ export const PUT: RequestHandler = async ({
     });
   }*/
 
-  const dbCon = new JsonDB(new Config(`db/${db}`, true, false, "/"));
+  const dbCon = new JsonDB(
+    new Config(`data/users/default-user/db/${db}`, true, false, "/")
+  );
   if (!dbCon) {
     return new Response(
       JSON.stringify({ error: "Database connection failed" }),
@@ -148,7 +154,9 @@ export const DELETE: RequestHandler = async ({
     return resp({ error: er.badRequest.missing }, 400);
   }
 
-  const dbCon = new JsonDB(new Config(`db/${db}`, true, false, "/"));
+  const dbCon = new JsonDB(
+    new Config(`data/users/default-user/db/${db}`, true, false, "/")
+  );
   if (!dbCon) {
     return resp({ error: er.serverFail.db }, 500);
   }
@@ -203,7 +211,9 @@ export const HEAD: RequestHandler = async ({ url }: any): Promise<Response> => {
     });
   }
 
-  const dbCon = new JsonDB(new Config(`db/${db}`, true, false, "/"));
+  const dbCon = new JsonDB(
+    new Config(`data/users/default-user/db/${db}`, true, false, "/")
+  );
   if (!dbCon) {
     return new Response(null, {
       status: 500,
