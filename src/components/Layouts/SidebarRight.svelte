@@ -16,6 +16,7 @@
     const handleClickOutside = (event: any) => {
       if (srDiv && !srDiv.contains(event.target)) {
         srOpen = false;
+        EngineLlmStore.save();
       }
     };
     window.addEventListener("click", handleClickOutside);
@@ -23,7 +24,6 @@
       window.removeEventListener("click", handleClickOutside);
     };
   });
-  //FIXME: This is fucked.
 </script>
 
 <div
@@ -69,15 +69,14 @@
         <option value="openai">OpenAI</option>
       </select>
       <div transition:fade>
-        {#if $EngineLlmStore.llm[$EngineLlmStore.llmActive]?.baseUrl}
+        {#if $EngineLlmStore.llm[$EngineLlmStore.llmActive].hasOwnProperty('baseUrl')}
           <div class="mb-2 mt-2">
             <label for="LLMbaseUrl">LLM URL:</label>
             <input
               type="text"
               name="LLMbaseUrl"
               class="input"
-              bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive]
-                .baseUrl}
+              bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive].baseUrl}
             />
           </div>
         {/if}

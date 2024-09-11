@@ -1,29 +1,30 @@
 import { dbGet, dbSet } from "$utilities/data/db";
 import { writable, type Writable } from "svelte/store";
 
+const EnginePersonaDefault = {
+    persona: "Hamish",
+    personaDesc:
+      "%persona% is a 21 year old male tiger-humanoid that loves to expose himself to bank tellers.",
+}
 // Create the store instance
 export const EnginePersonaStore: Writable<any> & {
   get: () => any;
   setAndPersist: () => Promise<void>;
 } = createEnginePersonaStore();
 
-// Define the custom store
-// Define the custom store
+// Define the persona store
 function createEnginePersonaStore() {
-  const { subscribe, set, update } = writable({
-    persona: "Hamish",
-    personaDesc:
-      "%persona% is a 21 year old male tiger-humanoid that loves to expose himself to bank tellers.",
-  });
+  const { subscribe, set, update } = writable({});
 
   return {
     subscribe,
     set,
     update,
-    get: async () => {
+    get: async (fetch?:Window["fetch"]) => {
       try {
-        const data = await dbGet({ db: "CRL", collection: "personas" });
+        const data = await dbGet({ db: "CRL", collection: "personas", fetch });
         if (data) {
+          console.log("Got persona data and setting it as:", data);
           set(data);
         }
         return data;

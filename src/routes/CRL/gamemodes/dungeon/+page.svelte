@@ -63,7 +63,12 @@
       id: key,
       ...data[key],
     }));
-
+    //sort by game.meta.lastPlayed DESC
+    dataArray.sort((a, b) => {
+      const dateA = new Date(a?.meta?.lastPlayed).getTime();
+      const dateB = new Date(b?.meta?.lastPlayed).getTime();
+      return dateB - dateA;
+    });
     const recentlyPlayed = dataArray.map((game: any) => ({
       id: game.id,
       name: game.name,

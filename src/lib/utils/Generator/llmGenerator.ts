@@ -128,6 +128,7 @@ export class Generator {
     let mStore: any;
     if (weAre === "engine") mStore = get(EngineLlmStore);
     else mStore = get(DungeonGameSettingsStore);
+    console.log("Prompt from crlGenerate(): ", prompt); 
     const response = await fetch(
       `/api/llm/provider/${mStore.llmActive}/rawchat`,
       {

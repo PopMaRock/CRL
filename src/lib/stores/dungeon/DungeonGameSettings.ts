@@ -1,27 +1,13 @@
+import { dungeonPrompt } from "$lib/constants/prompts";
 import type { DungeonGameSettings } from "$lib/types/game";
 import { EngineLlmStore } from "$stores/engine/EngineLlm";
 import { dbGet, dbSet } from "$utilities/data/db";
-import { get, writable, type Writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 const DungeonGameSettingsDefault: DungeonGameSettings = {
   llmActive: "openai",
   llmTextSettings: {
-    prompt: `You are an AI dungeon master that provides any kind of roleplaying game content.
-  
-  Instructions:
-  - Be specific, descriptive, and creative.
-  - Avoid repetition and avoid summarization.
-  - Generally use second person (like this: 'He looks at you.'). But use third person if that's what the story seems to follow.
-  - Never decide or write for the user. If the input ends mid sentence, continue where it left off. ">" tokens mean a character action attempt. You should describe what happens when the player attempts that action.
-  
-  %personaName%
-  %personaDesc%
-  
-  %opening%
-  %plotEssentials%
-  %authorsNotes%
-  %storySummary%
-  %recent%`,
+    prompt: dungeonPrompt,
     model: "gpt-4o-mini",
     stream: false,
     limitContext: 4096,
@@ -110,7 +96,7 @@ export const DungeonGameSettingsStore = createDungeonGameSettingsStore(); //fuck
 export function resetDungeonSettingsStore() {
   // Clear the DungeonGameSettingsStore
   DungeonGameSettingsStore.reset();
-  const mEngine = get(EngineLlmStore);
+  const mEngine:any = get(EngineLlmStore);
   // Merge in user defaults from EngineLlmStore
   DungeonGameSettingsStore.update((s) => {
     return {
@@ -119,6 +105,8 @@ export function resetDungeonSettingsStore() {
         ...s.llmTextSettings,
         llmActive: mEngine.llmActive,
         ...mEngine.llmTextSettings,
+        autoSummarise: mEngine.llmTextSettings.autoSummarise as boolean | "main" | "local",
+        historyTruncate: mEngine.llmTextSettings.historyTruncate as "middle" | "start",
       },
     };
   });

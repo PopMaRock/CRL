@@ -8,8 +8,7 @@ fotozo
 .env.*
 /cache
 /TRASH
-/db
-/_cache
+/data
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

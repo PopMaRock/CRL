@@ -2,7 +2,6 @@
   import GameIconsSideswipe from "~icons/game-icons/sideswipe";
   import { logicalPropertiesHorizontalSlide } from "$lib/utils/transitions";
   import { onMount } from "svelte";
-  import { fade } from "svelte/transition";
   import Button from "$components/Base/FormElements/button.svelte";
   import { getToastStore, Tab, TabGroup } from "@skeletonlabs/skeleton";
   import { testLlmConnection } from "$utilities/utils";
@@ -86,15 +85,15 @@
               <option value="openai">OpenAI</option>
             </select>
             <div>
-              {#if $EngineLlmStore.llm[$DungeonGameSettingsStore.llmActive]?.baseUrl}
+              {#if $EngineLlmStore.llm[$DungeonGameSettingsStore.llmActive].hasOwnProperty('baseUrl')}
                 <div class="mb-2 mt-2">
                   <label for="LLMbaseUrl">LLM URL:</label>
+                  
                   <input
                     type="text"
                     name="LLMbaseUrl"
                     class="input"
-                    bind:value={$EngineLlmStore.llm[$DungeonGameSettingsStore.llmActive]
-                      .baseUrl}
+                    bind:value={$EngineLlmStore.llm[$DungeonGameSettingsStore.llmActive].baseUrl}
                   />
                 </div>
               {/if}
@@ -104,7 +103,7 @@
                   on:click={async () =>
                     testLlmConnection(
                       $DungeonGameSettingsStore.llmActive,
-                      toast,
+                      toast,/*@ts-ignore*/
                       $EngineLlmStore.llm[$DungeonGameSettingsStore.llmActive]?.baseUrl
                     )}>Test Connection</Button
                 >

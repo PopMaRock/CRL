@@ -31,10 +31,6 @@
     }
   }
   
-  function carouselThumbnail(index: number) {
-    currentIndex = index;
-    scrollToCurrentIndex();
-  }
 
   function scrollToCurrentIndex() {
     if (elemCarousel) {
@@ -57,14 +53,20 @@
     clearInterval(interval);
   }
 
+ function carouselThumbnail(index: number) {
+    currentIndex = index;
+    scrollToCurrentIndex();
+  }
+
   onMount(() => {
-    scrollToCurrentIndex(); // Ensure the initial scroll happens after the component is mounted
-    startAutoScroll(); // Start auto-scrolling after the component is mounted
+    interval = setInterval(carouselRight, 3000); // Example interval for auto-scrolling
   });
 
   // Cleanup interval on component destroy
-  onDestroy(() => {
-    clearInterval(interval);
+    onDestroy(() => {
+    if (interval) {
+      clearInterval(interval);
+    }
   });
 </script>
 

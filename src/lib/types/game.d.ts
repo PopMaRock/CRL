@@ -1,7 +1,7 @@
 //god, this is a fuckin mess...
 
 interface DungeonGameSettings {
-    llmActive: 'openai' | 'claude' | 'gemini' | 'lmstudio';
+    llmActive: 'openai' | 'lmstudio';
     llmTextSettings: LLMTextSettings;
     game: Game;
     sd?: SD;

@@ -20,6 +20,7 @@ export async function load({ params, url, fetch }) {
   DungeonManager.reset();
   //set everything
   await tick();
+  
   await DungeonGameSettingsStore.get(gameId, fetch); //get the game settings
   await DungeonConversationStore.get(gameId, fetch); //get the conversations
   await DungeonManager.get(gameId, fetch); //get the game manager

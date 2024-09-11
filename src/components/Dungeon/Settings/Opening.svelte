@@ -20,7 +20,7 @@
         `Write a brief opening to a new role playing adventure which revolves around the user.
 
         User's name: ${$EnginePersonaStore.persona}
-        User's description: ${$EnginePersonaStore.persona}
+        User's description: ${$EnginePersonaStore.personaDesc.replace('%personaName%', $EnginePersonaStore.persona)}
         Genre: ${$DungeonGameSettingsStore.game.genre}
 
         You should write in the second person i.e. "You are ${$EnginePersonaStore.persona} a...."`,
