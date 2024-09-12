@@ -8,8 +8,8 @@ test: "cunt"
 #SUMMARIES
 summProtect: 10 #Number of conversations to leave (and send as 'recent')
 summEvery: 20 #number of conversation messages to summ.
-summIncludePast: true #include past summary messages when summarising again.
-summNumToUse: 1 #number of summaries to include. If you set IncludePast and increase this number, it'll probably fuck up.
+summIncludePast: true #include past summary messages when summarising again. //TODO: NOT IMPLEMENTED
+summNumToUse: 2 #number of summaries to include. If you set IncludePast and increase this number, it'll probably fuck up.
 #VECTORISATION
 
 #STABLE DIFFUSION

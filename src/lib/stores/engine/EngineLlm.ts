@@ -1,15 +1,16 @@
 import { dungeonPrompt } from "$lib/constants/prompts";
-import { dbGet, dbSet, dbUpdate } from "$utilities/data/db";
-import { get, writable, type Writable } from "svelte/store";
+import { dbGet, dbSet } from "$utilities/data/db";
+import { get, writable } from "svelte/store";
 
 const EngineLlmDefault = {
-  llmActive: "openai",
+  llmActive: "lmstudio",
   llmTextSettings: {
     prompt: dungeonPrompt,
     model: "gpt-4o-mini",
     stream: false,
     limitContext: 4096,
     memoryBank: true, //using vectera local
+    cleanUpText: false,
     historyTruncate: "middle", //can be 'start', 'middle'
     autoSummarise: "main", //Can be false, local or main
     summariseAfter: 10, //automatically summarise after this many turns so it's really 20 messages

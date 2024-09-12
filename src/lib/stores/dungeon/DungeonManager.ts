@@ -101,7 +101,8 @@ function createDungeonManager() {
             DGSS.llmTextSettings.autoSummarise,
             DGSS.llmActive,
             400,
-            summaryText
+            summaryText,
+            currSumm[currSumm.length - 1]?.summary // Use the last summary as the past summary
           );
           if (resp.error) {
             console.error("Error generating summary:", resp.error);

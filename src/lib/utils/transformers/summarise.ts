@@ -1,3 +1,4 @@
+import { summaryPrompt } from "$lib/constants/prompts";
 import type { DungeonConversation } from "$lib/types/game";
 import { EngineProcessing } from "$stores/engine/EngineProcessing";
 import { stripConversation } from "$utilities/apiHelper";
@@ -6,7 +7,8 @@ export async function summarise(
   autoSummarise: boolean | "local" | "main",
   llmActive: string,
   contextLimit: number,
-  conversations: DungeonConversation[]
+  conversations: DungeonConversation[],
+  pastSummary?: string
 ) {
   let text = "";
   for (let i = 0; i < conversations.length; i++) {
@@ -22,7 +24,11 @@ export async function summarise(
   return { error: "Invalid summarise type" };
 }
 
-async function summariseMain(text: string, llmActive: string) {
+async function summariseMain(
+  text: string,
+  llmActive: string,
+  pastSummary?: string
+) {
   if (!llmActive && !text) return { error: "Invalid summariseMain parameters" };
   try {
     EngineProcessing.update((state) => {
@@ -30,8 +36,13 @@ async function summariseMain(text: string, llmActive: string) {
       return state;
     });
     //prompt
-    const prompt =
-      "You are an AI dungeon master that summarizes any kind of roleplaying game content. The provided story history includes key plot points, world information, dialogue and character actions. Generally use second person (like this: 'He looks at you.'). But use third person if that's what the story seems to follow.";
+    const prompt = summaryPrompt
+      .replace(
+        "%pastSummary%",
+        pastSummary ? `${pastSummary}\r\n` : ""
+      )
+      .replace("%text%", text);
+    ("You are an AI dungeon master that summarizes any kind of roleplaying game content. The provided story history includes key plot points, world information, dialogue and character actions. Generally use second person (like this: 'He looks at you.'). But use third person if that's what the story seems to follow.");
     const response = await fetch(`/api/llm/provider/${llmActive}/rawchat`, {
       method: "POST",
       headers: {
@@ -39,12 +50,12 @@ async function summariseMain(text: string, llmActive: string) {
       },
       body: JSON.stringify({
         model: "",
-        systemPrompt: prompt,
-        userMessage: `Story history: ${text}\r\n Distill the above story history into a single summary message. Respond in 250 words or less. Include as many specific details as you can. Only respond with the summary message.`,
+        prompt: prompt,
+        userMessage: "",
         settings: {
           maxTokens: 400,
-          temperature: 0.6,
-          topP: 0.9,
+          temperature: 0.5,
+          topP: 0.7,
           frequencyPenalty: 0.5,
           presencePenalty: 0.5,
           streaming: false,

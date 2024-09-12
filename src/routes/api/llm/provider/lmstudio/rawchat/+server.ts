@@ -3,15 +3,15 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { er, resp } from "$utilities/apiHelper";
 
 interface Settings {
-  generateNum?: number;
-  defaultGenNum?: number;
+  maxTokens: number;
   temperature: number;
   topP: number;
-  topK?: number;
-  presencePenalty?: number;
-  frequencyPenalty?: number;
-  seed?: number;
-  stream?: boolean;
+  //topK: number;
+  //batchSize: number;
+  presencePenalty: number;
+  frequencyPenalty: number;
+  // seed: number;
+  streaming: boolean;
   baseUrl?: string; // Optional property
 }
 
@@ -20,12 +20,12 @@ export const POST = async ({ request }) => {
   if (!body) return resp({ error: er.badRequest.missing }, 400);
 
   const {
-    systemPrompt,
+    prompt,
     model,
     userMessage,
     settings,
   }: {
-    systemPrompt: string;
+    prompt: string;
     model?: string;
     userMessage?: string;
     settings: Settings;
@@ -40,17 +40,17 @@ export const POST = async ({ request }) => {
   apiConfig = {
     ...apiConfig,
     temperature: settings.temperature ?? 0.1,
-    streaming: settings.stream ?? false,
+    streaming: settings.streaming ?? false,
     topP: settings.topP ?? 0.95,
     //topK: settings.topK ?? 50,
-    maxTokens: settings.generateNum ?? 100,
+    maxTokens: settings.maxTokens ?? 100,
     presencePenalty: settings.presencePenalty ?? 0,
     frequencyPenalty: settings.frequencyPenalty ?? 0,
     //seed: settings.seed ?? -1,
   };
 
   console.log("apiConfig before we begin", apiConfig);
-  const mPrompt = `${systemPrompt}`.trim();
+  const mPrompt = `${prompt}`.trim();
   // Check token count against context limit. If over, truncate from middle or start (depending on what user has picked).
   const llm = new ChatOpenAI({ ...apiConfig }); // Pass apiConfig as an object
 

@@ -9,13 +9,9 @@ export function promptReplace(prompt: string): string {
     .trimEnd();
 }
 
-export function resultReplace(result: string): string {
+export function resultReplace(result: string,cutTrailingSent=false): string {
   //Command R has this habit of responding with > at the start of the response remove it
-  let resp = result;
-  //remove <EOS_TOKEN>
-  //strip/replace HTML
-  return cutTrailingSentence(
-    resp
+  let resp = result
       .replace(/&nbsp;/g, " ")
       .replace(/&ldquo;/g, '"')
       .replace(/&rdquo;/g, '"')
@@ -40,10 +36,11 @@ export function resultReplace(result: string): string {
       //remove remaining >
       .replace(">", "")
       .replace("*", "")
-      .replace("\n\n", "\n")
+      .replace(/\n{3,}/g, "\n\n") // replace 3 or more newlines with 2 newlines
       //.replace("(?<=\\w)\\.\\.(?:\\s|$)", ".")
-      .replace(/#{1,3} Response:/, "")
-  ).trimEnd();
+      .replace(/#{1,3}\s*Response:/g, "").trimEnd();
+
+      return cutTrailingSent ? cutTrailingSentence(resp) : resp;
 }
 
 export function cutDownPrompt(prompt: string): string {

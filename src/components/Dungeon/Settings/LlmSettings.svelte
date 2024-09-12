@@ -9,6 +9,7 @@ import TextboxGroup from "$components/Base/FormElements/TextboxGroup.svelte";
     SlideToggle,
   } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
+  import Alert from "../Chat/Alert.svelte";
 
   let tokens: Uint32Array | undefined;
   onMount(async () => {
@@ -140,6 +141,18 @@ import TextboxGroup from "$components/Base/FormElements/TextboxGroup.svelte";
     <svelte:fragment slot="summary">Advanced [NOT IMPLEMENTED]</svelte:fragment>
     <svelte:fragment slot="content">
       <!--<Textarea name="stopString" label="Custom Stop String" class="textarea-add min-h-24 w-1/2" placeHolder="['jim', 'bob', 'dave']"/>-->
+      <div>
+  <SlideToggle
+    name="sd"
+    active="variant-filled-primary"
+    class="mt-4"
+    size="sm"
+    bind:checked={$DungeonGameSettingsStore.llmTextSettings.cleanUpText}
+    >Text Cleanup is {$DungeonGameSettingsStore.llmTextSettings.cleanUpText
+      ? "enabled"
+      : "disabled"}</SlideToggle
+  >
+</div>
      </svelte:fragment
     >
   </AccordionItem>

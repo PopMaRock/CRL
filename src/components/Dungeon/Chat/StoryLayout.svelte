@@ -3,7 +3,7 @@
   import TextBlock from "./Blocks/TextBlock.svelte";
   import { createEventDispatcher } from "svelte";
   import { writable } from "svelte/store";
-  import { ArrowDown, ArrowRightIcon } from "lucide-svelte";
+  import { ArrowDown } from "lucide-svelte";
   import Button from "../../Base/FormElements/button.svelte";
   import { useBackgroundMusic } from "./useAudio"; // Import the function
   import InteractionBox from "./InteractionBox.svelte";
@@ -58,14 +58,7 @@
     dispatch("sendMessage", { message, actionOption });
   }
   let input = "";
-  let agentHandle = "";
-  let acceptsContinue = true;
-  let _acceptsInput = true;
-  let _showsContinue = true;
-  let countdownToScrollActive = false;
-  const setInput = (value: string) => {
-    input = value;
-  };
+
   const advance = () => {
     message = "empty";
     actionOption = "continue";
@@ -122,6 +115,10 @@
                 fadein={index === $DungeonConversationStore.length - 1
                   ? !$DungeonGameSettingsStore.llmTextSettings.stream
                   : false}
+                on:remove={async () => {
+                  console.log("Removing", index);
+                  await DungeonConversationStore.remove(index, $DungeonGameSettingsStore.game.id)
+                }}
               />
             {/each}
             {#if $response.loading && $DungeonGameSettingsStore.llmTextSettings.stream}
@@ -159,10 +156,12 @@
     </div>
   </div>
   <div
-    class="relative mb-2 flex h-20 w-10/12 flex-col items-end justify-center gap-2 pt-1"
+    class="relative mb-2 h-36 flex w-10/12 flex-col items-end justify-center gap-2 pt-1"
   >
-    {#if _acceptsInput}
       <InteractionBox
+        on:advance={() => {
+          advance();
+        }}
         on:sendMessage={(e) => {
           message = e.detail.message;
           actionOption = e.detail.selectedOption;
@@ -170,20 +169,6 @@
         }}
         {input}
         isLoading={$response.isLoading}
-        {setInput}
-        {agentHandle}
       />
-    {/if}
-    {#if _showsContinue}
-      <Button
-        disabled={!acceptsContinue}
-        on:click={() => {
-          advance();
-        }}
-        class="w-full"
-      >
-        Continue <ArrowRightIcon size={18} />
-      </Button>
-    {/if}
   </div>
 </div>

@@ -1,5 +1,4 @@
 import { get } from "svelte/store";
-import { getSimilarity } from "$utilities/data/similarity";
 import { browser } from "$app/environment";
 import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
 import { EnginePersonaStore } from "$stores/engine/EnginePersona";
@@ -96,12 +95,13 @@ export class Generator {
         if (!answer) throw new Error("No response from LLM");
         const assistantMessage: DungeonConversation = {
           role: "assistant",
-          content: resultReplace(answer as string),
+          content: answer as string,
           meta: { timestamp: Date.now(), hasAudio: false },
           type: "text",
         };
-        //@ts-ignore
-
+        //This will do a basic clean up and, if cleanUpText is true, it'll cut trailing sentences.
+        assistantMessage.content = resultReplace(answer as string, DGSS.llmTextSettings.cleanUpText);
+        
         DungeonConversationStore.update((conversations) => [
           ...conversations,
           assistantMessage,
@@ -138,7 +138,7 @@ export class Generator {
         },
         body: JSON.stringify({
           model: mStore.llmTextSettings.model,
-          systemPrompt: prompt,
+          prompt,
           settings: {
             baseUrl:
               mStore.llmActive === "lmstudio"

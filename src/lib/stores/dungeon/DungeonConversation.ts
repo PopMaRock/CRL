@@ -8,15 +8,22 @@ export const DungeonConversationStore = createDungeonConversationStore();
 function createDungeonConversationStore() {
   const { subscribe, set, update } = writable<DungeonConversation[]>([]);
 
-  return {
+    return {
     subscribe,
     set,
     update,
+    async remove(conversationIndex: number, gameId: any) {
+      if (!gameId || gameId.includes(".")) return;
+      const conversations = get(this);
+      conversations.splice(conversationIndex, 1);
+      this.set(conversations);
+      await this.save(gameId);
+    },
     async save(gameId: string) {
       console.log("DungeonConversationStore save gameId:", gameId);
       if (!gameId || gameId.includes(".")) return;
       const conversations = get(this);
-
+  
       await dbSet({
         db: `dungeons/${gameId}/conversations`,
         data: conversations,
@@ -26,7 +33,8 @@ function createDungeonConversationStore() {
       console.log("DungeonConversationStore get gameId:", gameId);
       if (!gameId || gameId.includes(".")) return;
       const result = await dbGet({
-        db: `dungeons/${gameId}/conversations`, fetch
+        db: `dungeons/${gameId}/conversations`,
+        fetch,
       });
       if (!result) {
         // Reset DungeonConversationStore
@@ -34,6 +42,15 @@ function createDungeonConversationStore() {
       } else {
         // Set DungeonConversationStore to the response
         this.set(result as DungeonConversation[]);
+      }
+    },
+    async restart(gameId: string) {
+      if (!gameId || gameId.includes(".")) return;
+      const conversations = get(this);
+      if (conversations.length > 2) {
+        const firstTwoConversations = conversations.slice(0, 2);
+        this.set(firstTwoConversations);
+        await this.save(gameId);
       }
     },
   };

@@ -59,6 +59,7 @@ interface LLMTextSettings {
     stream: boolean;
     limitContext: number;
     memoryBank: boolean;
+    cleanUpText: boolean;
     autoSummarise: boolean | 'local' | 'main';
     summariseAfter: number;
     historyTruncate: 'start' | 'middle'

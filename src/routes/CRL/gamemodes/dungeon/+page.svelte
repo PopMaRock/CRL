@@ -6,57 +6,51 @@
   import MultiColumn from "$components/Base/Layouts/Parts/multiColumn.svelte";
   import { formatTimeAgo } from "$utilities/utils";
   import { dbGet } from "$utilities/data/db";
+  import { EnginePersonaStore } from "$stores/engine/EnginePersona";
+  import PersonaSettings from "$components/Base/Persona/PersonaSettings.svelte";
+
   const modalStore = getModalStore();
-  const modalComponent: ModalComponent = {
+  let games: any[] = [];
+  const NewGameModal: ModalComponent = {
     ref: NewGame,
     props: { stage: 1 },
   };
+  const PersonaSettingsModal: ModalComponent = {
+    ref: PersonaSettings,
+    props: {},
+  };
+  const newGameModal: ModalSettings = {
+    type: "component",
+    title: "New Adventure",
+    backdropClasses: "",
+    component: NewGameModal,
+    response: async (r: any) => {
+      console.log("NewGame response:", r)
+      await getRecentlyPlayed();
+    },
+  };
+  const personaModal: ModalSettings = {
+    type: "component",
+    title: "Persona Settings",
+    backdropClasses: "",
+    component: PersonaSettingsModal,
+    response: async (r: any) => {
+      await EnginePersonaStore.setAndPersist();
+      console.log("PersonaSettings response:", r);
+      modalStore.trigger(newGameModal);
+    },
+  };
   async function createOwnGame() {
-    const modal: ModalSettings = {
-      type: "component",
-      title: "New Adventure",
-      backdropClasses: "",
-      component: modalComponent,
-      // Returns the updated response value
-      response: (r: string) => console.log("response:", r),
-    };
-    /*
-        Choose a scenario
-        -- Random (AI generates it)
-        -- Blank (User write it)
-        -- Fantasy (AI generates it)
-        -- Space (AI generates it)
-        -- Cyberpunk (AI generates it)
-        -- Horror (AI generates it)
-        -- Mystery (AI generates it)
-        -- Steampunk (AI generates it)
-        -- Comedy (AI generates it)
-
-        Then pick story elements - Enhanced will take world, characters, items, magic etc... into consideration.
-        
-        Story:
-        --Opening Story (Premise)
-        --Authors notes (Writing style: Elegant, dramatic, vivid prose. Theme: fantasy, adventure.)
-        --Plot Essentials (hidden)
-        --Story Summary (hidden) -- story so far
-        --AI Prompt (hidden) -- AI full prompt
-        --Enable third person (hidden) -- need to switch off all the functions that change text to second person.
-        Details:
-        Use the game settings component
-        -----Title
-        -----Description
-        -----Tags (max 10)
-        -----Content Rating (fuck knows how to handle this just now)
-        -----Import / Export (will figure this out later)
-        Settings:
-        Just use the game settings component
-        */
-    modalStore.trigger(modal);
+    if (!$EnginePersonaStore?.persona) {
+      modalStore.trigger(personaModal);
+    } else {
+      modalStore.trigger(newGameModal);
+    }
   }
 
   async function getRecentlyPlayed() {
     const data = await dbGet({ db: "CRL", collection: "dungeons" });
-    if(!data || data?.error) return []
+    if (!data || data?.error) return [];
 
     // Convert the object to an array of game objects
     const dataArray = Object.keys(data).map((key) => ({
@@ -82,7 +76,7 @@
     }));
 
     console.log("Recently played", recentlyPlayed);
-    return recentlyPlayed;
+    games = recentlyPlayed;
   }
 </script>
 
@@ -108,7 +102,7 @@
       <div class="mt-5 w-full">
         {#await getRecentlyPlayed()}
           Loading....
-        {:then games}
+        {:then}
           <MultiColumn data={games} />
         {/await}
       </div>

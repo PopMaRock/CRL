@@ -4,16 +4,18 @@
   import NarrationPlayer from "../NarrationPlayer.svelte";
   import BlockContainer from "./BlockContainer.svelte";
   import { fade } from "svelte/transition";
-  import { onDestroy, onMount } from "svelte";
+  import { createEventDispatcher, onDestroy, onMount } from "svelte";
   import { TextGenerateEffect } from "$components/Base/UI-Effects/text-generation";
   import { Trash2 } from "lucide-svelte";
   import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
+  import type { DungeonConversation } from "$lib/types/game";
   export let item: DungeonConversation | string;
   export let blockId = 0;
   export let offerAudio = false;
   export let fadein = false;
   export let isLast = false;
   const isHover = writable(false);
+  const dispatch = createEventDispatcher();
   function formatText() {
     if (typeof item === "string") return;
     if (
@@ -88,10 +90,10 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
     on:mouseenter={() => {
-      if (typeof item !== "string" && item?.role !== "user") isHover.set(true);
+      if (typeof item !== "string") isHover.set(true);
     }}
     on:mouseleave={() => {
-      if (typeof item !== "string" && item?.role !== "user") isHover.set(false);
+      if (typeof item !== "string") isHover.set(false);
     }}
   >
     {#if $isHover}
@@ -99,12 +101,7 @@
         {#if typeof item !== "string"}
           <button
             class="absolute top-0 right-0 ml-2 p-1 hover:text-red-700"
-            on:click={() => {
-              DungeonConversationStore.update((conversations) => {
-                conversations.splice(blockId, 1);
-                return conversations;
-              });
-            }}
+            on:click={async () => dispatch('remove')}
           >
             <Trash2 class="w-6 h-6" />
           </button>
@@ -136,14 +133,18 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <span class="editable" on:click={enableEditing}>
               {#if fadein && item.role === "assistant"}
-                <TextGenerateEffect words={content} />
+                <!--<TextGenerateEffect words={content} />-->
+                {@html formatText()}
               {:else}
                 {@html formatText()}
               {/if}
             </span>
           {/if}
         {:else}
-          <span>{@html formatText()}</span>
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <span class="editable" on:click={enableEditing}
+            >{@html formatText()}</span
+          >
         {/if}
       </p>
     </div>
