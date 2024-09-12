@@ -20,8 +20,7 @@
     const handleClickOutside = (event: any) => {
       if (srDiv && !srDiv.contains(event.target)) {
         srOpen = false;
-        //set DungeonGameSettingsStore to database
-        DungeonGameSettingsStore.save();
+        DungeonGameSettingsStore.save(); //set DungeonGameSettingsStore to database
       }
     };
     window.addEventListener("click", handleClickOutside);
@@ -51,8 +50,9 @@
             type="button"
             class="btn"
             title="Get the fuck back in"
-            on:click={(event) => {
+            on:click={async (event) => {
               event.stopPropagation();
+              await DungeonGameSettingsStore.save();
               srOpen = false;
             }}
             ><GameIconsSideswipe

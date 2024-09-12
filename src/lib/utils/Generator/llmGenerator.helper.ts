@@ -12,33 +12,35 @@ export function promptReplace(prompt: string): string {
 export function resultReplace(result: string,cutTrailingSent=false): string {
   //Command R has this habit of responding with > at the start of the response remove it
   let resp = result
-      .replace(/&nbsp;/g, " ")
-      .replace(/&ldquo;/g, '"')
-      .replace(/&rdquo;/g, '"')
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, '"')
-      .replace(/&apos;/g, "'")
-      .replace(/&cent;/g, "¢")
-      .replace(/&pound;/g, "£")
-      .replace(/&yen;/g, "¥")
-      .replace(/&euro;/g, "€")
-      .replace(/&copy;/g, "")
-      .replace(/&reg;/g, "")
-      .replace(/&trade;/g, "")
-      .replace(/&times;/g, "x")
-      .replace(/&divide;/g, "/")
-      .replace(/&ndash;/g, "-")
-      .replace(/&mdash;/g, "-")
-      .replace(/&hellip;/g, "...")
-      .replace(/&amp;/g, "&")
-      .replace(/<\/?[^>]+(>|$)/g, "") //remove HTML tags
-      //remove remaining >
-      .replace(">", "")
-      .replace("*", "")
-      .replace(/\n{3,}/g, "\n\n") // replace 3 or more newlines with 2 newlines
-      //.replace("(?<=\\w)\\.\\.(?:\\s|$)", ".")
-      .replace(/#{1,3}\s*Response:/g, "").trimEnd();
+    .replace(/&nbsp;/g, " ")
+    .replace(/&ldquo;/g, '"')
+    .replace(/&rdquo;/g, '"')
+    .replace(/<\|[^|]+\|>.*?<\|[^|]+\|>/gs, "") // remove tags and everything between them
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&cent;/g, "¢")
+    .replace(/&pound;/g, "£")
+    .replace(/&yen;/g, "¥")
+    .replace(/&euro;/g, "€")
+    .replace(/&copy;/g, "")
+    .replace(/&reg;/g, "")
+    .replace(/&trade;/g, "")
+    .replace(/&times;/g, "x")
+    .replace(/&divide;/g, "/")
+    .replace(/&ndash;/g, "-")
+    .replace(/&mdash;/g, "-")
+    .replace(/&hellip;/g, "...")
+    .replace(/&amp;/g, "&")
+    .replace(/<\/?[^>]+(>|$)/g, "") //remove HTML tags
+    //remove remaining >
+    .replace(">", "")
+    .replace("*", "")
+    .replace(/\n{3,}/g, "\n\n") // replace 3 or more newlines with 2 newlines
+    //.replace("(?<=\\w)\\.\\.(?:\\s|$)", ".")
+    .replace(/#{1,3}\s*Response:/g, "")
+    .trim();
 
       return cutTrailingSent ? cutTrailingSentence(resp) : resp;
 }

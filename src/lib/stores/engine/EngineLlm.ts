@@ -2,7 +2,7 @@ import { dungeonPrompt } from "$lib/constants/prompts";
 import { dbGet, dbSet } from "$utilities/data/db";
 import { get, writable } from "svelte/store";
 
-const EngineLlmDefault = {
+const EngineLlmDefault: EngineLlm = {
   llmActive: "lmstudio",
   llmTextSettings: {
     prompt: dungeonPrompt,
@@ -32,7 +32,7 @@ const EngineLlmDefault = {
   },
 };
 const createEngineLlmStore = () => {
-  const { subscribe, set, update } = writable({});
+  const { subscribe, set, update } = writable(<EngineLlm>EngineLlmDefault);
 
   return {
     subscribe,

@@ -111,6 +111,7 @@
               <TextBlock
                 blockId={index}
                 {item}
+                streamingAllowed={$DungeonGameSettingsStore.llmTextSettings.stream}
                 isLast={index === $DungeonConversationStore.length - 1}
                 fadein={index === $DungeonConversationStore.length - 1
                   ? !$DungeonGameSettingsStore.llmTextSettings.stream
@@ -126,7 +127,7 @@
                 {#if $response.text == ""}
                   <TypingIndicator />
                 {:else}
-                  <TextBlock blockId={-1} item={$response.text} />
+                  <TextBlock streaming={true} blockId={-1} item={$response.text} />
                 {/if}
               {/await}
             {/if}

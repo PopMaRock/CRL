@@ -1,5 +1,6 @@
 //From: https://github.com/semicognitive/sveltekit-chat/blob/main/src/lib/readablestreamstore.ts
 //By ConProgramming https://github.com/semicognitive/
+import { resultReplace } from "$utilities/Generator/llmGenerator.helper";
 import { writable } from "svelte/store";
 
 export function readablestreamStore() {

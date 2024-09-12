@@ -9,7 +9,6 @@ import {
   promptReplace,
   resultReplace,
 } from "./llmGenerator.helper";
-import type { DungeonConversation } from "$lib/types/game";
 import { DungeonManager } from "$stores/dungeon/DungeonManager";
 export class Generator {
   async genOutput(
@@ -43,6 +42,7 @@ export class Generator {
           /%personaDesc%/g,
           updatedPersonaDesc ? `Description of user: ${updatedPersonaDesc}` : ""
         )
+        .replace(/%genre%/g, DGSS.game.genre ? `Genre: ${DGSS.game.genre}` : "")
         .replace(
           /%opening%/g,
           DGSS.game.opening ? `How it started: ${DGSS.game.opening}` : ""
@@ -71,6 +71,7 @@ export class Generator {
           streaming: DGSS.llmTextSettings.stream ?? false,
           baseUrl: get(EngineLlmStore).llm[DGSS.llmActive].baseUrl,
           temperature: DGSS.llmTextSettings.temperature,
+          topK: DGSS.llmTextSettings.topK,
           topP: DGSS.llmTextSettings.topP,
           maxTokens: DGSS.llmTextSettings.generateNum,
           presencePenalty: DGSS.llmTextSettings.presencePenalty,
@@ -123,6 +124,7 @@ export class Generator {
     maxTokens?: number,
     temperature?: number,
     topP?: number,
+    topK?: number,
     frequencyPenalty?: number,
     presencePenalty?: number,
     streaming?: boolean,
@@ -132,7 +134,7 @@ export class Generator {
     if (weAre === "engine") mStore = get(EngineLlmStore);
     else mStore = get(DungeonGameSettingsStore);
     console.log("Prompt from crlGenerate(): ", prompt);
-        const requestBody = {
+    const requestBody = {
       model: mStore.llmTextSettings.model,
       prompt,
       settings: {
@@ -143,6 +145,7 @@ export class Generator {
         maxTokens: maxTokens ?? mStore.llmTextSettings.genTokens ?? 300,
         temperature: temperature ?? mStore.llmTextSettings.temperature ?? 0.7,
         topP: topP ?? mStore.llmTextSettings.topP ?? 1,
+        topK: topK ?? mStore.llmTextSettings.topK ?? 50,
         frequencyPenalty:
           frequencyPenalty ?? mStore.llmTextSettings.frequencyPenalty ?? 0.5,
         presencePenalty:
@@ -151,7 +154,7 @@ export class Generator {
       },
       stop: stop ?? [],
     };
-    
+
     const fetchUrl = `/api/llm/provider/${mStore.llmActive}/rawchat`;
     console.log("Request body: ", requestBody);
     console.log("Fetch URL: ", fetchUrl);
@@ -239,7 +242,7 @@ export class Generator {
     await this.genOutput(
       response,
       history,
-      summaries?.map((s) => s.summary).join("\n") ?? ""
+      summaries?.map((s: any) => s.summary).join("\n") ?? ""
     ); //do generation
     /*const tempStory: any = get(DungeonConversationStore);
     if (tempStory.length >= 2) {

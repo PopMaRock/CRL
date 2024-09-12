@@ -11,7 +11,7 @@ interface Settings {
   maxTokens: number;
   temperature: number;
   topP: number;
-  //topK: number;
+  topK: number;
   //batchSize: number;
   presencePenalty: number;
   frequencyPenalty: number;
@@ -42,12 +42,14 @@ export const POST = async ({ request }) => {
     // biome-ignore lint/style/useNamingConvention: <explanation>
     configuration: { baseURL: settings.baseUrl },
   };
-
+  
   apiConfig = {
     ...apiConfig,
     temperature: settings.temperature,
     streaming: settings.streaming,
     topP: settings.topP,
+    //@ts-ignore
+    topK: settings.topK,
     presencePenalty: settings.presencePenalty,
     frequencyPenalty: settings.frequencyPenalty,
     //topK: settings.topK,

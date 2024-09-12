@@ -1,5 +1,4 @@
 import { dungeonPrompt } from "$lib/constants/prompts";
-import type { DungeonGameSettings } from "$lib/types/game";
 import { EngineLlmStore } from "$stores/engine/EngineLlm";
 import { dbGet, dbSet } from "$utilities/data/db";
 import { get, writable } from "svelte/store";

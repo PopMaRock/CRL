@@ -45,8 +45,9 @@
             type="button"
             class="btn"
             title="Get the fuck back in"
-            on:click={(event) => {
+            on:click={async (event) => {
               event.stopPropagation();
+              await EngineLlmStore.save();
               srOpen = false;
             }}
             ><GameIconsSideswipe
@@ -69,20 +70,27 @@
         <option value="openai">OpenAI</option>
       </select>
       <div transition:fade>
-        {#if $EngineLlmStore.llm[$EngineLlmStore.llmActive].hasOwnProperty('baseUrl')}
+        {#if $EngineLlmStore.llm[$EngineLlmStore.llmActive].hasOwnProperty("baseUrl")}
           <div class="mb-2 mt-2">
             <label for="LLMbaseUrl">LLM URL:</label>
             <input
               type="text"
               name="LLMbaseUrl"
               class="input"
-              bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive].baseUrl}
+              bind:value={$EngineLlmStore.llm[$EngineLlmStore.llmActive]
+                .baseUrl}
             />
           </div>
         {/if}
         <div>
-          <Button class="variant-filled-primary btn" on:click={async ()=>testLlmConnection($EngineLlmStore.llmActive,toast,$EngineLlmStore.llm[$EngineLlmStore.llmActive]?.baseUrl)}
-            >Test Connection</Button
+          <Button
+            class="variant-filled-primary btn"
+            on:click={async () =>
+              testLlmConnection(
+                $EngineLlmStore.llmActive,
+                toast,
+                $EngineLlmStore.llm[$EngineLlmStore.llmActive]?.baseUrl
+              )}>Test Connection</Button
           >
         </div>
       </div>

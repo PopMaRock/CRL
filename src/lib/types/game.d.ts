@@ -52,27 +52,6 @@ interface Audio {
     type: string; // 'voiceOver', 'backgroundMusic', 'soundEffect'
     generator: string; // 'elevenlabs', 'localXtts', 'localTts'
 }
-//LLM Interface
-interface LLMTextSettings {
-    prompt: string;
-    model?: string;
-    stream: boolean;
-    limitContext: number;
-    memoryBank: boolean;
-    cleanUpText: boolean;
-    autoSummarise: boolean | 'local' | 'main';
-    summariseAfter: number;
-    historyTruncate: 'start' | 'middle'
-    convertToUkEnglish: boolean;
-    generateNum: number;
-    defaultGenNum: number;
-    temperature: number;
-    topP: number;
-    topK: number;
-    presencePenalty: number;
-    frequencyPenalty: number;
-    seed: number;
-}
 interface Game {
     id: string | null;
     name: string;
@@ -119,17 +98,54 @@ interface Meta {
     timestamp?: number;
     hasAudio?: boolean;
 }
-export interface Summary {
+interface Summary {
   summary: string;
   positionSummarised: number;
   timestamp: number; // Use number for timestamp as Date.now() returns a number
 }
 
-export interface DungeonManagerType {
+interface DungeonManagerType {
   state: Record<string, any>;
   summaries: Summary[];
   player: Record<string, any>;
   characters: Record<string, any>[];
   currentCharacter: Record<string, any>;
   currentLocation: Record<string, any>;
+}
+//LLM Interface
+interface LLMTextSettings {
+    prompt: string;
+    model?: string;
+    stream: boolean;
+    limitContext: number;
+    memoryBank: boolean;
+    cleanUpText: boolean;
+    autoSummarise: boolean | 'local' | 'main';
+    summariseAfter: number;
+    historyTruncate: 'start' | 'middle'
+    convertToUkEnglish: boolean;
+    generateNum: number;
+    defaultGenNum: number;
+    temperature: number;
+    topP: number;
+    topK: number;
+    presencePenalty: number;
+    frequencyPenalty: number;
+    seed: number;
+}
+
+//###################################################
+//ENGINE
+interface LLM {
+  openai: Record<string, unknown>;
+  lmstudio: {
+    baseUrl: string;
+  };
+  [key: string]: any; // Add index signature
+}
+
+interface EngineLlm {
+  llmActive: string;
+  llmTextSettings: LLMTextSettings;
+  llm: LLM;
 }

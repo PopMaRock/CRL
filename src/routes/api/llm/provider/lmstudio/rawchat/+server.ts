@@ -6,7 +6,7 @@ interface Settings {
   maxTokens: number;
   temperature: number;
   topP: number;
-  //topK: number;
+  topK: number;
   //batchSize: number;
   presencePenalty: number;
   frequencyPenalty: number;
@@ -42,7 +42,8 @@ export const POST = async ({ request }) => {
     temperature: settings.temperature ?? 0.1,
     streaming: settings.streaming ?? false,
     topP: settings.topP ?? 0.95,
-    //topK: settings.topK ?? 50,
+    // @ts-ignore
+    topK: settings.topK ?? 50,
     maxTokens: settings.maxTokens ?? 100,
     presencePenalty: settings.presencePenalty ?? 0,
     frequencyPenalty: settings.frequencyPenalty ?? 0,
