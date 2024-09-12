@@ -7,7 +7,7 @@
   import Story from "./Settings/Story.svelte";
   import GameSettings from "./Settings/GameSettings.svelte";
   import LlmSettings from "./Settings/LlmSettings.svelte";
-  import { DungeonGameSettingsStore, resetDungeonSettingsStore } from "$stores/dungeon/DungeonGameSettings";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   import { dbUpdate } from "$utilities/data/db";
   import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
   export let stage: number;
@@ -26,7 +26,7 @@
     console.log("New Game");
     // Remove focus from any element to stop wanky default focuses on buttons.
     (document.activeElement as HTMLElement)?.blur();
-    resetDungeonSettingsStore();
+    DungeonGameSettingsStore.reset();
   });
   function scenarioSelected(event: CustomEvent) {
     console.log(event);

@@ -20,7 +20,7 @@ const DungeonGameSettingsDefault: DungeonGameSettings = {
     generateNum: 100, //internal
     defaultGenNum: 100,
     temperature: 0.7,
-    topP: 0.90,
+    topP: 0.9,
     topK: 50,
     presencePenalty: 0.5,
     frequencyPenalty: 1.5,
@@ -60,7 +60,7 @@ const DungeonGameSettingsDefault: DungeonGameSettings = {
     autoSaveInterval: 60000,
   },
 };
-//DungeonGameSettings
+
 function createDungeonGameSettingsStore() {
   const { subscribe, set, update } = writable<DungeonGameSettings>(
     DungeonGameSettingsDefault
@@ -70,7 +70,31 @@ function createDungeonGameSettingsStore() {
     subscribe,
     set,
     update,
-    reset: () => set(structuredClone(DungeonGameSettingsDefault)),
+    reset: () => {
+      set(structuredClone(DungeonGameSettingsDefault));
+      const mEngine: any = get(EngineLlmStore);
+      console.log("mEngine", mEngine);
+      
+      update((s) => {
+         const updater = {
+           ...s,
+           llmActive: mEngine.llmActive,
+           llmTextSettings: {
+             ...s.llmTextSettings,
+             ...mEngine.llmTextSettings,
+             autoSummarise: mEngine.llmTextSettings.autoSummarise as
+               | boolean
+               | "main"
+               | "local",
+             historyTruncate: mEngine.llmTextSettings.historyTruncate as
+               | "middle"
+               | "start",
+           },
+         };
+         console.log("Setting",updater);
+        return updater
+      });
+    },
     save: async () => {
       const tempDungeon = get(DungeonGameSettingsStore);
       await dbSet({
@@ -90,25 +114,8 @@ function createDungeonGameSettingsStore() {
         // Set DungeonGameSettingsStore to the response
         this.set(result);
       }
-    }
+    },
   };
 }
-export const DungeonGameSettingsStore = createDungeonGameSettingsStore(); //fuck knows why it needs to be done this way...
-export function resetDungeonSettingsStore() {
-  // Clear the DungeonGameSettingsStore
-  DungeonGameSettingsStore.reset();
-  const mEngine:any = get(EngineLlmStore);
-  // Merge in user defaults from EngineLlmStore
-  DungeonGameSettingsStore.update((s) => {
-    return {
-      ...s,
-      llmTextSettings: {
-        ...s.llmTextSettings,
-        llmActive: mEngine.llmActive,
-        ...mEngine.llmTextSettings,
-        autoSummarise: mEngine.llmTextSettings.autoSummarise as boolean | "main" | "local",
-        historyTruncate: mEngine.llmTextSettings.historyTruncate as "middle" | "start",
-      },
-    };
-  });
-}
+
+export const DungeonGameSettingsStore = createDungeonGameSettingsStore();

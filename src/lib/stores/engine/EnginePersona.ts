@@ -24,7 +24,6 @@ function createEnginePersonaStore() {
       try {
         const data = await dbGet({ db: "CRL", collection: "personas", fetch });
         if (data) {
-          console.log("Got persona data and setting it as:", data);
           set(data);
         }
         return data;
@@ -38,6 +37,9 @@ function createEnginePersonaStore() {
       subscribe((value) => (currentValue = value))();
       set(currentValue);
       await dbSet({ db: "CRL", collection: "personas", data: currentValue });
+    },
+    reset: () => {
+      set(EnginePersonaDefault);
     },
   };
 }

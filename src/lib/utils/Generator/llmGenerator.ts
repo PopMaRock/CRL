@@ -100,8 +100,11 @@ export class Generator {
           type: "text",
         };
         //This will do a basic clean up and, if cleanUpText is true, it'll cut trailing sentences.
-        assistantMessage.content = resultReplace(answer as string, DGSS.llmTextSettings.cleanUpText);
-        
+        assistantMessage.content = resultReplace(
+          answer as string,
+          DGSS.llmTextSettings.cleanUpText
+        );
+
         DungeonConversationStore.update((conversations) => [
           ...conversations,
           assistantMessage,
@@ -128,38 +131,37 @@ export class Generator {
     let mStore: any;
     if (weAre === "engine") mStore = get(EngineLlmStore);
     else mStore = get(DungeonGameSettingsStore);
-    console.log("Prompt from crlGenerate(): ", prompt); 
-    const response = await fetch(
-      `/api/llm/provider/${mStore.llmActive}/rawchat`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: mStore.llmTextSettings.model,
-          prompt,
-          settings: {
-            baseUrl:
-              mStore.llmActive === "lmstudio"
-                ? get(EngineLlmStore).llm.lmstudio.baseUrl
-                : "",
-            maxTokens: maxTokens ?? mStore.llmTextSettings.genTokens ?? 300,
-            temperature:
-              temperature ?? mStore.llmTextSettings.temperature ?? 0.7,
-            topP: topP ?? mStore.llmTextSettings.topP ?? 1,
-            frequencyPenalty:
-              frequencyPenalty ??
-              mStore.llmTextSettings.frequencyPenalty ??
-              0.5,
-            presencePenalty:
-              presencePenalty ?? mStore.llmTextSettings.presencePenalty ?? 1.5,
-            streaming: streaming ?? mStore.llmTextSettings.streaming ?? false,
-          },
-          stop: stop ?? [],
-        }),
-      }
-    );
+    console.log("Prompt from crlGenerate(): ", prompt);
+        const requestBody = {
+      model: mStore.llmTextSettings.model,
+      prompt,
+      settings: {
+        baseUrl:
+          mStore.llmActive === "lmstudio"
+            ? get(EngineLlmStore).llm.lmstudio.baseUrl
+            : "",
+        maxTokens: maxTokens ?? mStore.llmTextSettings.genTokens ?? 300,
+        temperature: temperature ?? mStore.llmTextSettings.temperature ?? 0.7,
+        topP: topP ?? mStore.llmTextSettings.topP ?? 1,
+        frequencyPenalty:
+          frequencyPenalty ?? mStore.llmTextSettings.frequencyPenalty ?? 0.5,
+        presencePenalty:
+          presencePenalty ?? mStore.llmTextSettings.presencePenalty ?? 1.5,
+        streaming: streaming ?? mStore.llmTextSettings.streaming ?? false,
+      },
+      stop: stop ?? [],
+    };
+    
+    const fetchUrl = `/api/llm/provider/${mStore.llmActive}/rawchat`;
+    console.log("Request body: ", requestBody);
+    console.log("Fetch URL: ", fetchUrl);
+    const response = await fetch(fetchUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
     const data = await response.json();
     console.log(data);
     if (data.error) {

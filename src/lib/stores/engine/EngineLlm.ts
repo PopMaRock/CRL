@@ -42,8 +42,11 @@ const createEngineLlmStore = () => {
       await dbSet({ db: "CRL", collection: "EngineLlm", data: get(this) });
     },
     async get(fetch?: Window["fetch"]) {
-      const result = await dbGet({ db: "CRL", collection: "EngineLlm", fetch });
-      if (!result || result?.error) return;
+      const result = await dbGet({ db: "CRL", collection: "EngineLlm", fetch});
+      if (!result || result?.error) {
+        console.error("Error getting EngineLlm from database: ", result?.error);
+        return;
+      }
       this.set(result);
       return result;
     },
