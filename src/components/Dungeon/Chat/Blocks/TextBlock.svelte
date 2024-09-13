@@ -6,14 +6,23 @@
   import { fade } from "svelte/transition";
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
   import { TextGenerateEffect } from "$components/Base/UI-Effects/text-generation";
-  import { Trash2 } from "lucide-svelte";
+  import {
+    Ellipsis,
+    Image,
+    AudioLines,
+    EyeOff,
+    Split,
+    Trash2,
+    Paintbrush
+  } from "lucide-svelte";
   import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
+  import { ListBox, ListBoxItem, popup } from "@skeletonlabs/skeleton";
   export let item: DungeonConversation | string;
   export let blockId = 0;
-  export let offerAudio = false;
-  export let fadein = false;
+  export let offerAudio = true;
   export let isLast = false;
   export let streaming = false;
+  export let fadein = false; //TODO: Implement fadein
   export let streamingAllowed = false;
 
   let isEditing = false;
@@ -92,6 +101,17 @@
   onDestroy(() => {
     document.removeEventListener("click", handleClickOutside);
   });
+
+  let optionsMenu: any;
+  $: (async () => {
+    console.log("optionsMenu changed:", optionsMenu);
+    if (optionsMenu === "delete") {
+      dispatch("remove");
+    }
+    if (optionsMenu === "genPicture") {
+      dispatch("genPicture");
+    }
+  })();
 </script>
 
 <BlockContainer>
@@ -105,14 +125,76 @@
     }}
   >
     {#if $isHover}
-      <div class="relative">
+      <div transition:fade>
         {#if typeof item !== "string" || !streaming}
+        <div class="flex items-center relative mr-1 text-surface-400">
           <button
-            class="absolute top-0 right-0 ml-2 p-1 hover:text-red-700"
-            on:click={async () => dispatch("remove")}
+            type="button"
+            title="Message options"
+            class="mr-2 group absolute top-0 right-4 p-1 hover:text-surface-200"
+            use:popup={{
+              event: "click",
+              target: `optionsOptionsBox${blockId}`,
+              placement: "left",
+              closeQuery: ".listbox-item",
+            }}
           >
-            <Trash2 class="w-6 h-6" />
+            <Ellipsis size={20} />
           </button>
+          <div
+            class="card w-48 shadow-xl py-2"
+            data-popup={`optionsOptionsBox${blockId}`}
+          >
+            <ListBox rounded="rounded-none">
+              <ListBoxItem
+                bind:group={optionsMenu}
+                name="action"
+                value="genPicture"
+              >
+                <div class="flex items-center">
+                  <Paintbrush class="mr-2" />Gen: Image
+                </div>
+              </ListBoxItem>
+              <ListBoxItem
+                bind:group={optionsMenu}
+                name="action"
+                value="genNarration"
+              >
+                <div class="flex items-center">
+                  <AudioLines class="mr-2"/>Gen: Narration
+                </div>
+              </ListBoxItem>
+              <hr />
+              <ListBoxItem
+                bind:group={optionsMenu}
+                name="action"
+                value="excludeFromPrompt"
+              >
+                <div class="flex items-center">
+                  <EyeOff class="mr-2"/>Ex.from History
+                </div>
+              </ListBoxItem>
+              <ListBoxItem
+                bind:group={optionsMenu}
+                name="action"
+                value="createBranch"
+              >
+                <div class="flex items-center"><Split class="mr-2"/>Create Branch</div>
+              </ListBoxItem>
+            </ListBox>
+            <div class="arrow bg-surface-100-800-token" />
+          </div>
+          <button 
+            type="button" 
+            title="Delete message" 
+            class="group absolute top-0 right-0 p-1 hover:text-error-600"
+            on:click={() => {
+              optionsMenu = "delete";
+            }}
+          >
+            <Trash2 size={20} />
+          </button>
+        </div>
         {/if}
       </div>
     {/if}
@@ -132,7 +214,7 @@
           <textarea
             id={`textarea-${blockId}`}
             bind:value={inputValue}
-            class="editable"
+            class="!m-2 !p-4 editable"
             on:blur={saveChanges}
             on:input={(event) => adjustTextareaHeight(event.target)}
           ></textarea>
@@ -176,8 +258,6 @@
     font-size: inherit;
     font-family: inherit;
     line-height: inherit;
-    padding: 0;
-    margin: 0;
     border: none;
     background: none;
     resize: none;
@@ -185,16 +265,5 @@
   }
   .editable:focus {
     outline: none;
-  }
-  .fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
 </style>

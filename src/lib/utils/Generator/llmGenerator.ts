@@ -4,12 +4,8 @@ import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
 import { EnginePersonaStore } from "$stores/engine/EnginePersona";
 import { EngineLlmStore } from "$stores/engine/EngineLlm";
 import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
-import {
-  firstToSecondPerson,
-  promptReplace,
-  resultReplace,
-} from "./llmGenerator.helper";
 import { DungeonManager } from "$stores/dungeon/DungeonManager";
+import { firstToSecondPerson, promptReplace, resultReplace } from "$utilities/utils";
 export class Generator {
   async genOutput(
     response: any,
@@ -103,7 +99,7 @@ export class Generator {
         //This will do a basic clean up and, if cleanUpText is true, it'll cut trailing sentences.
         assistantMessage.content = resultReplace(
           answer as string,
-          DGSS.llmTextSettings.cleanUpText
+          true//DGSS.llmTextSettings.cleanUpText
         );
 
         DungeonConversationStore.update((conversations) => [
