@@ -149,3 +149,15 @@ interface EngineLlm {
   llmTextSettings: LLMTextSettings;
   llm: LLM;
 }
+interface CrlGenerateParams {
+  weAre: "engine" | "game";
+  prompt: string;
+  maxTokens?: number;
+  temperature?: number;
+  topP?: number;
+  topK?: number;
+  frequencyPenalty?: number;
+  presencePenalty?: number;
+  streaming?: boolean;
+  stop?: string[];
+}

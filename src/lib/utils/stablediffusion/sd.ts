@@ -1,5 +1,8 @@
-import { resolutionOptions } from "./sdConstants";
+import { getConfig } from "$lib/config";
+import { resolutionOptions } from "$stores/dungeon/DungeonSd";
+import { addAlwaysOnScripts } from "./alwaysOnScripts";
 
+const config = getConfig();
 /**
  * Find a closest resolution option match for the current width and height.
  */
@@ -44,25 +47,33 @@ export function getClosestKnownResolution(width: number,height: number) {
  *  @param {number} generationType - The type of image generation to perform.
  *  @returns {Promise<{format: string, data: string}>} - A promise that resolves when the image generation and processing are complete.
  */
-async function generateAutoImage(
+interface GenerateAutoImageParams {
+  characters?: any;
+  options?: any;
+  positivePrompt?: string;
+  negativePrompt?: any;
+  signal?: any;
+  generationType?: any;
+}
+
+async function generateAutoImage({
+  characters,
+  options,
   positivePrompt,
   negativePrompt,
   signal,
-  generationType
-) {
-  const { key, settings } = keyCheck();
-  const isValidVae =
-    extension_settings.sd.vae &&
-    !["N/A", placeholderVae].includes(extension_settings.sd.vae);
-  if (extension_settings.sd.character[key]["cn"]["fid"].enable) {
+  generationType,
+}: GenerateAutoImageParams = {}) {
+  // Function implementation
+  //const { key, settings } = keyCheck();
+  /*const isValidVae =
+    config.sd.vae &&
+    !["N/A", config.sd.placeholderVae].includes(config.sd.vae);
+  if (characters[key].cn.fid.enable) {
     positivePrompt =
-      "<lora:" +
-      extension_settings.sd.character[key]["cn"]["fid"]["lora"] +
-      ":1>, " +
-      positivePrompt;
-  }
+      `<lora:${characters[key].cn.fid.lora}:1>, ${positivePrompt}`;
+  }*/
   const postBody = {
-    ...getSdRequestBody(),
     prompt: positivePrompt,
     negative_prompt: negativePrompt, //was extension_settings.sd.negative_prompt...
     /** Fuck knows what these are */
@@ -73,29 +84,29 @@ async function generateAutoImage(
     s_tmax: null,
     s_tmin: 0.0,
     //--------------------------------
-    sampler_name: extension_settings.sd.character[key][settings.sampler],
+    sampler_name: characters[key][settings.sampler],
     scheduler:
-      extension_settings.sd.character[key][settings.scheduler] ?? "Automatic",
-    steps: extension_settings.sd.character[key][settings.steps] ?? 20,
+      characters[key][settings.scheduler] ?? "Automatic",
+    steps: characters[key][settings.steps] ?? 20,
     override_settings: {
       CLIP_stop_at_last_layers:
-        extension_settings.sd.character[key][settings.clipskip] ?? 1,
+        characters[key][settings.clipskip] ?? 1,
       sd_model_checkpoint:
-        extension_settings.sd.character[key][settings.model] ?? undefined,
+        characters[key][settings.model] ?? undefined,
     },
     override_settings_restore_afterwards: false, //meh, just leave them as is. Probably using the same character anyway
-    cfg_scale: Number(extension_settings.sd.character[key][settings.scale]),
-    width: extension_settings.sd.width ?? 512,
-    height: extension_settings.sd.height ?? 512,
-    restore_faces: !!extension_settings.sd.restore_faces ?? false,
-    enable_hr: !!extension_settings.sd.enable_hr ?? false,
-    hr_upscaler: extension_settings.sd.hr_upscaler ?? "none",
-    hr_scale: extension_settings.sd.hr_scale ?? 0,
-    denoising_strength: extension_settings.sd.denoising_strength,
-    hr_second_pass_steps: extension_settings.sd.hr_second_pass_steps,
+    cfg_scale: Number(characters[key][settings.scale]),
+    width: options.width ?? 512,
+    height: options.height ?? 512,
+    restore_faces: !!options.restore_faces ?? false,
+    enable_hr: !!options.enable_hr ?? false,
+    hr_upscaler: options.hr_upscaler ?? "none",
+    hr_scale: options.hr_scale ?? 0,
+    denoising_strength: options.denoising_strength,
+    hr_second_pass_steps: options.hr_second_pass_steps,
     seed:
-      extension_settings.sd.character[key][settings.seed] >= 0
-        ? extension_settings.sd.character[key][settings.seed]
+      options.character[key][settings.seed] >= 0
+        ? options.character[key][settings.seed]
         : "-1",
     // Ensure generated img is saved to disk
     save_images: true,
@@ -103,9 +114,9 @@ async function generateAutoImage(
     do_not_save_grid: false,
     do_not_save_samples: false,
   };
-  if (extension_settings.sd.character[key][settings.vae]) {
+  if (options.character[key][settings.vae]) {
     postBody.override_settings.sd_vae =
-      extension_settings.sd.character[key][settings.vae];
+      options.character[key][settings.vae];
   }
   const AOScripts =
     (await addAlwaysOnScripts(
@@ -120,7 +131,7 @@ async function generateAutoImage(
     ...postBody,
     ...AOScripts,
   });
-  console.log("EXTENSION SETTINGS SD", extension_settings.sd);
+  console.log("EXTENSION SETTINGS SD", options);
 
   const result = await fetch("/api/sd/generate", {
     method: "POST",

@@ -69,6 +69,9 @@
           <RadioItem bind:group={actionOption} name="action" value={"say"}
             >Say</RadioItem
           >
+          <RadioItem bind:group={actionOption} name="action" value={"see"}
+            >See</RadioItem
+          >
           <RadioItem bind:group={actionOption} name="action" value={"story"}
             >Story</RadioItem
           >

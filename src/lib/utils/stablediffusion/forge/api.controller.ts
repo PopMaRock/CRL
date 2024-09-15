@@ -1,342 +1,258 @@
-/* eslint-disable comma-dangle */
-/* eslint-disable quotes */
+import { browser } from "$app/environment";
+import { toastr } from "$utilities/toastr";
 
-export async function pingServerPlugin() {
-  try {
-    const result = await fetch("/api/plugins/stwebui/ping", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
-      throw new Error("SD WebUI returned an error.");
-    }
-    const data = await result.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
 export async function getControlNetModules() {
-  $("#sd_character_controlnet_fid_module").empty();
+  //$("#sd_character_controlnet_fid_module").empty();
   try {
-    const result = await fetch("/api/plugins/stwebui/controlnet/modules_list", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(getSdRequestBody("get-ct-modules"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-    const data = await result.json();
-    return data.module_list;
+    return result.data.module_list;
   } catch (error) {
     console.error(error);
     return false;
   }
 }
 export async function getControlNetModels() {
-  $("#sd_character_controlnet_fid_model").empty();
+  // $("#sd_character_controlnet_fid_model").empty();
   try {
-    const result = await fetch("/api/plugins/stwebui/controlnet/model_list", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(getSdRequestBody("get-ct-models"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-    const data = await result.json();
-    return data.model_list;
+    return result.data.model_list;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+export async function getControlNetTypes() {
+  try {
+    const result = await callSdApi(getSdRequestBody("get-ct-types"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
+      throw new Error("SD WebUI returned an error.");
+    }
+    return result.data;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+export async function interruptForge() {
+  try {
+    const result = await callSdApi(getSdRequestBody("interrupt"));
+    if (!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
+      throw new Error("SD WebUI returned an error.");
+    }
+    return result.data;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+export async function getForgeScripts() {
+  try {
+    const result = await callSdApi(getSdRequestBody("scripts"));
+    if (!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
+      throw new Error("SD WebUI returned an error.");
+    }
+    return result.data;
   } catch (error) {
     console.error(error);
     return false;
   }
 }
 export async function getLoras(ipadapterOnly = true) {
-  $("#sd_character_controlnet_fid_lora").empty();
+  //$("#sd_character_controlnet_fid_lora").empty();
   try {
-    const result = await fetch("/api/plugins/stwebui/loras", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(getSdRequestBody("get-loras"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-    const data = await result.json();
+    const data = await result.data;
+    console.log("LORAS", data);
     if (ipadapterOnly) {
       //filter through the data and build a new array where name includes 'ip-adapter'
-      return data.filter((item) => item.name.includes("ip-adapter"));
-    } else {
-      return data.module_list;
+      return data.filter((item: { name: string | string[] }) =>
+        item.name.includes("ip-adapter")
+      );
     }
+    return data.module_list;
   } catch (error) {
     console.error(error);
     return false;
   }
 }
-export async function loadAutoVaes() {
-  if (!extension_settings.sd.auto_url) {
-    return ["N/A"];
-  }
-
+export async function getForgeVaes() {
   try {
-    const result = await fetch("/api/plugins/stwebui/vaes", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(getSdRequestBody("get-vaes"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-
-    const data = await result.json();
-    Array.isArray(data) && data.unshift(placeholderVae);
+    const data = result.data;
+    Array.isArray(data) && data.unshift("Automatic");
     return data;
   } catch (error) {
     return ["N/A"];
   }
 }
-export async function loadAutoSamplers() {
-  if (!extension_settings.sd.auto_url) {
-    return [];
-  }
-
+export async function getForgeSamplers() {
   try {
-    const result = await fetch("/api/sd/samplers", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(getSdRequestBody("get-samplers"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-
-    const data = await result.json();
-    return data;
+    return result.data;
   } catch (error) {
+    console.error(error);
     return [];
   }
 }
-export async function loadAutoModels() {
+export async function getForgeModels() {
   let result = null;
-  if (!extension_settings.sd.auto_url) {
-    return [];
-  }
 
   try {
-    const currentModel = await getAutoRemoteModel();
+    const currentModel = await getForgeModel();
 
     if (currentModel) {
-      extension_settings.sd.model = currentModel;
+      //extension_settings.sd.model = currentModel;
     }
     try {
-      result = await fetch("/api/sd/models", {
-        method: "POST",
-        headers: getRequestHeaders(),
-        body: JSON.stringify(getSdRequestBody()),
-      });
-
-      if (!result.ok) {
+      result = await callSdApi(getSdRequestBody("get-models"));
+      if(!result) throw new Error("No result returned from SD WebUI.");
+      if (!result.success) {
         throw new Error("SD WebUI returned an error.");
       }
     } catch (error) {
-      console.error(await result.json());
+      if (result?.data) {
+        console.error(await result.data);
+      } else {
+        console.error("Result is null.");
+      }
     }
   } catch (error) {
     return [];
   }
-  const upscalers = await getAutoRemoteUpscalers();
-
+  const upscalers = await getForgeUpscalers();
+  /*
   if (Array.isArray(upscalers) && upscalers.length > 0) {
-    $("#sd_hr_upscaler").empty();
+    //$("#sd_hr_upscaler").empty();
 
     for (const upscaler of upscalers) {
       const option = document.createElement("option");
       option.innerText = upscaler;
       option.value = upscaler;
-      option.selected = upscaler === extension_settings.sd.hr_upscaler;
-      $("#sd_hr_upscaler").append(option);
+      option.selected = upscaler === sd.hr_upscaler;
     }
   }
   let data = [];
-  if (result.ok) {
+  if (result.success) {
     data = await result.json();
-  }
-  return data;
+  }*/
+  //return data;
 }
-export async function getAutoRemoteSchedulers() {
+export async function getForgeSchedulers() {
   try {
-    const result = await fetch("/api/sd/schedulers", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(getSdRequestBody("get-schedulers"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-
-    const data = await result.json();
-    return data;
+    return result.data;
   } catch (error) {
     console.error(error);
     return ["N/A"];
   }
 }
-export async function getAutoRemoteUpscalers() {
+export async function getForgeUpscalers() {
   try {
-    const result = await fetch("/api/sd/upscalers", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(getSdRequestBody("get-upscalers"));
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-
-    const data = await result.json();
-    return data;
+    return result.data;
   } catch (error) {
     console.error(error);
-    return [extension_settings.sd.hr_upscaler];
+    return ["N/A"];
   }
 }
-export async function updateAutoRemoteModel() {
+export async function updateForgeModel(model: string) {
   try {
-    const result = await fetch("/api/sd/set-model", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify({
-        ...getSdRequestBody(),
-        model: extension_settings.sd.model,
-      }),
-    });
-
-    if (!result.ok) {
+    const result = await callSdApi(
+      getSdRequestBody("set-model", {
+        model: model,
+      })
+    );
+    if(!result) throw new Error("No result returned from SD WebUI.");
+    if (!result.success) {
       throw new Error("SD WebUI returned an error.");
     }
-
     console.log("Model successfully updated on SD WebUI remote.");
   } catch (error) {
     console.error(error);
-    toastr.error(`Could not update SD WebUI model: ${error.message}`);
-  }
-}
-export async function updateExtrasRemoteModel() {
-  const url = new URL(getApiUrl());
-  url.pathname = "/api/image/model";
-  const getCurrentModelResult = await doExtrasFetch(url, {
-    method: "POST",
-    body: JSON.stringify({ model: extension_settings.sd.model }),
-  });
-
-  if (getCurrentModelResult.ok) {
-    console.log("Model successfully updated on SD remote.");
-  }
-}
-export async function loadExtrasSamplers() {
-  if (!modules.includes("sd")) {
-    return [];
-  }
-
-  const url = new URL(getApiUrl());
-  url.pathname = "/api/image/samplers";
-  const result = await doExtrasFetch(url);
-
-  if (result.ok) {
-    const data = await result.json();
-    return data.samplers;
-  }
-
-  return [];
-}
-export function getSdRequestBody() {
-  switch (extension_settings.sd.source) {
-    case sources.auto:
-    case sources.forge:
-      return {
-        url: extension_settings.sd.auto_url,
-        auth: extension_settings.sd.auto_auth,
-      };
-    default:
-      throw new Error("Invalid SD source.");
-  }
-}
-export async function validateAutoUrl() {
-  try {
-    if (!extension_settings.sd.auto_url) {
-      toastr.error("URL is not set.");
-      return false;
-    }
-
-    const result = await fetch("/api/sd/ping", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
+    toastr({
+      type: "error",
+      message: `Could not update SD WebUI model: ${error}`,
     });
-
-    if (!result.ok) {
-      toastr.error("SD WebUI returned an error.");
-      return false;
-    }
-    toastr.success("SD WebUI API connected.");
+  }
+}
+export async function validateForgeUrl() {
+  try {
+    const result = await callSdApi(getSdRequestBody("ping"));
+    if (!result?.success) throw new Error("SD WebUI API returned an error.");
+    toastr({ message: "SD WebUI API connected.", type: "success" });
     return true;
-  } catch (error) {
-    toastr.error(`Could not validate SD WebUI API: ${error.message}`);
+  } catch (error: any) {
+    console.error(error);
+    toastr({
+      message: `Could not validate SD WebUI API:\n ${error}`,
+      type: "error",
+    });
     return false;
   }
 }
-export async function loadExtrasModels() {
-  if (!modules.includes("sd")) {
-    return [];
-  }
-
-  const url = new URL(getApiUrl());
-  url.pathname = "/api/image/model";
-  const getCurrentModelResult = await doExtrasFetch(url);
-
-  if (getCurrentModelResult.ok) {
-    const data = await getCurrentModelResult.json();
-    extension_settings.sd.model = data.model;
-  }
-
-  url.pathname = "/api/image/models";
-  const getModelsResult = await doExtrasFetch(url);
-
-  if (getModelsResult.ok) {
-    const data = await getModelsResult.json();
-    const view_models = data.models.map((x) => ({ value: x, text: x }));
-    return view_models;
-  }
-
-  return [];
-}
-export async function getAutoRemoteModel() {
+export async function getForgeModel() {
   try {
-    const result = await fetch("/api/sd/get-model", {
-      method: "POST",
-      headers: getRequestHeaders(),
-      body: JSON.stringify(getSdRequestBody()),
-    });
-
-    if (!result.ok) {
-      throw new Error("SD WebUI returned an error.");
-    }
-
-    const data = await result.text();
-    return data;
+    return await callSdApi(getSdRequestBody("get-model"));
   } catch (error) {
-    console.error(error);
-    return null;
+    return { error: true };
+  }
+}
+function getSdRequestBody(action = "ping", opts?: any) {
+  return {
+    url: "http://127.0.0.1:7860",
+    auth: null,
+    action: action,
+    ...opts,
+  };
+}
+async function callSdApi(body: any) {
+  if (browser) {
+    try {
+      const result = await fetch("/api/sd/webui", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!result.ok) {
+        throw new Error("Error making SD WebUI call.");
+      }
+      const data = await result.json();
+      if(!data || data?.error) throw new Error(data?.error);
+      return { success: true, data };
+    } catch (error) {
+      console.error(error);
+      return { success: false, error };
+    }
   }
 }

@@ -27,7 +27,7 @@ interface Task {
 
 const tasks: Record<string, Task> = {
   "text-classification": {
-    defaultModel: "Cohee/distilbert-base-uncased-go-emotions-onnx",
+    defaultModel: "Cohee/roberta-base-go_emotions-onnx",
     pipeline: null,
     quantized: true,
   },

@@ -1,15 +1,14 @@
 <script lang="ts">
-import TextboxGroup from "$components/Base/FormElements/TextboxGroup.svelte";
+  import RangeSlider from "$components/Base/FormElements/RangeSlider.svelte";
+  import TextboxGroup from "$components/Base/FormElements/TextboxGroup.svelte";
   import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   import { getTokens } from "$utilities/utils";
   import {
     Accordion,
     AccordionItem,
-    RangeSlider,
     SlideToggle,
   } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
-  import Alert from "../Chat/Alert.svelte";
 
   let tokens: Uint32Array | undefined;
   onMount(async () => {
@@ -52,108 +51,74 @@ import TextboxGroup from "$components/Base/FormElements/TextboxGroup.svelte";
     helpText="If the AI is talking too much, reduce this"
   />
 </div>
-
-<div>
-  <RangeSlider
-    name="temperature"
-    bind:value={$DungeonGameSettingsStore.llmTextSettings.temperature}
-    max={1}
-    step={0.1}
-    ticked
-  >
-    <div class="flex justify-between items-center">
-      <div class="font-bold" title="Temperature">Randomness</div>
-      <div class="text-xs">
-        {$DungeonGameSettingsStore.llmTextSettings.temperature} / 1
-      </div>
-    </div>
-  </RangeSlider>
-</div>
+<RangeSlider
+  title="Temperature"
+  name="temperature"
+  bind:value={$DungeonGameSettingsStore.llmTextSettings.temperature}
+  max={1}
+  step={0.1}
+/>
 <div class="grid grid-cols-2 gap-4">
-  <div title="TopP is simply the ">
-    <RangeSlider
-      name="topP"
-      bind:value={$DungeonGameSettingsStore.llmTextSettings.topP}
-      max={1}
-      step={0.05}
-      ticked
-    >
-      <div class="flex justify-between items-center">
-        <div class="font-bold">Top P</div>
-        <div class="text-xs">
-          {$DungeonGameSettingsStore.llmTextSettings.topP} / 1
-        </div>
-      </div>
-    </RangeSlider>
-  </div>
-  <!-- FIXME: TopK is bullshit. Remove it later-->
-  <div>
-    <RangeSlider
-      name="topK"
-      bind:value={$DungeonGameSettingsStore.llmTextSettings.topK}
-      max={100}
-      step={1}
-      ticked
-    >
-      <div class="flex justify-between items-center">
-        <div class="font-bold">Top K</div>
-        <div class="text-xs">
-          {$DungeonGameSettingsStore.llmTextSettings.topK} / 100
-        </div>
-      </div>
-    </RangeSlider>
-  </div>
-  <div>
-    <RangeSlider
-      name="presencePenalty"
-      bind:value={$DungeonGameSettingsStore.llmTextSettings.presencePenalty}
-      max={2}
-      step={0.1}
-      ticked
-    >
-      <div class="flex justify-between items-center">
-        <div class="font-bold">Presence Penalty</div>
-        <div class="text-xs">
-          {$DungeonGameSettingsStore.llmTextSettings.presencePenalty} / 2
-        </div>
-      </div>
-    </RangeSlider>
-  </div>
-  <div>
-    <RangeSlider
-      name="frequencyPenalty"
-      bind:value={$DungeonGameSettingsStore.llmTextSettings.frequencyPenalty}
-      max={2}
-      step={0.1}
-      ticked
-    >
-      <div class="flex justify-between items-center">
-        <div class="font-bold">Frequency Penalty</div>
-        <div class="text-xs">
-          {$DungeonGameSettingsStore.llmTextSettings.frequencyPenalty} / 2
-        </div>
-      </div>
-    </RangeSlider>
-  </div>
+  <RangeSlider
+    title="TopP"
+    name="topP"
+    bind:value={$DungeonGameSettingsStore.llmTextSettings.topP}
+    max={1}
+    step={0.05}
+  />
+  <RangeSlider
+    title="TopK"
+    name="topK"
+    bind:value={$DungeonGameSettingsStore.llmTextSettings.topK}
+    max={100}
+    step={1}
+  />
+  <RangeSlider
+    title="Presence Penalty"
+    name="presencePenalty"
+    bind:value={$DungeonGameSettingsStore.llmTextSettings.presencePenalty}
+    max={2}
+    step={0.1}
+  />
+  <RangeSlider
+    title="Frequency Penalty"
+    name="frequencyPenalty"
+    bind:value={$DungeonGameSettingsStore.llmTextSettings.frequencyPenalty}
+    max={2}
+    step={0.1}
+  />
 </div>
+<Accordion class="border-1 dark:variant-filled-surface rounded-md mt-5 mb-5">
+  <AccordionItem closed>
+    <svelte:fragment slot="summary">AI Prompt</svelte:fragment>
+    <svelte:fragment slot="content">
+      <textarea
+        name="prompt"
+        class="!text-xs textarea-add min-h-40 w-full"
+        bind:value={$DungeonGameSettingsStore.llmTextSettings.prompt}
+        placeholder="e.g. You find yourself in the rugged heartland of Alba. Life has been good and you are loved by the locals. However, a power-hungry queen plans to invade your country from the south. You must find a way to stop her armies and save your country."
+      ></textarea></svelte:fragment
+    >
+  </AccordionItem>
+</Accordion>
 <Accordion class="border-1 variant-filled-surface rounded-md mt-5 mb-5">
   <AccordionItem closed>
     <svelte:fragment slot="summary">Advanced [NOT IMPLEMENTED]</svelte:fragment>
     <svelte:fragment slot="content">
       <!--<Textarea name="stopString" label="Custom Stop String" class="textarea-add min-h-24 w-1/2" placeHolder="['jim', 'bob', 'dave']"/>-->
       <div>
-  <SlideToggle
-    name="sd"
-    active="variant-filled-primary"
-    class="mt-4"
-    size="sm"
-    bind:checked={$DungeonGameSettingsStore.llmTextSettings.cleanUpText}
-    >Text Cleanup is {$DungeonGameSettingsStore.llmTextSettings.cleanUpText
-      ? "enabled"
-      : "disabled"}</SlideToggle
-  >
-</div>
-     </svelte:fragment
-    >
+        <SlideToggle
+          name="sd"
+          active="variant-filled-primary"
+          class="mt-4"
+          size="sm"
+          bind:checked={$DungeonGameSettingsStore.llmTextSettings.cleanUpText}
+          >Text Cleanup is {$DungeonGameSettingsStore.llmTextSettings
+            .cleanUpText
+            ? "enabled"
+            : "disabled"}</SlideToggle
+        >
+      </div>
+    </svelte:fragment>
   </AccordionItem>
 </Accordion>

@@ -104,7 +104,7 @@ function createDungeonGameSettingsStore() {
     async get(gameId: string, fetch?: Window["fetch"]) {
       if (!gameId || gameId.includes(".")) return;
       const result = await dbGet({
-        db: `dungeons/${gameId}/gamesettings`,
+        db: `dungeons/${gameId}/gamesettings`,fetch
       });
       if (!result) {
         // Reset DungeonGameSettingsStore
@@ -113,6 +113,7 @@ function createDungeonGameSettingsStore() {
         // Set DungeonGameSettingsStore to the response
         this.set(result);
       }
+      return result;
     },
   };
 }

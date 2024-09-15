@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { initializeStores, Modal, storePopup } from "@skeletonlabs/skeleton";
-  import { AppShell, Toast } from "@skeletonlabs/skeleton";
   //import type { LayoutData } from './$types'
-  import { autoModeWatcher } from "@skeletonlabs/skeleton";
+  import { autoModeWatcher, AppShell, initializeStores, Modal, storePopup } from "@skeletonlabs/skeleton";
+  import { Toaster } from 'svelte-french-toast';
   import "../app.postcss";
   import {
     arrow,
@@ -21,8 +20,7 @@
 <!-- Rip out the skeleton modal as it strictly follows ARIA rules which are detrimental to development and fuck up functionality-->
 <!-- thanks to the ARIA pish, the modal will always close when the backdrop is clicked. -->
   <Modal zIndex="z-[666]" on:backdrop={()=>{return undefined;}}/>
-  <Toast zIndex="z-[999]"/>
-
+  <Toaster containerStyle="z-[999]"/>
   <AppShell>
     <slot />
   </AppShell>

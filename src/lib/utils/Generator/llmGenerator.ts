@@ -114,18 +114,19 @@ export class Generator {
       }
     }
   }
-  async crlGenerate(
-    weAre: "engine" | "game",
-    prompt: string,
-    maxTokens?: number,
-    temperature?: number,
-    topP?: number,
-    topK?: number,
-    frequencyPenalty?: number,
-    presencePenalty?: number,
-    streaming?: boolean,
-    stop: string[] = []
-  ): Promise<any> {
+
+async crlGenerate({
+  weAre,
+  prompt,
+  maxTokens,
+  temperature,
+  topP,
+  topK,
+  frequencyPenalty,
+  presencePenalty,
+  streaming=false,
+  stop = []
+}: CrlGenerateParams): Promise<any> {
     let mStore: any;
     if (weAre === "engine") mStore = get(EngineLlmStore);
     else mStore = get(DungeonGameSettingsStore);
@@ -168,6 +169,7 @@ export class Generator {
     }
     return data.response;
   }
+  
   async handleMessage(
     response: any,
     message: string,

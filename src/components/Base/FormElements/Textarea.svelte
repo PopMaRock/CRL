@@ -18,7 +18,7 @@
 </script>
 
 <div
-  class={cn($$props.class, "dark:variant-filled-surface rounded-md mt-5 mb-5")}
+  class={cn($$props.class, "formTextAreaBox")}
 >
   {#if showLabel}
     <label for={name} class="label pl-2 pt-2 font-bold" {title}>{label}</label>

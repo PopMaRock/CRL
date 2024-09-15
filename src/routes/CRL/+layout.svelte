@@ -3,17 +3,16 @@
   import SidebarLeft from "$components/Layouts/Main/SidebarLeft.svelte";
   import SidebarRight from "$components/Layouts/SidebarRight.svelte";
   import SidebarRightGame from "$components/Dungeon/SidebarRight.svelte";
-  import { AppShell } from "@skeletonlabs/skeleton";
-
-  let currentSidebarRight = SidebarRight;
+  import { AppShell, Drawer, getDrawerStore } from "@skeletonlabs/skeleton";
+  import GameIconsSideswipe from "~icons/game-icons/sideswipe";
+  import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
+  import { DungeonSd } from "$stores/dungeon/DungeonSd";
+  import { EngineLlmStore } from "$stores/engine/EngineLlm";
+  let url: string;
   $: {
-    const url = $page.url.pathname;
-    if (url.includes("play")) {
-      currentSidebarRight = SidebarRightGame;
-    } else {
-      currentSidebarRight = SidebarRight;
-    }
+    url = $page.url.pathname;
   }
+  const drawerStore = getDrawerStore();
 </script>
 
 <div>
@@ -24,8 +23,46 @@
         <SidebarLeft />
       </div>
     </svelte:fragment>
-	<svelte:fragment slot="sidebarRight">
-      <svelte:component this={currentSidebarRight} />
+    <svelte:fragment slot="sidebarRight">
+      <Drawer
+        on:backdrop={$drawerStore.meta?.close()}
+        position="right"
+        width="60vh"
+        rounded="rounded-none"
+      >
+        {#if $drawerStore.id === "engineRight"}
+          <SidebarRight />
+        {/if}
+        {#if $drawerStore.id === "gameRight"}
+          <SidebarRightGame />
+        {/if}
+      </Drawer>
+      <section>
+        <button
+          type="button"
+          class="btn"
+          on:click={(event) => {
+            event.stopPropagation();
+            drawerStore.open({
+              id: url.includes("play") ? "gameRight" : "engineRight",
+              meta: {
+                close: () => {
+                  if (url.includes("play")) {
+                    DungeonGameSettingsStore.save();
+                    if ($DungeonGameSettingsStore.game.sd) {
+                      DungeonSd.save(String($DungeonGameSettingsStore.game.id));
+                    }
+                  } else {
+                    EngineLlmStore.save();
+                  }
+                },
+              },
+            });
+          }}
+        >
+          <GameIconsSideswipe class="text-xl text-primary-900" /></button
+        >
+      </section>
     </svelte:fragment>
     <!-- Router Slot -->
     <div class="h-screen flex flex-col">

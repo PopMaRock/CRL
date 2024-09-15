@@ -1,11 +1,17 @@
+//Store for hte basic SD settings associated with a game
+
+import { dbGet, dbSet } from "$utilities/data/db";
+import { tick } from "svelte";
+import { get, writable } from "svelte/store";
+
 export const UPDATE_INTERVAL = 1000;
 // This is a 1x1 transparent PNG
 export const PNG_PIXEL =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 export const placeholderVae = "Automatic";
-export const sources = {
-  auto: "auto",
+export const sdSources = {
   forge: "forge",
+  civitai: "civitai",
 };
 export const generationMode = {
   MESSAGE: -1,
@@ -74,7 +80,8 @@ export const promptTemplates = {
   [generationMode.MESSAGE]:
     "[{{char}} sends a picture that contains: {{prompt}}].",
   /*OLD:     [generationMode.CHARACTER]: "Pause your roleplay and provide comma-delimited list of phrases and keywords which describe {{char}}'s physical appearance and clothing. Ignore {{char}}'s personality traits, and chat history when crafting this description. End your response once the comma-delimited list is complete. Do not roleplay when writing this description, and do not attempt to continue the story.", */
-  [generationMode.CHARACTER]: "[In the next response, ONLY RESPOND WITH ONE COMMA-DELIMITATED LIST OF KEYWORDS TO DESCRIBE THE LAST MESSAGE. The keywords should be descriptive but concise, geared towards creating a full character portrait. Include the specified characteristics: Perspective, Camera Shot, Camera Angle, Camera Lens, Lighting, Location, Character Genders, Primary Action, and Characters in Scene (grouped by individual). They must include relevant descriptive and detailed explicit keywords, when appropriate. Only respond with the comma-separated keyword list.]",
+  [generationMode.CHARACTER]:
+    "[In the next response, ONLY RESPOND WITH ONE COMMA-DELIMITATED LIST OF KEYWORDS TO DESCRIBE THE LAST MESSAGE. The keywords should be descriptive but concise, geared towards creating a full character portrait. Include the specified characteristics: Perspective, Camera Shot, Camera Angle, Camera Lens, Lighting, Location, Character Genders, Primary Action, and Characters in Scene (grouped by individual). They must include relevant descriptive and detailed explicit keywords, when appropriate. Only respond with the comma-separated keyword list.]",
 
   //face-specific prompt
   [generationMode.FACE]:
@@ -101,112 +108,60 @@ export const promptTemplates = {
     'Pause your roleplay and provide an exhaustive comma-separated list of tags describing the appearance of "{0}" in great detail. Start with {{charPrefix}} (sic) if the subject is associated with {{char}}.',
 };
 
-const defaultPrefix = "best quality, absurdres, aesthetic,";
-const defaultNegative =
-  "lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry";
+const defaultPositive = " zPDXL2";
+const defaultNegative = " zPDXL2-neg";
 
 //------------------------------
-export const defaultSettings = {
+const defaultSettings = {
   //################################################################
-  // CFG Scale
-  scale_min: 1,
-  scale_max: 30,
-  scale_step: 0.5,
-  // Sampler steps
-  steps_min: 1,
-  steps_max: 150,
-  steps_step: 1,
-
-  // controlnet
-  clipskip_min: 1,
-  clipskip_max: 12,
-  clipskip_step: 1,
-
+  source: sdSources.forge,
   // Image dimensions (Width & Height)
-  dimension_min: 64,
-  dimension_max: 2048,
-  dimension_step: 64,
   width: 1024,
   height: 1024,
-
-  prompt_prefix: defaultPrefix ?? "zPDXL2",
-  negative_prompt: defaultNegative ?? "zPDXL2-neg",
+  positivePrompt: defaultPositive ?? "zPDXL2",
+  negativePrompt: defaultNegative ?? "zPDXL2-neg",
   // Automatic1111/Forge exclusives
-  restore_faces: false,
-  enable_hr: false,
-
+  enableHr: false,
   // Refine mode
-  refine_mode: false,
-  expand: false,
-  interactive_mode: false,
-  multimodal_captioning: false,
-  snap: false,
-  free_extend: false,
-
+  llmPromptGen: true,
+  editBeforeGen: true,
+  interactiveMode: true, // Allows the key 'See' to be used.
+  freeExtend: false,
   prompts: promptTemplates,
-
-  // AUTOMATIC1111 settings
-  // AUTOMATIC1111 settings
-  auto_url: "http://localhost:7860",
-  auto_auth: "",
-
-  hr_upscaler: "Latent",
-  hr_scale: 2.0,
-  hr_scale_min: 1.0,
-  hr_scale_max: 4.0,
-  hr_scale_step: 0.1,
-  denoising_strength: 0.7,
-  denoising_strength_min: 0.0,
-  denoising_strength_max: 1.0,
-  denoising_strength_step: 0.01,
-  hr_second_pass_steps: 0,
-  hr_second_pass_steps_min: 0,
-  hr_second_pass_steps_max: 150,
-  hr_second_pass_steps_step: 1,
-
-  // Visibility toggles
-  wand_visible: false,
-  command_visible: false,
-  interactive_visible: false,
+  forgeUrl: "http://localhost:7860",
+  forgeAuth: "",
+  forgeValidated: false,
+  hrUpscaler: "R-ESRGAN 4x+ Anime6B",
+  hrScale: 2.0,
+  denoisingStrength: 0.7,
+  hrSecondPassSteps: 0,
 };
-//Keys For Character Settings
-export const char_settings = {
-  positive: "positivePrompts",
-  negative: "negativePrompts",
-  model: "model",
-  sampler: "sampler",
-  resolution: "resolution",
-  vae: "vae",
-  scale: "scale",
-  seed: "seed",
-  scheduler: "scheduler",
-  steps: "steps",
-  width: "width",
-  height: "height",
-  clipskip: "clipskip",
-  expression: "expression",
-  cn: {
-    enable: "enable",
-    mode: "mode",
-    model: "model",
-    module: "module",
-    lora: "lora",
-    attachTo: "attachTo",
-    inputRef: "inputRef",
-    pixelperfect: "pixelperfect",
-    prefer: "prefer",
-    weight: "weight",
-  },
-  ad: {
-    adetailer_mode: "adetailer_mode",
-    adetailer_models: "adetailer_models",
-    adetailer_weight: "adetailer_weight",
-  },
-  ao: {
-    manual_ao_mode: "manual_ao_mode",
-    ao_override: "ao_override",
-  },
-  freeU: "freeU",
+export const fixedParams = {
+  hrSecondPassStepsMax: 150,
+  hrSecondPassStepsStep: 1,
+  //-
+  denoisingStrengthMax: 1,
+  denoisingStrengthStep: 0.01,
+  //-
+  hrScaleMin: 1.0,
+  hrScaleMax: 4.0,
+  hrScaleStep: 0.1,
+  //-
+  dimensionMin: 64,
+  dimensionMax: 2048,
+  dimensionStep: 64,
+  //-
+  clipskipMin: 1,
+  clipskipMax: 12,
+  clipskipStep: 1,
+  //-
+  stepsMin: 1,
+  stepsMax: 150,
+  stepsStep: 1,
+  //-
+  scaleMin: 1,
+  scaleMax: 30,
+  scaleStep: 0.5,
 };
 export const expressYourself = {
   admiration:
@@ -264,7 +219,7 @@ export const expressYourself = {
     "wide eyes, dropped jaw, and eyebrows raised in astonishment conveying a sense of surprise and shock.",
 };
 export const defaultCharacterSettings = {
-  positivePrompts: defaultPrefix,
+  positivePrompts: defaultPositive,
   negativePrompts: defaultNegative,
   model: "",
   resolution: "sd_res_1024x1024",
@@ -390,3 +345,35 @@ export const resolutionOptions = {
     name: "640x1536 (10:24, SDXL)",
   },
 };
+
+function createDungeonSdStore() {
+  const { subscribe, set, update } = writable(defaultSettings);
+
+  return {
+    subscribe,
+    set,
+    update,
+    reset: () => {
+      set(structuredClone(defaultSettings));
+    },
+    async get(gameId: string, fetch?: Window["fetch"]) {
+      const result = await dbGet({
+        db: `dungeons/${gameId}/sd`,
+        fetch,
+      });
+      if (!result || Object.keys(result).length === 0) {
+        this.reset();
+      } else {
+        this.set(result);
+      }
+      await tick();
+      console.log("SD Options Loaded", get(this));
+    },
+    async save(gameId: string) {
+      const currSdSettings = get(this);
+      await dbSet({ db: `dungeons/${gameId}/sd`, data: currSdSettings });
+    },
+  };
+}
+
+export const DungeonSd = createDungeonSdStore();

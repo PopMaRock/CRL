@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { getToastStore, Tab, TabGroup } from "@skeletonlabs/skeleton";
+  import { Tab, TabGroup } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
   import Modal from "../Base/ModalTemplate.svelte";
   import Scenarios from "./Settings/Scenarios.svelte";
-  import Opening from "./Settings/Opening.svelte";
   import Story from "./Settings/Story.svelte";
   import GameSettings from "./Settings/GameSettings.svelte";
   import LlmSettings from "./Settings/LlmSettings.svelte";
   import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings";
   import { dbUpdate } from "$utilities/data/db";
   import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
+  import { toastr } from "$utilities/toastr";
+  import GameSettingsSd from "./Settings/GameSettings-sd.svelte";
   export let stage: number;
-  const ms = getToastStore();
   let loading = false;
 
   function forward() {
@@ -45,9 +45,9 @@
       !$DungeonGameSettingsStore.llmTextSettings.prompt
     ) {
       console.log("Missing essentials");
-      ms.trigger({
+      toastr({
         message: "Missing essentials. Re-check form",
-        background: "variant-filled-primary",
+        type: "error",
         timeout: 2000,
         hideDismiss: true,
       });
@@ -83,10 +83,9 @@
         DungeonConversationStore.save($DungeonGameSettingsStore.game.id);
     } catch (e) {
       console.error(e);
-      ms.trigger({
+      toastr({
         message: "Error creating game -- check console",
-        background: "variant-filled-primary",
-        timeout: 2000,
+        type: "error",
         hideDismiss: true,
       });
       return;
@@ -111,18 +110,20 @@
   {:else if stage === 2}
     <!-- story and plot -->
     <TabGroup>
-      <Tab bind:group={storyTab} name="tab1" value={0}>Opening</Tab>
-      <Tab bind:group={storyTab} name="tab2" value={1}>Story</Tab>
-      <Tab bind:group={storyTab} name="tab4" value={2}>Game Settings</Tab>
+      <Tab bind:group={storyTab} name="tab1" value={0}>Story</Tab>
+      <Tab bind:group={storyTab} name="tab2" value={1}>Game Settings</Tab>
+      {#if $DungeonGameSettingsStore.game.sd}
+      <Tab bind:group={storyTab} name="tab3" value={2}>SD</Tab>
+      {/if}
       <Tab bind:group={storyTab} name="tab5" value={3}>LLM Settings</Tab>
       <!-- Tab Panels --->
       <svelte:fragment slot="panel">
         {#if storyTab === 0}
-          <Opening />
-        {:else if storyTab === 1}
           <Story />
+        {:else if storyTab === 1}
+           <GameSettings />
         {:else if storyTab === 2}
-          <GameSettings />
+         <GameSettingsSd />
         {:else if storyTab === 3}
           <LlmSettings />
         {/if}

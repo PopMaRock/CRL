@@ -10,6 +10,7 @@ import cl100k_base from "tiktoken/encoders/cl100k_base";
 import { Tiktoken } from "tiktoken";
 import { addProcessToQueue } from "$stores/processes";
 import { browser } from "$app/environment";
+import { toastr } from "./toastr";
 
 export async function getTokens(text: string): Promise<any> {
   if (!text) return undefined;
@@ -29,7 +30,6 @@ export async function getTokens(text: string): Promise<any> {
 }
 export async function testLlmConnection(
   llmActive: string,
-  toast?: any,
   baseUrl?: string
 ) {
   if (browser) {
@@ -41,20 +41,16 @@ export async function testLlmConnection(
       if (!response.ok) {
         throw new Error(data?.error || "Failed to connect to LmStudio");
       }
-      if (toast)
-        toast.trigger({
-          message: `Connection to ${llmActive} successful`,
-          background: "variant-filled-success",
-          timeout: 5000,
-        });
+      toastr({
+        message: `Connection to ${llmActive} successful`,
+        type: "success",
+      });
     } catch (error) {
       console.error("Failed to connect to LLM.", error);
-      if (toast)
-        toast.trigger({
-          message: `Connection to ${llmActive} failed: ${error}`,
-          background: "variant-filled-error",
-          timeout: 5000,
-        });
+     toastr({
+        message: `Connection to ${llmActive} failed: ${error}`,
+        type: "error",
+      });
     }
   }
 }

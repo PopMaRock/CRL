@@ -1,6 +1,7 @@
 import { DungeonConversationStore } from "$stores/dungeon/DungeonConversation";
 import { DungeonGameSettingsStore } from "$stores/dungeon/DungeonGameSettings.js";
 import { DungeonManager } from "$stores/dungeon/DungeonManager";
+import { DungeonSd } from "$stores/dungeon/DungeonSd.js";
 import { tick } from "svelte";
 export const ssr = false; //da run on the server. Just browser.
 
@@ -20,10 +21,11 @@ export async function load({ params, url, fetch }) {
   DungeonManager.reset();
   //set everything
   await tick();
-  
-  await DungeonGameSettingsStore.get(gameId, fetch); //get the game settings
+
+  const tmp = await DungeonGameSettingsStore.get(gameId, fetch); //get the game settings
   await DungeonConversationStore.get(gameId, fetch); //get the conversations
   await DungeonManager.get(gameId, fetch); //get the game manager
+  if (tmp.game.sd) await DungeonSd.get(gameId, fetch); //load SD settings
 
   return {
     gameId,
